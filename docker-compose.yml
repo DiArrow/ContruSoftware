@@ -1,0 +1,11 @@
+services:
+  frontend:
+    build:
+        context: ./frontend/
+  backend:
+    build:
+        context: ./backend/
+  db:
+    build:
+        context: ./db/
+
