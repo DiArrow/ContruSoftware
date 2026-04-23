@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Frontend - Docker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #61dafb;
+            background: #282c34;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .status {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>React + Docker</h1>
+        <p>Si estás viendo esto, el contenedor de <strong>Nginx</strong> está funcionando.</p>
+        <p class="status">● Frontend listo</p>
+        <hr>
+        <small>Verifica la consola para probar la conexión con FastAPI</small>
+    </div>
+
+    <script>
+        console.log("Frontend cargado correctamente.");
+        // Prueba simple de conexión al backend (ajusta la URL según tu docker-compose)
+        fetch('http://localhost:8000/')
+            .then(response => console.log("Conexión con Backend: OK"))
+            .catch(err => console.error("Aún no hay conexión con el Backend"));
+    </script>
+</body>
+
+</html>
