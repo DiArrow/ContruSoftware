@@ -1,1 +1,12 @@
 .env
+
+node_modules/
+npm-debug.log*
+
+dist/
+build/
+.parcel-cache/
+.next/
+
+.DS_Store
+Thumbs.db
