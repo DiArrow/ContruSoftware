@@ -1,0 +1,20 @@
+name: CI en Develop y Main
+
+on:
+  push:
+    branches: 
+      - Develop        
+      - main           
+  pull_request:
+    branches: 
+      - main           
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker Compose
+        run: docker compose build
