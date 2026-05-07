@@ -1,6 +1,7 @@
 import React from "react";
 import "./index.css"; // estilos globales: body, :root variables
 
+
 const baseCard = {
   backgroundColor: "#ffffff",
   opacity: 0.95,
