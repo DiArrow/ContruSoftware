@@ -1,8 +1,8 @@
 import React from "react";
 import "./index.css";
 
-//Iconos desarrollados presentes en la sidebar
-//Presentes mediante figuras geométricas
+//Iconos presentes mediante figuras geométricas
+//Iconos para la sidebar
 const IconGrid = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -44,7 +44,21 @@ const IconBox = () => (
     <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
   </svg>
 );
-// Items de navegación
+
+//Iconos para el topbar
+const IconBell = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+  </svg>
+);
+const IconUser = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
+//Items de navegación
 const navItems = [
   { icon: <IconGrid />,     label: "Dashboard"   },
   { icon: <IconUsers />,    label: "Estudiantes" },
@@ -115,6 +129,87 @@ function Sidebar() {
     </aside>
   );
 }
+
+//Topbar
+function Topbar() {
+  return (
+    <div style={{
+      width: "100%",
+      height: "64px",
+      display: "flex",
+      alignItems: "flex-start",
+      padding: "0 8px 0",
+      boxSizing: "border-box",
+      position: "relative",
+    }}>
+      {/* Mensaje de bienvenida */}
+      <div style={{
+        position: "absolute",
+        left: "50%",
+        transform: "translateX(-50%)",
+        display: "flex",
+        alignItems: "center",
+        paddingTop: "8px",
+      }}>
+        <p style={{ fontSize: "19px", color: "#374151", fontWeight: 100, margin: 0 }}>
+          {/* fontWeight: 100 para el texto general y 750 para el mensaje destacado */}
+          Bienvenid@ a MakerBox, <strong style={{ fontWeight: 750 }}>tu espacio de creación y aprendizaje</strong> 
+        </p>  
+      </div>
+
+      {/* Iconos */}
+      <div style={{
+        position: "absolute",
+        right: "8px",
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+      }}>
+
+        {/* Campana */}
+        <button title="Notificaciones" style={{
+          width: "40px", height: "40px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          borderRadius: "12px",
+          border: "1px solid rgba(0,0,0,0.08)",
+          backgroundColor: "#ffffff",
+          color: "#6b7280",
+          cursor: "pointer",
+          position: "relative",
+          transition: "background 0.2s, color 0.2s",
+        }}>
+          <IconBell />
+
+          {/* Badge de notificación */}
+          <span style={{
+            position: "absolute",
+            top: "8px", right: "8px",
+            width: "7px", height: "7px",
+            borderRadius: "50%",
+            backgroundColor: "#7c3aed",
+            border: "1.5px solid #ffffff",
+          }} />
+        </button>
+
+        {/* Perfil */}
+        <button title="Perfil" style={{
+          width: "40px", height: "40px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          borderRadius: "12px",
+          border: "1px solid rgba(0,0,0,0.08)",
+          backgroundColor: "#ede9fe",
+          color: "#5b21b6",
+          cursor: "pointer",
+          transition: "background 0.2s, color 0.2s",
+        }}>
+          <IconUser />
+        </button>
+
+      </div>
+    </div>
+  );
+}
+
 //Cards
 const baseCard = {
   backgroundColor: "#ffffff",
@@ -135,6 +230,7 @@ const styles = {
   cuadroSuperior: {
     ...baseCard,
     height: "var(--cuadro-alto)",
+    paddingTop: "5px",
   },
   cuadroCentral: {
     ...baseCard,
@@ -158,7 +254,13 @@ function useHover() {
 function CuadroSuperior({ children }) {
   const { hovered, ...handlers } = useHover();
   return (
-    <div style={{ ...styles.cuadroSuperior, ...(hovered ? hoverShadow : {}) }} {...handlers}>
+    <div style={{
+      ...styles.cuadroSuperior,
+      ...(hovered ? hoverShadow : {}),
+      display: "flex",
+      flexDirection: "column",
+      gap: "18px",
+    }} {...handlers}>
       {children}
     </div>
   );
@@ -167,7 +269,13 @@ function CuadroSuperior({ children }) {
 function CuadroCentral({ children }) {
   const { hovered, ...handlers } = useHover();
   return (
-    <div style={{ ...styles.cuadroCentral, ...(hovered ? hoverShadow : {}) }} {...handlers}>
+    <div style={{
+      ...styles.cuadroCentral,
+      ...(hovered ? hoverShadow : {}),
+      display: "flex",
+      flexDirection: "column",
+      gap: "18px",
+    }} {...handlers}>
       {children}
     </div>
   );
@@ -176,20 +284,28 @@ function CuadroCentral({ children }) {
 function CuadroInferior({ children }) {
   const { hovered, ...handlers } = useHover();
   return (
-    <div style={{ ...styles.cuadroInferior, ...(hovered ? hoverShadow : {}) }} {...handlers}>
+    <div style={{
+      ...styles.cuadroInferior,
+      ...(hovered ? hoverShadow : {}),
+      display: "flex",
+      flexDirection: "column",
+      gap: "18px",
+    }} {...handlers}>
       {children}
     </div>
   );
 }
 
-//App 
+//App (llamada de funciones)
 export default function App() {
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
       
+    <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <CuadroSuperior>
+          <Topbar />
           <p></p>
         </CuadroSuperior>
 
@@ -201,6 +317,7 @@ export default function App() {
           <p></p>
         </CuadroInferior>
       </div>
+    </div>
     </div>
   );
 }
