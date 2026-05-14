@@ -1,0 +1,27 @@
+name: Lint Infraestructura (Docker & YAML)
+
+on:
+  push:
+    paths:
+      - '**/Dockerfile'
+      - '**/*.yml'
+      - '**/*.yaml'
+
+jobs:
+  lint-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Hadolint (Dockerfiles)
+        uses: hadolint/hadolint-action@v3.1.0
+        continue-on-error: true # Solo advierte
+        with:
+          recursive: true
+
+      - name: Run Yamllint
+        continue-on-error: true # Solo advierte
+        run: |
+          sudo apt-get update && sudo apt-get install -y yamllint
+          yamllint .
