@@ -1,7 +1,7 @@
 FROM node:26-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci  # Más reproducible que npm install
 COPY . .
 RUN npm run build
 
