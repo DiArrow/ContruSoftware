@@ -1,5 +1,5 @@
-import reactLogo from './assets/react.svg'
-import './App.css'
+import reactLogo from './assets/react.svg';
+import './App.css';
 
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
         <h1>Hola mundo</h1>
       </section>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
