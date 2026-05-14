@@ -1,0 +1,16 @@
+extends: default
+
+ignore: |
+  frontend/node_modules/
+  test_linters/
+  .venv/
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  document-start:
+    present: false
+  truthy:
+    # Permite valores como 'on' o 'off' sin comillas, común en GHA
+    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
