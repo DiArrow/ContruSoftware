@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./index.css";
 
 //Iconos presentes mediante figuras geométricas
@@ -70,7 +70,7 @@ const navItems = [
 
 // Sidebar 
 function Sidebar() {
-  const [active, setActive] = React.useState(0);
+  const [active, setActive] = useState(0);
   return (
     <aside style={{
       width: "72px",
@@ -247,7 +247,7 @@ const styles = {
 };
 
 function useHover() {
-  const [hovered, setHovered] = React.useState(false);
+  const [hovered, setHovered] = useState(false);
   return { hovered, onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) };
 }
 
