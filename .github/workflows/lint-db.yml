@@ -26,7 +26,7 @@ jobs:
 
       - name: Run SQLFluff (Auto-fix)
         working-directory: ./db
-        continue-on-error: true # Solo advierte
+        continue-on-error: true   # Solo advierte
         run: sqlfluff fix . --dialect postgres --force
 
       - name: Commit Auto-fix changes

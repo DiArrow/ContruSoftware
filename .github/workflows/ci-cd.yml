@@ -2,13 +2,12 @@ name: CI en Develop y Main
 
 on:
   push:
-    branches: 
-      - Develop        
-      - main           
+    branches:
+      - Develop
+      - main
   pull_request:
-    branches: 
-      - main           
-
+    branches:
+      - main
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

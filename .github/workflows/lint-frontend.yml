@@ -6,7 +6,7 @@ on:
       - 'frontend/**'
 
 permissions:
-  contents: write # Permiso necesario para que el bot haga el auto-fix
+  contents: write   # Permiso necesario para que el bot haga el auto-fix
 
 jobs:
   lint-and-fix:
@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '26'
+          node-version: '20'
 
       - name: Install dependencies
         working-directory: ./frontend
@@ -26,8 +26,7 @@ jobs:
 
       - name: Run ESLint & Prettier (Auto-fix)
         working-directory: ./frontend
-        continue-on-error: true # Solo advierte, no bloquea
-        # Ejecuta la corrección automática de ESLint y luego Prettier
+        continue-on-error: true  # Solo advierte, no bloquea
         run: |
           npx eslint . --fix
           npx prettier --write .

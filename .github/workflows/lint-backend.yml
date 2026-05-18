@@ -20,7 +20,7 @@ jobs:
 
       - name: Run Ruff Linter & Formatter (Auto-fix)
         working-directory: ./backend
-        continue-on-error: true # Solo advierte
+        continue-on-error: true  # Solo advierte
         run: |
           ruff check . --fix
           ruff format .
