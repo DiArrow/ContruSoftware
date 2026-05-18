@@ -23,14 +23,21 @@ describe('Suite de pruebas generales', () => {
 });
 
 describe('Suite de pruebas para la Sidebar', () => {
-  const items = ["Dashboard", "Students", "Inventory", "Reports", "Courses", "Settings"];
+  const items = [
+    'Dashboard',
+    'Students',
+    'Inventory',
+    'Reports',
+    'Courses',
+    'Settings',
+  ];
 
   items.forEach((label) => {
-  it('Debe resaltar el icono de ' + label + ' al ser seleccionado', () => {
-    render(<App />);
-    const button = screen.getByTitle(label);
-    fireEvent.click(button);
-    expect(button).toHaveStyle('background-color: rgb(237, 233, 254)');
-  });
+    it('Debe resaltar el icono de ' + label + ' al ser seleccionado', () => {
+      render(<App />);
+      const button = screen.getByTitle(label);
+      fireEvent.click(button);
+      expect(button).toHaveStyle('background-color: rgb(237, 233, 254)');
+    });
   });
 });
