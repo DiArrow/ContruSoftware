@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "./index.css";
+import { useState } from 'react';
+import './index.css';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -402,7 +402,11 @@ const styles = {
 
 function useHover() {
   const [hovered, setHovered] = useState(false);
-  return { hovered, onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) };
+  return {
+    hovered,
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  };
 }
 
 function TopPanel({ children }) {
