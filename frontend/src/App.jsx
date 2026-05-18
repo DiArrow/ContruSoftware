@@ -152,11 +152,11 @@ const IconUser = () => (
 //Items de navegación
 const navItems = [
   { icon: <IconGrid />, label: 'Dashboard' },
-  { icon: <IconUsers />, label: 'Estudiantes' },
-  { icon: <IconBag />, label: 'Inventario' },
-  { icon: <IconChart />, label: 'Reportes' },
-  { icon: <IconBook />, label: 'Cursos' },
-  { icon: <IconSettings />, label: 'Ajustes' },
+  { icon: <IconUsers />, label: 'Students' },
+  { icon: <IconBag />, label: 'Inventory' },
+  { icon: <IconChart />, label: 'Reports' },
+  { icon: <IconBook />, label: 'Courses' },
+  { icon: <IconSettings />, label: 'Settings' },
 ];
 
 // Sidebar
@@ -381,21 +381,21 @@ const baseCard = {
 const hoverShadow = { boxShadow: '0 15px 40px rgba(0, 0, 0, 0.12)' };
 
 const styles = {
-  cuadroSuperior: {
+  TopPanel: {
     ...baseCard,
-    height: 'var(--cuadro-alto)',
+    height: 'var(--top-panel-height)',
     paddingTop: '5px',
   },
-  cuadroCentral: {
+  CentralPanel: {
     ...baseCard,
-    height: 'var(--cuadro-central-alto)',
+    height: 'var(--central-panel-height)',
     border: '1px solid rgba(0, 0, 0, 0.08)',
     marginTop: '70px',
     marginBottom: '30px',
   },
-  cuadroInferior: {
+  LowerPanel: {
     ...baseCard,
-    height: 'var(--cuadro-inferior-alto)',
+    height: 'var(--lower-panel-height)',
     border: '1px solid rgba(0, 0, 0, 0.08)',
   },
 };
@@ -409,12 +409,12 @@ function useHover() {
   };
 }
 
-function CuadroSuperior({ children }) {
+function TopPanel({ children }) {
   const { hovered, ...handlers } = useHover();
   return (
     <div
       style={{
-        ...styles.cuadroSuperior,
+        ...styles.TopPanel,
         ...(hovered ? hoverShadow : {}),
         display: 'flex',
         flexDirection: 'column',
@@ -427,12 +427,12 @@ function CuadroSuperior({ children }) {
   );
 }
 
-function CuadroCentral({ children }) {
+function CentralPanel({ children }) {
   const { hovered, ...handlers } = useHover();
   return (
     <div
       style={{
-        ...styles.cuadroCentral,
+        ...styles.CentralPanel,
         ...(hovered ? hoverShadow : {}),
         display: 'flex',
         flexDirection: 'column',
@@ -445,12 +445,12 @@ function CuadroCentral({ children }) {
   );
 }
 
-function CuadroInferior({ children }) {
+function LowerPanel({ children }) {
   const { hovered, ...handlers } = useHover();
   return (
     <div
       style={{
-        ...styles.cuadroInferior,
+        ...styles.LowerPanel,
         ...(hovered ? hoverShadow : {}),
         display: 'flex',
         flexDirection: 'column',
@@ -478,18 +478,18 @@ export default function App() {
         }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <CuadroSuperior>
+          <TopPanel>
             <Topbar />
             <p></p>
-          </CuadroSuperior>
+          </TopPanel>
 
-          <CuadroCentral>
+          <CentralPanel>
             <p></p>
-          </CuadroCentral>
+          </CentralPanel>
 
-          <CuadroInferior>
+          <LowerPanel>
             <p></p>
-          </CuadroInferior>
+          </LowerPanel>
         </div>
       </div>
     </div>
