@@ -1,8 +1,7 @@
 :root {
-  --cuadro-ancho: 1750px;
-  --cuadro-alto: 50px;
-  --cuadro-central-alto: 250px;
-  --cuadro-inferior-alto: 600px;
+  --top-panel-height: 50px;
+  --central-panel-height: 250px;
+  --lower-panel-height: 600px;
 }
 
 body {
