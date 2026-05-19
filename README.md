@@ -35,14 +35,38 @@
     - `fix:` Al corregir un error o _bug_.
     - `docs:` Al realizar cambios exclusivos en la documentación.
     - `refactor:` Al reestructurar código sin alterar su comportamiento ni añadir funciones nuevas.
+### 📖 Estándares de Codificación por Lenguaje de Programación
 
-## 🛠 Estandarización de Código y Linters por lenguaje de programación
+#### 1. Frontend (JavaScript / React)
+* **Herramientas:** ESLint + Prettier
+* **Estándar base:** **ESLint Recommended** & **React Recommended**.
+* **Reglas principales:** 
+  * Uso estricto de Hooks de React (`react-hooks/recommended`).
+  * Prettier maneja el formato:  punto y coma obligatorio, y comillas simples (`'`).
+  * Prevención de variables no utilizadas y exportaciones incorrectas en Vite.
 
-Para mantener la calidad y consistencia en el proyecto, utilizamos las siguientes herramientas:
-* **Frontend:** ESLint (Estándar Airbnb) + Prettier
-* **Backend:** Ruff (Estándar PEP 8)
-* **Base de Datos:** SQLFluff (Dialecto PostgreSQL)
-* **Infraestructura:** Yamllint y Hadolint (Docker)
+#### 2. Backend (Python / FastAPI)
+* **Herramienta:** Ruff
+* **Estándar base:** **PEP 8** (El estándar oficial de Python) + Estilo **Black**.
+* **Reglas principales:**
+  * **Pycodestyle (E, W):** Validación estricta del PEP 8 (espacios, saltos de línea).
+  * **Pyflakes (F):** Detección de errores lógicos (variables sin usar, imports faltantes).
+  * **Isort (I):** Ordenamiento automático y alfabético de las importaciones.
+  * **Formato:** Longitud máxima de 88 caracteres por línea y uso de comillas dobles (`"`) para strings.
+
+#### 3. Base de Datos (SQL / PostgreSQL)
+* **Herramienta:** SQLFluff
+* **Estándar base:** **PostgreSQL Official Conventions**.
+* **Reglas principales:**
+  * Palabras reservadas y funciones (`SELECT`, `FROM`, `COUNT`) estrictamente en **MAYÚSCULAS**.
+  * Identificadores (nombres de tablas y columnas) estrictamente en **minúsculas**.
+
+#### 4. Infraestructura (Docker & YAML)
+* **Herramientas:** Hadolint (Docker) + Yamllint (YAML)
+* **Estándar base:** **Docker Official Best Practices**.
+* **Reglas principales:**
+  * **Docker:** Uso de tags específicos (no usar `:latest`), agrupación de comandos `RUN`, y limpieza de cachés apt/apk (`--no-install-recommends`).
+  * **YAML:** Longitud máxima de 120 caracteres, indentación estricta y formato uniforme en archivos de configuración como `docker-compose.yml` y GitHub Actions.
 
 ---
 ### 💻 Ejecución Local (Antes de hacer commit)
