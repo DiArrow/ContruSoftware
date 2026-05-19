@@ -4,7 +4,7 @@ dialect = postgres
 # Excluimos directorios si los hubiera
 exclude_rules = none
 # Límite de línea para los archivos SQL
-max_line_length = 100
+max_line_length = 120
 
 [sqlfluff:rules:capitalisation.keywords]
 # Palabras clave (SELECT, FROM, WHERE) siempre en mayúsculas

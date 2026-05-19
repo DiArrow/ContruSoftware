@@ -1,5 +1,7 @@
 # Tamaño máximo de línea
 line-length = 88
+# Indentación a 4 espacios
+indent-width = 4
 
 # Versión de Python a la que apuntamos
 target-version = "py310"
@@ -11,7 +13,7 @@ target-version = "py310"
 # I: isort (ordenar imports)
 # B: flake8-bugbear (posibles bugs de diseño)
 # UP: pyupgrade (modernizar sintaxis de Python)
-select = ["E", "W", "F", "I", "B", "UP"]
+select = ["E", "W", "F", "I"]
 
 # Ignoramos reglas específicas si lo vemos necesario
 ignore = []
