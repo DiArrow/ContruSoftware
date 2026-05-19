@@ -2,39 +2,39 @@ import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../App';
 
-describe('Suite de pruebas generales', () => {
-  it('Debe renderizar el Dashboard y el mensaje de bienvenida correctamente', () => {
+function AccederSeccionLogin() {
+  fireEvent.change(screen.getByPlaceholderText(/Usuario/i), {
+    target: { value: 'usuario@utalca.cl' },
+  });
+  fireEvent.change(screen.getByPlaceholderText(/Contraseña/i), {
+    target: { value: 'usuario' },
+  });
+  fireEvent.click(screen.getByText(/Acceder/i));
+}
+
+describe('Suite de pruebas tras login', () => {
+  it('Debe mostrar la página principal después de un login exitoso', () => {
     render(<App />);
+    AccederSeccionLogin();
 
-    // Verificamos logo de la Sidebar
-    const logo = screen.getByText((content, element) => {
-      return (
-        element.tagName.toLowerCase() === 'span' && content.includes('MakerBox')
-      );
-    });
-    expect(logo).toBeInTheDocument();
-
-    // Verificamos mensaje de bienvenida del Topbar
-    const bienvenida = screen.getByText(
-      /Tu espacio de creación y aprendizaje/i
-    );
-    expect(bienvenida).toBeInTheDocument();
+    expect(screen.getByText(/Bienvenid@ a MakerBox/i)).toBeInTheDocument();
   });
 });
 
-describe('Suite de pruebas para la Sidebar', () => {
-  const items = [
-    'Dashboard',
-    'Students',
-    'Inventory',
-    'Reports',
-    'Courses',
-    'Settings',
-  ];
+describe('Suite de pruebas para el click en la sidebar', () => {
+  it('Debe mostrar la sección seleccionada al hacer clic en la sidebar', () => {
+    render(<App />);
+    AccederSeccionLogin();
 
-  items.forEach((label) => {
-    it('Debe resaltar el icono de ' + label + ' al ser seleccionado', () => {
-      render(<App />);
+    const items = [
+      'Dashboard',
+      'Students',
+      'Inventory',
+      'Reports',
+      'Courses',
+      'Settings',
+    ];
+    items.forEach((label) => {
       const button = screen.getByTitle(label);
       fireEvent.click(button);
       expect(button).toHaveStyle('background-color: rgb(237, 233, 254)');
