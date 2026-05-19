@@ -149,6 +149,24 @@ const IconUser = () => (
   </svg>
 );
 
+//Icono para el central panel
+const IconCentral = () => (
+  <svg
+    width="100"
+    height="100"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+    <line x1="12" y1="22.08" x2="12" y2="12" />
+  </svg>
+);
+
 //Items de navegación
 const navItems = [
   { icon: <IconGrid />, label: 'Dashboard' },
@@ -441,6 +459,59 @@ function CentralPanel({ children }) {
       {...handlers}
     >
       {children}
+
+      {/* Logo makerbox */}
+      <div
+        style={{
+          position: 'relative',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-93%, -80%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
+        <div
+          style={{
+            width: '150px',
+            height: '150px',
+            backgroundColor: '#ede9fe',
+            borderRadius: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#5b21b6',
+          }}
+        >
+          <IconCentral />
+        </div>
+        <span
+          style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            color: '#5b21b6',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+          }}
+        ></span>
+        <span
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(20%, -80%)',
+            fontSize: '50px',
+            fontWeight: 100,
+            color: '#000000',
+            letterSpacing: '0.05em',
+            marginTop: '10px',
+          }}
+        >
+          Proyectos realizados: 0
+        </span>
+      </div>
     </div>
   );
 }
@@ -458,6 +529,17 @@ function LowerPanel({ children }) {
       }}
       {...handlers}
     >
+      <span
+        style={{
+          fontSize: '30px',
+          fontWeight: 100,
+          color: '#000000',
+          fontFamily: 'inter',
+          letterSpacing: '0.05em',
+        }}
+      >
+        Progreso de proyecto actual: 0%
+      </span>
       {children}
     </div>
   );
