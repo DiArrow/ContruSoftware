@@ -547,8 +547,9 @@ function LowerPanel({ children }) {
 
 //App (llamada de funciones)
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false); // Estado para controlar si el usuario ha iniciado sesión
+  const [loggedIn, setLoggedIn] = useState(false);
 
+  //Para efectos actuales, se accede al dashboard al hacer clic en el botón de inicio de sesión, sin validación de credenciales
   if (!loggedIn) {
     return <Login onLogin={() => setLoggedIn(true)} />;
   }
