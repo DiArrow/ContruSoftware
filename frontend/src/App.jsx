@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './index.css';
+import Login from './components/Login';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -466,7 +466,7 @@ function CentralPanel({ children }) {
           position: 'relative',
           top: '50%',
           left: '50%',
-          transform: 'translate(-93%, -80%)',
+          transform: 'translate(-93%, -50%)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -547,10 +547,14 @@ function LowerPanel({ children }) {
 
 //App (llamada de funciones)
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(false); // Estado para controlar si el usuario ha iniciado sesión
+
+  if (!loggedIn) {
+    return <Login onLogin={() => setLoggedIn(true)} />;
+  }
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       <Sidebar />
-
       <div
         style={{
           flex: 1,
@@ -562,16 +566,9 @@ export default function App() {
         <div style={{ flex: 1, minWidth: 0 }}>
           <TopPanel>
             <Topbar />
-            <p></p>
           </TopPanel>
-
-          <CentralPanel>
-            <p></p>
-          </CentralPanel>
-
-          <LowerPanel>
-            <p></p>
-          </LowerPanel>
+          <CentralPanel></CentralPanel>
+          <LowerPanel></LowerPanel>
         </div>
       </div>
     </div>
