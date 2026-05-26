@@ -1,5 +1,0 @@
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-ruff>=0.4.0
-sqlfluff>=3.0.0
-yamllint>=1.35.0
