@@ -8,19 +8,20 @@ import os
 from collections.abc import Generator
 from pathlib import Path
 
-import pytest
 from dotenv import load_dotenv
+
+# Load environment variables BEFORE any import that triggers config.py
+_project_root = Path(__file__).resolve().parents[2]
+_env_path = _project_root / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path)
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from src.main import app
-
-# Load environment variables from the project root .env file
-_project_root = Path(__file__).resolve().parents[2]
-_env_path = _project_root / ".env"
-if _env_path.exists():
-    load_dotenv(_env_path)
 
 
 def _get_database_url() -> str:
