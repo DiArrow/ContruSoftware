@@ -1,6 +1,6 @@
 """SQLAlchemy model for the ``semestre`` table."""
 
-from sqlalchemy import Boolean, Column, Date, String, TIMESTAMP, func
+from sqlalchemy import TIMESTAMP, Boolean, Column, Date, String, func
 from sqlalchemy.orm import relationship
 
 from src.database import Base

@@ -1,6 +1,6 @@
 """SQLAlchemy model for the ``usuario`` table."""
 
-from sqlalchemy import Column, String, TIMESTAMP, func
+from sqlalchemy import TIMESTAMP, Column, String, func
 from sqlalchemy.orm import relationship
 
 from src.database import Base
