@@ -58,6 +58,6 @@ Chain strategy: stacked-to-main
 
 ## PR #4: Health Endpoint (STRICT TDD)
 
-- [ ] 4.1 (RED) Write `backend/tests/test_connection.py` — /health returns 200 + `{"status":"ok"}`; 503 on DB down
-- [ ] 4.2 (GREEN) Rewrite `backend/src/main.py` — remove skeleton, add `GET /health` with `Depends(get_db)`, `SELECT 1`
-- [ ] 4.3 (VERIFY) `pytest backend/tests/ -v --cov=backend.src.models --cov=backend.src.database` — full pass, ≥80% coverage
+- [x] 4.1 (RED) Write `backend/tests/test_connection.py` — /health returns 200 + `{"status":"ok"}`; 503 on DB down
+- [x] 4.2 (GREEN) Rewrite `backend/src/main.py` — remove skeleton, add `GET /health` with `Depends(get_db)`, `SELECT 1`
+- [x] 4.3 (VERIFY) `pytest backend/tests/ -v --cov=backend.src.models --cov=backend.src.database --cov=backend.src.main` — full pass, 100% coverage
