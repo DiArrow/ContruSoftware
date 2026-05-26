@@ -48,13 +48,13 @@ Chain strategy: stacked-to-main
 
 ## PR #3: Tier-1/2/3 Models (STRICT TDD)
 
-- [ ] 3.1 (RED) Write tier-1 model tests for estudiante, articulo, bloque_horario, curso, grupo_estudiante, impresion, movimiento_stock, ayudantia — schema + FK verification
-- [ ] 3.2 (GREEN) Create remaining tier-0: `estudiante.py`, `articulo.py`, `bloque_horario.py`
-- [ ] 3.3 (GREEN) Create tier-1: `curso.py`, `grupo_estudiante.py`, `impresion.py`, `movimiento_stock.py`, `ayudantia.py`
-- [ ] 3.4 (RED) Write tier-2 model tests for inscripcion_ayudantia, uso_impresora, reserva, bloque_reservado — schema + FK + composite PK checks
-- [ ] 3.5 (GREEN) Create tier-2/3: `inscripcion_ayudantia.py`, `uso_impresora.py`, `reserva.py`, `bloque_reservado.py`
-- [ ] 3.6 (GREEN) Create `backend/src/models/__init__.py` — re-export all 14 models
-- [ ] 3.7 (VERIFY) `pytest backend/tests/ -v && ruff check backend/src/models/` — all pass
+- [x] 3.1 (RED) Write tier-1 model tests for estudiante, articulo, bloque_horario, curso, grupo_estudiante, impresion, movimiento_stock, ayudantia — schema + FK verification
+- [x] 3.2 (GREEN) Create remaining tier-0: `estudiante.py`, `articulo.py`, `bloque_horario.py`
+- [x] 3.3 (GREEN) Create tier-1: `curso.py`, `grupo_estudiante.py`, `impresion.py`, `movimiento_stock.py`, `ayudantia.py`
+- [x] 3.4 (RED) Write tier-2 model tests for inscripcion_ayudantia, uso_impresora, reserva, bloque_reservado — schema + FK + composite PK checks
+- [x] 3.5 (GREEN) Create tier-2/3: `inscripcion_ayudantia.py`, `uso_impresora.py`, `reserva.py`, `bloque_reservado.py`
+- [x] 3.6 (GREEN) Create `backend/src/models/__init__.py` — re-export all 14 models
+- [x] 3.7 (VERIFY) `pytest backend/tests/ -v && ruff check backend/src/models/` — all pass
 
 ## PR #4: Health Endpoint (STRICT TDD)
 
