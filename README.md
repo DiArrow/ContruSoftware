@@ -85,3 +85,13 @@ Desde la carpeta raíz del proyecto, ejecuta el script correspondiente a tu sist
 ``` Powershell
 .\test_linters\run_linters.bat
 ```
+---
+
+### Estrategia de branching
+
+GitLab Flow adaptado:
+
+- deploy
+- main
+- develop
+- feat-x
