@@ -55,3 +55,20 @@ def test_get_db_yields_session_and_closes():
             next(gen)
 
         mock_session.close.assert_called_once()
+
+
+def test_get_db_rollback_on_error():
+    """If close() raises, rollback() must still have been called before it."""
+    with patch("src.database.SessionLocal") as mock_factory:
+        mock_session = mock_factory.return_value
+        mock_session.close.side_effect = RuntimeError("close failed")
+
+        gen = get_db()
+        db = next(gen)
+        assert db is mock_session
+
+        with pytest.raises(RuntimeError, match="close failed"):
+            gen.close()
+
+        mock_session.rollback.assert_called_once()
+        mock_session.close.assert_called_once()
