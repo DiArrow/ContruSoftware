@@ -10,7 +10,7 @@ Exports:
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from src.config import SQLALCHEMY_DATABASE_URL
 
@@ -35,4 +35,5 @@ def get_db() -> Generator[Session, None, None]:
     try:
         yield db
     finally:
+        db.rollback()
         db.close()
