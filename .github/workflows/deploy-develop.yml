@@ -1,0 +1,17 @@
+name: Deploy Develop
+
+on:
+  push:
+    branches: [ "deployment" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Obtener últimos cambios
+        uses: actions/checkout@v4
+
+      - name: Levantar servicios
+        run: |
+          docker compose -f docker-compose.yml down
+          docker compose -f docker-compose.yml up -d --build
