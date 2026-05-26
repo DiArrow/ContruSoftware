@@ -1,0 +1,45 @@
+"""Infrastructure tests verifying test fixtures work correctly."""
+
+from sqlalchemy import inspect, text
+
+
+def test_db_session_can_execute_query(db_session):
+    """Verify db_session fixture provides a working database session."""
+    result = db_session.execute(text("SELECT 1"))
+    assert result.scalar() == 1
+
+
+def test_db_session_can_query_real_tables(db_session):
+    """Verify db_session is connected to the business database with real tables."""
+    result = db_session.execute(text("SELECT COUNT(*) FROM usuario"))
+    count = result.scalar()
+    assert isinstance(count, int)
+    assert count >= 0
+
+
+def test_test_engine_has_expected_tables(test_engine):
+    """Verify test_engine is connected to the correct database schema."""
+    inspector = inspect(test_engine)
+    tables = inspector.get_table_names()
+    assert "usuario" in tables
+    assert "semestre" in tables
+    assert "curso" in tables
+    assert len(tables) == 14
+
+
+def test_client_can_make_requests(client):
+    """Verify client fixture provides a working TestClient."""
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "mensaje" in response.json()
+
+
+def test_client_can_make_post_requests(client):
+    """Verify client supports POST requests with JSON payload."""
+    response = client.post("/items/", json={
+        "nombre": "Test Item",
+        "precio": 10.5,
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["mensaje"] == "Producto 'Test Item' creado exitosamente"
