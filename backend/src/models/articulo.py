@@ -1,6 +1,6 @@
 """SQLAlchemy model for the ``articulo`` table."""
 
-from sqlalchemy import Boolean, Column, Integer, String, TIMESTAMP, func
+from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from src.database import Base

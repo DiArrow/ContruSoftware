@@ -1,6 +1,6 @@
 """SQLAlchemy model for the ``curso`` table."""
 
-from sqlalchemy import Column, ForeignKey, String, TIMESTAMP, func
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, String, func
 from sqlalchemy.orm import relationship
 
 from src.database import Base
