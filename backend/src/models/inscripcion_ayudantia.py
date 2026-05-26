@@ -1,6 +1,6 @@
 """SQLAlchemy model for the ``inscripcion_ayudantia`` table."""
 
-from sqlalchemy import Column, ForeignKey, String, TIMESTAMP
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from src.database import Base
