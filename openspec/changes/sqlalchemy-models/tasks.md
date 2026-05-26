@@ -35,16 +35,16 @@ Chain strategy: stacked-to-main
 
 ## PR #2: DB Layer + Tier-0 Models (STRICT TDD)
 
-- [ ] 2.1 (RED) Write `backend/tests/test_config.py` — missing var raises ValueError; valid vars produce URL
-- [ ] 2.2 (GREEN) Create `backend/src/config.py` — read 5 env vars, build `postgresql+psycopg2://` URL
-- [ ] 2.3 (RED) Write `backend/tests/test_database.py` — engine, SessionLocal, Base exist; get_db yields session
-- [ ] 2.4 (GREEN) Create `backend/src/database.py` — `engine` (pool_size=5), `SessionLocal`, `Base`, `get_db` generator
-- [ ] 2.5 Create `backend/.env.example` — document 5 required vars (POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST, POSTGRES_PORT)
-- [ ] 2.6 Add `sqlalchemy`, `psycopg2-binary` to `backend/requirements.txt`
-- [ ] 2.7 (RED) Write tier-0 model tests for Usuario + Semestre — table name, columns, PK, timestamps
-- [ ] 2.8 (GREEN) Create `backend/src/models/usuario.py` — VARCHAR(36) PK, timestamps, relationships
-- [ ] 2.9 (GREEN) Create `backend/src/models/semestre.py` — VARCHAR(36) PK, timestamps
-- [ ] 2.10 (VERIFY) `pytest backend/tests/ -v` — all PR #2 tests pass
+- [x] 2.1 (RED) Write `backend/tests/test_config.py` — missing var raises ValueError; valid vars produce URL
+- [x] 2.2 (GREEN) Create `backend/src/config.py` — read 5 env vars, build `postgresql+psycopg2://` URL
+- [x] 2.3 (RED) Write `backend/tests/test_database.py` — engine, SessionLocal, Base exist; get_db yields session
+- [x] 2.4 (GREEN) Create `backend/src/database.py` — `engine` (pool_size=5), `SessionLocal`, `Base`, `get_db` generator
+- [x] 2.5 Create `backend/.env.example` — document 5 required vars (POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST, POSTGRES_PORT)
+- [x] 2.6 Add `sqlalchemy`, `psycopg2-binary` to `backend/requirements.txt` *(completed in PR #1)*
+- [x] 2.7 (RED) Write tier-0 model tests for Usuario + Semestre — table name, columns, PK, timestamps
+- [x] 2.8 (GREEN) Create `backend/src/models/usuario.py` — VARCHAR(36) PK, timestamps, relationships
+- [x] 2.9 (GREEN) Create `backend/src/models/semestre.py` — VARCHAR(36) PK, timestamps
+- [x] 2.10 (VERIFY) `pytest backend/tests/ -v` — all PR #2 tests pass
 
 ## PR #3: Tier-1/2/3 Models (STRICT TDD)
 
