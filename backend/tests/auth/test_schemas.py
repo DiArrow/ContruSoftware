@@ -6,7 +6,7 @@ Valida ``LoginRequest``, ``TokenResponse``, ``TokenData`` y ``UsuarioResponse``.
 from datetime import datetime, timezone
 
 import pytest
-from pydantic import EmailStr, ValidationError
+from pydantic import ValidationError
 
 from auth.schemas import LoginRequest, TokenData, TokenResponse, UsuarioResponse
 
