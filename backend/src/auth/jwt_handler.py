@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt
 
-from src.config import ALGORITHM, SECRET_KEY
+from config import ALGORITHM, SECRET_KEY
 
 
 def _ensure_secret_key() -> None:

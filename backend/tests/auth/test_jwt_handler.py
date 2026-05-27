@@ -9,8 +9,8 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from jose import JWTError, jwt
 
-from src.auth.jwt_handler import crear_token_jwt, validar_token_jwt
-from src.config import ALGORITHM, SECRET_KEY
+from auth.jwt_handler import crear_token_jwt, validar_token_jwt
+from config import ALGORITHM, SECRET_KEY
 
 
 class TestCrearTokenJwt:
@@ -39,7 +39,7 @@ class TestCrearTokenJwt:
 
     def test_crear_token_jwt_missing_secret_key_raises_runtimeerror(self, monkeypatch):
         """Sin SECRET_KEY debe lanzar RuntimeError."""
-        monkeypatch.setattr("src.auth.jwt_handler.SECRET_KEY", "")
+        monkeypatch.setattr("auth.jwt_handler.SECRET_KEY", "")
         with pytest.raises(RuntimeError, match="SECRET_KEY"):
             crear_token_jwt({"sub": "123", "role": "SOL"}, timedelta(minutes=10))
 
