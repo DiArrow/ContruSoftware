@@ -3,7 +3,7 @@
 from sqlalchemy import Column, String, Time
 from sqlalchemy.orm import relationship
 
-from src.database import Base
+from database import Base
 
 
 class BloqueHorario(Base):

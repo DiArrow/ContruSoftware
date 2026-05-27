@@ -5,8 +5,8 @@ Verifies table names, columns, primary keys, types, and timestamp defaults.
 
 from sqlalchemy import TIMESTAMP, Boolean, Date, String
 
-from src.models.semestre import Semestre
-from src.models.usuario import Usuario
+from models.semestre import Semestre
+from models.usuario import Usuario
 
 
 class TestUsuario:
