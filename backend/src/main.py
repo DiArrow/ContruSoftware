@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from src.database import get_db
+from database import get_db
 
 app = FastAPI()
 

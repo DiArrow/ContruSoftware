@@ -10,7 +10,7 @@ import pytest
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
-from src.database import Base, SessionLocal, engine, get_db
+from database import Base, SessionLocal, engine, get_db
 
 
 def test_engine_is_created_and_exportable():
@@ -44,7 +44,7 @@ def test_base_has_metadata_and_supports_inheritance():
 
 def test_get_db_yields_session_and_closes():
     """get_db generator must yield a Session and then close it."""
-    with patch("src.database.SessionLocal") as mock_factory:
+    with patch("database.SessionLocal") as mock_factory:
         mock_session = mock_factory.return_value
         gen = get_db()
         db = next(gen)
@@ -59,7 +59,7 @@ def test_get_db_yields_session_and_closes():
 
 def test_get_db_rollback_on_error():
     """If close() raises, rollback() must still have been called before it."""
-    with patch("src.database.SessionLocal") as mock_factory:
+    with patch("database.SessionLocal") as mock_factory:
         mock_session = mock_factory.return_value
         mock_session.close.side_effect = RuntimeError("close failed")
 
