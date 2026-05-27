@@ -10,6 +10,8 @@ Define 14 SQLAlchemy ORM models that exactly mirror the SQL schema in `db/init/0
 
 The system SHALL provide one model file per table under `backend/src/models/`. The `__init__.py` SHALL re-export all 14 models. Models SHALL be created in dependency order so `relationship()` backrefs resolve.
 
+**Extension (auth-core)**: The `usuario.py` model SHALL now include `email VARCHAR(255) UNIQUE`, `estado BOOLEAN DEFAULT True`, and `rol` constrained to `SOL | EST | AYU | PRO | ADM`.
+
 | File | Table | Dependencies |
 |------|-------|-------------|
 | `usuario.py` | usuario | None |
@@ -33,6 +35,12 @@ The system SHALL provide one model file per table under `backend/src/models/`. T
 - WHEN `from backend.src.models import *` is executed
 - THEN all 14 model classes are available
 - AND no circular import errors occur
+
+#### Scenario: Usuario has new columns
+
+- GIVEN the `Usuario` model
+- WHEN `email`, `estado`, `rol` accessed
+- THEN columns exist with correct types/constraints
 
 ### Requirement: Primary Keys as UUID Strings
 
@@ -108,11 +116,37 @@ Models SHALL define `relationship()` where foreign keys exist, using `lazy="sele
 - THEN the related `Semestre` object is loaded
 - AND no circular import error occurs
 
+### Requirement: Usuario Email Unique
+
+`Usuario.email` SHALL be `VARCHAR(255)` with `unique=True`, `nullable=True`.
+
+| Scenario | Given | When | Then |
+|----------|-------|------|------|
+| duplicate rejected | Usuario with `email="test@uc.cl"` exists | second Usuario same email | `IntegrityError` |
+
+### Requirement: Usuario Estado Default
+
+`Usuario.estado` SHALL be `BOOLEAN` with `default=True`, `server_default=text("true")`.
+
+| Scenario | Given | When | Then |
+|----------|-------|------|------|
+| active by default | new Usuario without `estado` | row inserted | `estado` is `True` |
+
+### Requirement: Usuario Rol Enum Validation
+
+`Usuario.rol` SHALL be constrained to `SOL | EST | AYU | PRO | ADM`. Invalid values raise `ValueError` before DB insertion.
+
+| Scenario | Given | When | Then |
+|----------|-------|------|------|
+| valid rol | `rol="ADM"` | Usuario created | row inserted |
+| invalid rol | `rol="INVALID"` | Usuario created | `ValueError` |
+
 ## Acceptance Criteria
 
-- [ ] All 14 models exist as individual files under `backend/src/models/`
+- [ ] All 14 models exist under `backend/src/models/`
 - [ ] Each model's columns match `01-init.sql` exactly
-- [ ] All 15 FK constraints are defined (matching SQL)
+- [ ] `Usuario` has `email VARCHAR(255) UNIQUE`, `estado BOOLEAN DEFAULT True`, `rol` validates enum (`SOL | EST | AYU | PRO | ADM`)
+- [ ] All 15 FK constraints defined (unchanged)
 - [ ] `ref_impresora` in `UsoImpresora` has no FK (matches SQL gap)
 - [ ] `__init__.py` re-exports all 14 models
 - [ ] `ruff check backend/src/models/` passes with zero errors
