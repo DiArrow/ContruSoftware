@@ -8,8 +8,8 @@ import os
 
 REQUIRED_VARS = [
     "POSTGRES_HOST",
-    "POSTGRES_USER",
-    "POSTGRES_PASSWORD",
+    "POSTGRES_APP_USER",
+    "POSTGRES_APP_PASSWORD",
     "POSTGRES_DB",
 ]
 
@@ -26,8 +26,8 @@ def _build_database_url() -> str:
 
     host = os.getenv("POSTGRES_HOST")
     port = os.getenv("POSTGRES_PORT", "5432")
-    user = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
+    user = os.getenv("POSTGRES_APP_USER")
+    password = os.getenv("POSTGRES_APP_PASSWORD")
     db = os.getenv("POSTGRES_DB")
 
     return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}"

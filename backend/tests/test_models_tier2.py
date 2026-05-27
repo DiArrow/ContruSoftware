@@ -8,10 +8,10 @@ foreign keys, types, timestamps, and relationship attributes.
 
 from sqlalchemy import TIMESTAMP, Date, String
 
-from src.models.bloque_reservado import BloqueReservado
-from src.models.inscripcion_ayudantia import InscripcionAyudantia
-from src.models.reserva import Reserva
-from src.models.uso_impresora import UsoImpresora
+from models.bloque_reservado import BloqueReservado
+from models.inscripcion_ayudantia import InscripcionAyudantia
+from models.reserva import Reserva
+from models.uso_impresora import UsoImpresora
 
 
 class TestInscripcionAyudantia:

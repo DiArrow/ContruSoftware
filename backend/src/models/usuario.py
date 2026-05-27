@@ -3,7 +3,7 @@
 from sqlalchemy import TIMESTAMP, Boolean, Column, String, func, text
 from sqlalchemy.orm import relationship, validates
 
-from src.database import Base
+from database import Base
 
 _ROLES_VALIDOS = {"SOL", "EST", "AYU", "PRO", "ADM"}
 
