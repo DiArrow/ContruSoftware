@@ -7,7 +7,7 @@ manipulación de tokens.
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 
 from src.auth.jwt_handler import crear_token_jwt, validar_token_jwt
 from src.config import ALGORITHM, SECRET_KEY
