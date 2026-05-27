@@ -32,7 +32,9 @@ CREATE TABLE usuario (
     nombre VARCHAR(255),
     apellido VARCHAR(255),
     correo VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
     rol VARCHAR(50),
+    estado BOOLEAN DEFAULT true,
     creado_en TIMESTAMP,
     actualizado_en TIMESTAMP,
     CONSTRAINT pk_usuario PRIMARY KEY (id_usuario)
