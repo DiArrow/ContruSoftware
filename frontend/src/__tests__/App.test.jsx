@@ -1,30 +1,98 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../App';
 
-function AccederSeccionLogin() {
-    fireEvent.change(screen.getByPlaceholderText(/Usuario/i), {
-        target: { value: 'usuario@utalca.cl' },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/Contraseña/i), {
-        target: { value: 'usuario' },
-    });
-    fireEvent.click(screen.getByText(/Acceder/i));
-}
+vi.mock('../api/client', () => ({
+    apiGet: vi.fn(),
+    apiPost: vi.fn(),
+}));
 
-describe('Suite de pruebas tras login', () => {
-    it('Debe mostrar la página principal después de un login exitoso', () => {
+import { apiGet, apiPost } from '../api/client';
+
+describe('App with auth', () => {
+    beforeEach(() => {
+        localStorage.clear();
+        vi.clearAllMocks();
+    });
+
+    it('shows login page when unauthenticated', () => {
         render(<App />);
-        AccederSeccionLogin();
-
-        expect(screen.getByText(/Bienvenid@ a MakerBox/i)).toBeInTheDocument();
+        expect(screen.getByText(/Iniciar Sesión/i)).toBeInTheDocument();
     });
-});
 
-describe('Suite de pruebas para el click en la sidebar', () => {
-    it('Debe mostrar la sección seleccionada al hacer clic en la sidebar', () => {
+    it('shows dashboard after successful login', async () => {
+        apiPost.mockResolvedValue({ access_token: 'tok123' });
+        apiGet.mockResolvedValue({
+            id_usuario: '1',
+            nombre: 'María',
+            apellido: 'Gómez',
+            email: 'maria@utalca.cl',
+            rol: 'user',
+        });
+
         render(<App />);
-        AccederSeccionLogin();
+
+        fireEvent.change(screen.getByTestId('email-input'), {
+            target: { value: 'maria@utalca.cl' },
+        });
+        fireEvent.change(screen.getByTestId('password-input'), {
+            target: { value: 'secret123' },
+        });
+        fireEvent.click(screen.getByText(/Acceder/i));
+
+        await waitFor(() =>
+            expect(
+                screen.getByText(/Bienvenid@ a MakerBox/i)
+            ).toBeInTheDocument()
+        );
+        expect(screen.getByText(/María/i)).toBeInTheDocument();
+    });
+
+    it('shows error on invalid credentials', async () => {
+        apiPost.mockRejectedValue(new Error('Credenciales inválidas'));
+
+        render(<App />);
+
+        fireEvent.change(screen.getByTestId('email-input'), {
+            target: { value: 'bad@utalca.cl' },
+        });
+        fireEvent.change(screen.getByTestId('password-input'), {
+            target: { value: 'wrong' },
+        });
+        fireEvent.click(screen.getByText(/Acceder/i));
+
+        await waitFor(() =>
+            expect(screen.getByTestId('login-error')).toHaveTextContent(
+                'Credenciales inválidas'
+            )
+        );
+    });
+
+    it('sidebar navigation works after login', async () => {
+        apiPost.mockResolvedValue({ access_token: 'tok123' });
+        apiGet.mockResolvedValue({
+            id_usuario: '1',
+            nombre: 'Carlos',
+            apellido: 'Pérez',
+            email: 'carlos@utalca.cl',
+            rol: 'admin',
+        });
+
+        render(<App />);
+
+        fireEvent.change(screen.getByTestId('email-input'), {
+            target: { value: 'carlos@utalca.cl' },
+        });
+        fireEvent.change(screen.getByTestId('password-input'), {
+            target: { value: 'admin123' },
+        });
+        fireEvent.click(screen.getByText(/Acceder/i));
+
+        await waitFor(() =>
+            expect(
+                screen.getByText(/Bienvenid@ a MakerBox/i)
+            ).toBeInTheDocument()
+        );
 
         const items = [
             'Dashboard',
@@ -37,7 +105,9 @@ describe('Suite de pruebas para el click en la sidebar', () => {
         items.forEach((label) => {
             const button = screen.getByTitle(label);
             fireEvent.click(button);
-            expect(button).toHaveStyle('background-color: rgb(237, 233, 254)');
+            expect(button).toHaveStyle(
+                'background-color: rgb(237, 233, 254)'
+            );
         });
     });
 });

@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+
 const IconLogin = () => (
     <svg
         width="100"
@@ -16,7 +19,32 @@ const IconLogin = () => (
     </svg>
 );
 
-export default function Login({ onLogin }) {
+export default function Login() {
+    const { login } = useAuth();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (!email.trim() || !password.trim()) {
+            setError('Por favor complete todos los campos');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await login(email, password);
+        } catch (err) {
+            setError(err.message || 'Error de conexión');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div
             style={{
@@ -28,7 +56,8 @@ export default function Login({ onLogin }) {
                 fontFamily: 'Inter, sans-serif',
             }}
         >
-            <div
+            <form
+                onSubmit={handleSubmit}
                 style={{
                     backgroundColor: '#ffffff',
                     padding: '40px',
@@ -57,14 +86,40 @@ export default function Login({ onLogin }) {
                 <h3 style={{ color: '#5b21b6', marginBottom: '20px' }}>
                     Iniciar Sesión
                 </h3>
-                <input type="text" placeholder="Usuario" style={inputStyle} />
+                <input
+                    type="email"
+                    placeholder="Correo electrónico"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={inputStyle}
+                    disabled={isLoading}
+                    data-testid="email-input"
+                />
                 <input
                     type="password"
                     placeholder="Contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     style={inputStyle}
+                    disabled={isLoading}
+                    data-testid="password-input"
                 />
+                {error && (
+                    <p
+                        style={{
+                            color: '#dc2626',
+                            fontSize: '14px',
+                            marginBottom: '10px',
+                            marginTop: 0,
+                        }}
+                        data-testid="login-error"
+                    >
+                        {error}
+                    </p>
+                )}
                 <button
-                    onClick={onLogin}
+                    type="submit"
+                    disabled={isLoading}
                     style={{
                         width: '100%',
                         padding: '12px',
@@ -72,16 +127,18 @@ export default function Login({ onLogin }) {
                         color: 'white',
                         border: 'none',
                         borderRadius: '12px',
-                        cursor: 'pointer',
+                        cursor: isLoading ? 'not-allowed' : 'pointer',
                         fontWeight: '600',
+                        opacity: isLoading ? 0.7 : 1,
                     }}
                 >
-                    Acceder
+                    {isLoading ? 'Cargando...' : 'Acceder'}
                 </button>
-            </div>
+            </form>
         </div>
     );
 }
+
 const inputStyle = {
     width: '100%',
     padding: '12px',
