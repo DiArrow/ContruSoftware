@@ -3,10 +3,13 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from src.auth.dependencies import oauth2_scheme  # noqa: F401
-from src.database import get_db
+from auth.dependencies import oauth2_scheme  # noqa: F401
+from auth.router import router as auth_router
+from database import get_db
 
 app = FastAPI()
+
+app.include_router(auth_router)
 
 
 @app.get("/health")

@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import pytest
 from pydantic import EmailStr, ValidationError
 
-from src.auth.schemas import LoginRequest, TokenData, TokenResponse, UsuarioResponse
+from auth.schemas import LoginRequest, TokenData, TokenResponse, UsuarioResponse
 
 
 class TestLoginRequest:
