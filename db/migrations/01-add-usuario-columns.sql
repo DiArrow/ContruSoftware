@@ -4,4 +4,4 @@
 
 ALTER TABLE usuario ADD COLUMN IF NOT EXISTS email VARCHAR(255);
 ALTER TABLE usuario ADD COLUMN IF NOT EXISTS estado BOOLEAN DEFAULT true;
-CREATE UNIQUE INDEX IF NOT EXISTS idx_usuario_email ON usuario(email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usuario_email ON usuario (email);
