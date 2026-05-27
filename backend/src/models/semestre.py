@@ -3,7 +3,7 @@
 from sqlalchemy import TIMESTAMP, Boolean, Column, Date, String, func
 from sqlalchemy.orm import relationship
 
-from src.database import Base
+from database import Base
 
 
 class Semestre(Base):
