@@ -27,7 +27,7 @@ class Usuario(Base):
     reservas = relationship("Reserva", back_populates="usuario", lazy="select")
 
     @validates("rol")
-    def _validate_rol(self, key, value):
+    def _validate_rol(self, key: str, value: str) -> str:
         if value not in _ROLES_VALIDOS:
             raise ValueError("Rol inválido")
         return value
