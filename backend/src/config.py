@@ -34,3 +34,23 @@ def _build_database_url() -> str:
 
 
 SQLALCHEMY_DATABASE_URL = _build_database_url()
+
+# JWT configuration
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+
+# Role-specific database credentials
+ROLES = ["SOL", "EST", "AYU", "PRO", "ADM"]
+ROL_DATABASE_URLS: dict[str, str] = {}
+
+for _rol in ROLES:
+    _user = os.getenv(f"POSTGRES_USER_{_rol}")
+    _password = os.getenv(f"POSTGRES_PASSWORD_{_rol}")
+    if _user and _password:
+        _host = os.getenv("POSTGRES_HOST", "localhost")
+        _port = os.getenv("POSTGRES_PORT", "5432")
+        _db = os.getenv("POSTGRES_DB", "postgres")
+        ROL_DATABASE_URLS[_rol] = (
+            f"postgresql+psycopg2://{_user}:{_password}@{_host}:{_port}/{_db}"
+        )
