@@ -1,0 +1,37 @@
+# Tamaño máximo de línea
+line-length = 88
+# Indentación a 4 espacios
+indent-width = 4
+
+# Versión de Python a la que apuntamos
+target-version = "py310"
+
+[lint]
+# Seleccionamos las reglas que queremos aplicar:
+# E, W: pycodestyle (estilo PEP 8)
+# F: pyflakes (errores lógicos)
+# I: isort (ordenar imports)
+# B: flake8-bugbear (posibles bugs de diseño)
+# UP: pyupgrade (modernizar sintaxis de Python)
+select = ["E", "W", "F", "I"]
+
+# Ignoramos reglas específicas si lo vemos necesario
+ignore = []
+
+# Permitir autofix en las reglas seleccionadas
+fixable = ["ALL"]
+unfixable = []
+
+# Excluir directorios comunes (aunque Ruff ya ignora muchos por defecto)
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+]
+
+[format]
+# Usar comillas dobles (estilo Black)
+quote-style = "double"
+# Usar espacios en vez de tabs
+indent-style = "space"

@@ -1,0 +1,11 @@
+:root {
+    --top-panel-height: 50px;
+    --central-panel-height: 250px;
+    --lower-panel-height: 600px;
+}
+
+body {
+    margin: 0;
+    padding: 20px 0;
+    background-color: #e3e1e1;
+}
