@@ -21,7 +21,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from src.main import app
+from main import app
 
 
 def _get_database_url() -> str:
@@ -89,7 +89,7 @@ def client(db_session) -> Generator[TestClient, None, None]:
     ``TestClient``.
     """
     try:
-        from src.database import get_db
+        from database import get_db
 
         app.dependency_overrides[get_db] = lambda: db_session
     except ImportError:
@@ -99,7 +99,7 @@ def client(db_session) -> Generator[TestClient, None, None]:
         yield test_client
 
     try:
-        from src.database import get_db
+        from database import get_db
 
         app.dependency_overrides.pop(get_db, None)
     except ImportError:
