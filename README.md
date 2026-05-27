@@ -95,3 +95,36 @@ GitLab Flow adaptado:
 - main
 - develop
 - feat-x
+
+---
+
+### 🔑 Credenciales de Prueba
+
+#### Usuario Administrador (producción / Docker)
+
+| Campo    | Valor                          |
+| -------- | ------------------------------ |
+| Email    | `admin@makerbox.cl`            |
+| Password | `admin123`                     |
+
+Este usuario se crea automáticamente mediante el seed script `db/seeds/02-admin-user.sh`. Requiere que la migración `db/migrations/02-add-password-hash.sh` haya sido ejecutada primero.
+
+#### Endpoints de Autenticación
+
+| Método | Endpoint           | Descripción                     |
+| ------ | ------------------ | ------------------------------- |
+| POST   | `/api/auth/token`  | Login: envía `{email, password}` |
+| GET    | `/api/auth/me`     | Perfil del usuario autenticado (requiere `Authorization: Bearer <token>`) |
+
+#### Ejemplo de Login
+
+```bash
+# Obtener token JWT
+curl -X POST http://localhost/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@makerbox.cl", "password": "admin123"}'
+
+# Usar token para obtener perfil
+curl http://localhost/api/auth/me \
+  -H "Authorization: Bearer <token>"
+```
