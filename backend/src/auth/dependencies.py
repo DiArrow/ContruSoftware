@@ -41,7 +41,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     except JWTError:
         raise HTTPException(
             status_code=401,
-            detail="Invalid authentication credentials",
+            detail="Token inválido o expirado",
         )
     return payload
 
@@ -56,15 +56,18 @@ def requiere_rol(roles: list[str]) -> callable:
         A callable suitable for ``Depends()`` that validates the user's role.
 
     Raises:
-        HTTPException: 500 if ``roles`` is empty.
+        HTTPException: 403 if ``roles`` is empty.
         HTTPException: 403 if the user's role is not in the allowed list.
     """
     if not roles:
-        raise HTTPException(status_code=500, detail="No roles configured")
+        raise HTTPException(
+            status_code=403,
+            detail="Configuración inválida: lista de roles vacía"
+        )
 
     def _check_role(user: dict = Depends(get_current_user)) -> dict:
         if user.get("role") not in roles:
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise HTTPException(status_code=403, detail="Rol no autorizado")
         return user
 
     return _check_role
