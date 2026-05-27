@@ -27,6 +27,7 @@ class TestGetCurrentUser:
         with pytest.raises(HTTPException) as exc:
             get_current_user(token="invalid.token.here")
         assert exc.value.status_code == 401
+        assert exc.value.detail == "Token inválido o expirado"
 
 
 class TestRequiereRol:
@@ -44,12 +45,14 @@ class TestRequiereRol:
         with pytest.raises(HTTPException) as exc:
             dep(user={"sub": "123", "role": "SOL"})
         assert exc.value.status_code == 403
+        assert exc.value.detail == "Rol no autorizado"
 
-    def test_empty_roles_raises_500(self):
-        """Una lista vacía de roles debe lanzar HTTPException 500 al crear la factory."""
+    def test_empty_roles_raises_403(self):
+        """Una lista vacía de roles debe lanzar HTTPException 403 al crear la factory."""  # noqa: E501
         with pytest.raises(HTTPException) as exc:
             requiere_rol([])
-        assert exc.value.status_code == 500
+        assert exc.value.status_code == 403
+        assert exc.value.detail == "Configuración inválida: lista de roles vacía"
 
 
 class TestGetRoleSession:
