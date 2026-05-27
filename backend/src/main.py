@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from src.auth.dependencies import oauth2_scheme  # noqa: F401
 from src.database import get_db
 
 app = FastAPI()
