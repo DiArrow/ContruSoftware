@@ -11,8 +11,8 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
 
-from src.auth.jwt_handler import validar_token_jwt
-from src.database import get_role_session
+from auth.jwt_handler import validar_token_jwt
+from database import get_role_session
 
 __all__ = [
     "oauth2_scheme",

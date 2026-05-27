@@ -8,8 +8,8 @@ from datetime import timedelta
 import pytest
 from fastapi import HTTPException
 
-from src.auth.dependencies import get_current_user, get_role_session, requiere_rol
-from src.auth.jwt_handler import crear_token_jwt
+from auth.dependencies import get_current_user, get_role_session, requiere_rol
+from auth.jwt_handler import crear_token_jwt
 
 
 class TestGetCurrentUser:
@@ -59,7 +59,7 @@ class TestGetRoleSession:
     """Pruebas para ``get_role_session``."""
 
     def test_get_role_session_reexports_database_function(self):
-        """Debe ser la misma función que ``src.database.get_role_session``."""
-        import src.database as db_mod
+        """Debe ser la misma función que ``database.get_role_session``."""
+        import database as db_mod
 
         assert get_role_session is db_mod.get_role_session

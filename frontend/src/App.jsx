@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Login from './components/Login';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -274,7 +275,7 @@ function Sidebar() {
 }
 
 //Topbar
-function Topbar() {
+function Topbar({ user }) {
     return (
         <div
             style={{
@@ -306,10 +307,11 @@ function Topbar() {
                         margin: 0,
                     }}
                 >
-                    {/* fontWeight: 100 para el texto general y 750 para el mensaje destacado */}
                     Bienvenid@ a MakerBox,{' '}
                     <strong style={{ fontWeight: 750 }}>
-                        tu espacio de creación y aprendizaje
+                        {user
+                            ? user.nombre
+                            : 'tu espacio de creación y aprendizaje'}
                     </strong>
                 </p>
             </div>
@@ -376,7 +378,18 @@ function Topbar() {
                         transition: 'background 0.2s, color 0.2s',
                     }}
                 >
-                    <IconUser />
+                    {user ? (
+                        <span
+                            style={{
+                                fontSize: '14px',
+                                fontWeight: 600,
+                            }}
+                        >
+                            {user.nombre.charAt(0).toUpperCase()}
+                        </span>
+                    ) : (
+                        <IconUser />
+                    )}
                 </button>
             </div>
         </div>
@@ -546,14 +559,32 @@ function LowerPanel({ children }) {
     );
 }
 
-//App (llamada de funciones)
-export default function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
+function AppContent() {
+    const { currentUser, isAuthenticated, isLoading } = useAuth();
 
-    //Para efectos actuales, se accede al dashboard al hacer clic en el botón de inicio de sesión, sin validación de credenciales
-    if (!loggedIn) {
-        return <Login onLogin={() => setLoggedIn(true)} />;
+    if (isLoading) {
+        return (
+            <div
+                style={{
+                    height: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#f3f4f6',
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#5b21b6',
+                    fontSize: '18px',
+                }}
+            >
+                Cargando...
+            </div>
+        );
     }
+
+    if (!isAuthenticated) {
+        return <Login />;
+    }
+
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
             <Sidebar />
@@ -567,12 +598,20 @@ export default function App() {
             >
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <TopPanel>
-                        <Topbar />
+                        <Topbar user={currentUser} />
                     </TopPanel>
                     <CentralPanel></CentralPanel>
                     <LowerPanel></LowerPanel>
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function App() {
+    return (
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
     );
 }

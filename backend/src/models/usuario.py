@@ -20,6 +20,7 @@ class Usuario(Base):
     email = Column(String(255), unique=True, nullable=True)
     rol = Column(String(50))
     estado = Column(Boolean, default=True, server_default=text("true"))
+    password_hash = Column(String(255), nullable=False, default="")
     creado_en = Column(TIMESTAMP, server_default=func.now())
     actualizado_en = Column(TIMESTAMP, server_default=func.now())
 
