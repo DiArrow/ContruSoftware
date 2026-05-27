@@ -6,12 +6,12 @@ Verifies table names, columns, primary keys (including composite),
 foreign keys, types, timestamps, and relationship attributes.
 """
 
-from sqlalchemy import Date, String, TIMESTAMP
+from sqlalchemy import TIMESTAMP, Date, String
 
-from src.models.inscripcion_ayudantia import InscripcionAyudantia
-from src.models.uso_impresora import UsoImpresora
-from src.models.reserva import Reserva
 from src.models.bloque_reservado import BloqueReservado
+from src.models.inscripcion_ayudantia import InscripcionAyudantia
+from src.models.reserva import Reserva
+from src.models.uso_impresora import UsoImpresora
 
 
 class TestInscripcionAyudantia:

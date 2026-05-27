@@ -7,16 +7,16 @@ Verifies table names, columns, primary keys, foreign keys, types,
 timestamps, and relationship attributes against the SQL schema.
 """
 
-from sqlalchemy import Boolean, Date, Integer, String, Time, TIMESTAMP
+from sqlalchemy import TIMESTAMP, Boolean, Integer, String, Time
 
-from src.models.estudiante import Estudiante
 from src.models.articulo import Articulo
+from src.models.ayudantia import Ayudantia
 from src.models.bloque_horario import BloqueHorario
 from src.models.curso import Curso
+from src.models.estudiante import Estudiante
 from src.models.grupo_estudiante import GrupoEstudiante
 from src.models.impresion import Impresion
 from src.models.movimiento_stock import MovimientoStock
-from src.models.ayudantia import Ayudantia
 
 
 class TestEstudiante:
