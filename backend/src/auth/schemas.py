@@ -2,13 +2,13 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class LoginRequest(BaseModel):
     """Payload for user login."""
 
-    rut: str
+    email: EmailStr
     password: str
 
 
@@ -25,3 +25,13 @@ class TokenData(BaseModel):
     sub: str
     role: str
     exp: datetime
+
+
+class UsuarioResponse(BaseModel):
+    """Payload returned for authenticated user profile."""
+
+    id_usuario: str
+    nombre: str
+    apellido: str
+    email: str
+    rol: str
