@@ -10,7 +10,7 @@ import pytest
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
-from src.database import engine, SessionLocal, Base, get_db
+from src.database import Base, SessionLocal, engine, get_db
 
 
 def test_engine_is_created_and_exportable():
