@@ -7,7 +7,7 @@ import pytest
 from sqlalchemy import Boolean, String
 from sqlalchemy.exc import IntegrityError
 
-from src.models.usuario import Usuario
+from models.usuario import Usuario
 
 
 class TestUsuarioExtended:
