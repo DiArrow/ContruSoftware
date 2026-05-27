@@ -7,8 +7,8 @@ Covers:
 
 from sqlalchemy.exc import OperationalError
 
-from src.database import get_db
-from src.main import app
+from database import get_db
+from main import app
 
 
 def test_health_returns_ok(client):
