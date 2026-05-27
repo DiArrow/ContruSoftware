@@ -39,10 +39,11 @@ class TestUsuarioExtended:
                 rol="INVALID",
             )
 
+    @pytest.mark.filterwarnings("ignore::sqlalchemy.exc.SAWarning")
     def test_email_duplicate_raises_integrityerror(self, db_session):
         """Dos usuarios con el mismo email deben lanzar IntegrityError."""
         u1 = Usuario(
-            id_usuario="11111111-1111-1111-1111-111111111111",
+            id_usuario="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
             nombre="A",
             apellido="B",
             correo="dup@uc.cl",
@@ -53,7 +54,7 @@ class TestUsuarioExtended:
         db_session.flush()
 
         u2 = Usuario(
-            id_usuario="22222222-2222-2222-2222-222222222222",
+            id_usuario="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
             nombre="C",
             apellido="D",
             correo="dup@uc.cl",
@@ -63,3 +64,4 @@ class TestUsuarioExtended:
         db_session.add(u2)
         with pytest.raises(IntegrityError):
             db_session.flush()
+        db_session.rollback()
