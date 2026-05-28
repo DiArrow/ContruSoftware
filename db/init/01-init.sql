@@ -35,6 +35,7 @@ CREATE TABLE usuario (
     email VARCHAR(255) UNIQUE,
     rol VARCHAR(50),
     estado BOOLEAN DEFAULT true,
+    password_hash VARCHAR(255) NOT NULL DEFAULT '',
     creado_en TIMESTAMP,
     actualizado_en TIMESTAMP,
     CONSTRAINT pk_usuario PRIMARY KEY (id_usuario)
