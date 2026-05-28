@@ -599,7 +599,7 @@ function LowerPanel({ children }) {
 }
 
 function AppContent() {
-    const { currentUser, isAuthenticated, isLoading } = useAuth();
+    const { currentUser, isAuthenticated, isLoading, logout } = useAuth();
 
     if (isLoading) {
         return (
@@ -637,7 +637,7 @@ function AppContent() {
             >
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <TopPanel>
-                        <Topbar user={currentUser} />
+                        <Topbar user={currentUser} onLogout={logout} />
                     </TopPanel>
                     <CentralPanel></CentralPanel>
                     <LowerPanel></LowerPanel>
