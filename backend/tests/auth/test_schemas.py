@@ -141,9 +141,7 @@ class TestUsuarioResponse:
     def test_missing_email_raises_validation_error(self):
         """Falta email → ``ValidationError``."""
         with pytest.raises(ValidationError):
-            UsuarioResponse(
-                id_usuario="1", nombre="Juan", apellido="Pérez", rol="SOL"
-            )
+            UsuarioResponse(id_usuario="1", nombre="Juan", apellido="Pérez", rol="SOL")
 
     def test_missing_rol_raises_validation_error(self):
         """Falta rol → ``ValidationError``."""

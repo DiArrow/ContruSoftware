@@ -20,9 +20,7 @@ class InscripcionAyudantia(Base):
     fecha_inscripcion = Column(TIMESTAMP)
     estado_inscripcion = Column(String(50))
 
-    ayudantia = relationship(
-        "Ayudantia", back_populates="inscripciones", lazy="select"
-    )
+    ayudantia = relationship("Ayudantia", back_populates="inscripciones", lazy="select")
     estudiante = relationship(
         "Estudiante", back_populates="inscripciones", lazy="select"
     )

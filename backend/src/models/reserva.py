@@ -18,9 +18,7 @@ class Reserva(Base):
     ref_ayudantia = Column(String(36), ForeignKey("ayudantia.id_ayudantia"))
 
     usuario = relationship("Usuario", back_populates="reservas", lazy="select")
-    ayudantia = relationship(
-        "Ayudantia", back_populates="reservas", lazy="select"
-    )
+    ayudantia = relationship("Ayudantia", back_populates="reservas", lazy="select")
     bloques_reservados = relationship(
         "BloqueReservado", back_populates="reserva", lazy="select"
     )
