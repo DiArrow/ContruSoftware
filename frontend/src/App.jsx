@@ -432,6 +432,7 @@ const styles = {
     },
 };
 
+// Hook personalizado para gestionar el estado de los paneles
 function useHover() {
     const [hovered, setHovered] = useState(false);
     return {
