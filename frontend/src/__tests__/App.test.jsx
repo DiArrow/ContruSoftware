@@ -111,3 +111,53 @@ describe('App with auth', () => {
         });
     });
 });
+
+describe('Logout button', () => {
+    beforeEach(() => {
+        localStorage.clear();
+        vi.clearAllMocks();
+    });
+
+    it('renders logout button in Topbar when authenticated', async () => {
+        localStorage.setItem('token', 'tok123');
+        apiGet.mockResolvedValue({
+            id_usuario: '1',
+            nombre: 'Ana',
+            apellido: 'Lopez',
+            email: 'ana@utalca.cl',
+            rol: 'user',
+        });
+
+        render(<App />);
+
+        await waitFor(() =>
+            expect(screen.getByText(/Bienvenid@ a MakerBox/i)).toBeInTheDocument()
+        );
+
+        expect(screen.getByTitle('Cerrar sesión')).toBeInTheDocument();
+    });
+
+    it('clicking logout clears token and shows login view', async () => {
+        localStorage.setItem('token', 'tok123');
+        apiGet.mockResolvedValue({
+            id_usuario: '1',
+            nombre: 'Ana',
+            apellido: 'Lopez',
+            email: 'ana@utalca.cl',
+            rol: 'user',
+        });
+
+        render(<App />);
+
+        await waitFor(() =>
+            expect(screen.getByText(/Bienvenid@ a MakerBox/i)).toBeInTheDocument()
+        );
+
+        fireEvent.click(screen.getByTitle('Cerrar sesión'));
+
+        await waitFor(() =>
+            expect(screen.getByText(/Iniciar Sesión/i)).toBeInTheDocument()
+        );
+        expect(localStorage.getItem('token')).toBeNull();
+    });
+});
