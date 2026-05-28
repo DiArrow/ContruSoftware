@@ -1,0 +1,31 @@
+name: Lint Backend (Ruff)
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+permissions:
+  contents: write
+
+jobs:
+  lint-and-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff Linter & Formatter (Auto-fix)
+        working-directory: ./backend
+        continue-on-error: true  # Solo advierte
+        run: |
+          ruff check . --fix
+          ruff format .
+
+      - name: Commit Auto-fix changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style(backend): auto-fix ruff formatter & linter"

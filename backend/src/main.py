@@ -1,27 +1,25 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import Optional
+from fastapi import Depends, FastAPI
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from auth.dependencies import oauth2_scheme  # noqa: F401
+from auth.router import router as auth_router
+from database import get_db
 
 app = FastAPI()
 
-# Definimos un modelo de datos (Schema)
-class Item(BaseModel):
-    nombre: str
-    precio: float
-    descripcion: Optional[str] = None
-    oferta: bool = False
+app.include_router(auth_router)
 
-# Ruta de inicio (GET)
-@app.get("/")
-def leer_raiz():
-    return {"mensaje": "¡Bienvenido a mi API con FastAPI!"}
 
-# Ruta con parámetros de ruta (GET)
-@app.get("/items/{item_id}")
-def leer_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "busqueda": q}
-
-# Ruta para crear datos (POST)
-@app.post("/items/")
-def crear_item(item: Item):
-    return {"mensaje": f"Producto '{item.nombre}' creado exitosamente", "datos": item}
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    """Verify database connectivity and return health status."""
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception as exc:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "detail": str(exc)},
+        )
+    return {"status": "ok"}
