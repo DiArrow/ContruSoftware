@@ -291,7 +291,7 @@ function Sidebar() {
 }
 
 //Topbar
-function Topbar({ user }) {
+function Topbar({ user, onLogout }) {
     return (
         <div
             style={{
@@ -375,6 +375,29 @@ function Topbar({ user }) {
                             border: '1.5px solid #ffffff',
                         }}
                     />
+                </button>
+
+                {/* Logout */}
+                <button
+                    style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(0,0,0,0.08)',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        color: '#6b7280',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#ede9fe'; e.currentTarget.style.color = '#5b21b6'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#6b7280'; }}
+                    title="Cerrar sesión"
+                    onClick={onLogout}
+                >
+                    <IconLogout />
                 </button>
 
                 {/* Perfil */}
