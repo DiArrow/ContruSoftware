@@ -100,14 +100,17 @@ GitLab Flow adaptado:
 
 ### 🔑 Credenciales de Prueba
 
-#### Usuario Administrador (producción / Docker)
+Todos los usuarios de prueba usan la misma contraseña: **`test123`**
 
-| Campo    | Valor                          |
-| -------- | ------------------------------ |
-| Email    | `admin@makerbox.cl`            |
-| Password | `admin123`                     |
+| Rol          | Email        | Password | Descripción        |
+| ------------ | ------------ | -------- | ------------------ |
+| Solicitante  | `sol@uc.cl`  | test123  | Usuario SOL        |
+| Estudiante   | `est@uc.cl`  | test123  | Usuario EST        |
+| Ayudante     | `ayu@uc.cl`  | test123  | Usuario AYU        |
+| Profesor     | `pro@uc.cl`  | test123  | Usuario PRO        |
+| Admin        | `adm@uc.cl`  | test123  | Usuario ADM        |
 
-Este usuario se crea automáticamente mediante el seed script `db/seeds/02-admin-user.sh`. Requiere que la migración `db/migrations/02-add-password-hash.sh` haya sido ejecutada primero.
+> **Nota:** Estos usuarios se crean automáticamente al levantar los contenedores con `docker compose up --build`. No requieren ejecutar migraciones manuales.
 
 #### Endpoints de Autenticación
 
@@ -120,11 +123,11 @@ Este usuario se crea automáticamente mediante el seed script `db/seeds/02-admin
 
 ```bash
 # Obtener token JWT
-curl -X POST http://localhost/api/auth/token \
+curl -X POST http://localhost:8000/auth/token \
   -H "Content-Type: application/json" \
-  -d '{"email": "admin@makerbox.cl", "password": "admin123"}'
+  -d '{"email": "sol@uc.cl", "password": "test123"}'
 
 # Usar token para obtener perfil
-curl http://localhost/api/auth/me \
+curl http://localhost:8000/auth/me \
   -H "Authorization: Bearer <token>"
 ```
