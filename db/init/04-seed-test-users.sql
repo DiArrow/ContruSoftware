@@ -1,5 +1,6 @@
 -- ============================================================
 -- Seed: usuarios de prueba determinísticos por rol
+-- Todos usan contraseña: test123
 -- ============================================================
 
 INSERT INTO usuario (

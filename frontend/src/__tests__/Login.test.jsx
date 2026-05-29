@@ -58,7 +58,10 @@ describe('Login component', () => {
         fireEvent.click(screen.getByText(/Acceder/i));
 
         await waitFor(() =>
-            expect(loginMock).toHaveBeenCalledWith('test@utalca.cl', 'secret123')
+            expect(loginMock).toHaveBeenCalledWith(
+                'test@utalca.cl',
+                'secret123'
+            )
         );
     });
 

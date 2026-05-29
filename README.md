@@ -121,11 +121,11 @@ Los siguientes usuarios se crean automáticamente al inicializar la base de dato
 
 ```bash
 # Obtener token JWT
-curl -X POST http://localhost/api/auth/token \
+curl -X POST http://localhost:8000/auth/token \
   -H "Content-Type: application/json" \
   -d '{"email": "pro@uc.cl", "password": "pro123"}'
 
 # Usar token para obtener perfil
-curl http://localhost/api/auth/me \
+curl http://localhost:8000/auth/me \
   -H "Authorization: Bearer <token>"
 ```

@@ -105,9 +105,7 @@ describe('App with auth', () => {
         items.forEach((label) => {
             const button = screen.getByTitle(label);
             fireEvent.click(button);
-            expect(button).toHaveStyle(
-                'background-color: rgb(237, 233, 254)'
-            );
+            expect(button).toHaveStyle('background-color: rgb(237, 233, 254)');
         });
     });
 });

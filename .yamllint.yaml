@@ -14,5 +14,5 @@ rules:
   truthy:
     allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
   indentation:
-    spaces: 4
+    spaces: 2
     indent-sequences: consistent

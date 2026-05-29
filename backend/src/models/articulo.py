@@ -18,9 +18,7 @@ class Articulo(Base):
     alerta_stock = Column(Boolean)
     actualizado_en = Column(TIMESTAMP, server_default=func.now())
 
-    impresiones = relationship(
-        "Impresion", back_populates="articulo", lazy="select"
-    )
+    impresiones = relationship("Impresion", back_populates="articulo", lazy="select")
     movimientos_stock = relationship(
         "MovimientoStock", back_populates="articulo", lazy="select"
     )

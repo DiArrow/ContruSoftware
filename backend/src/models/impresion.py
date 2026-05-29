@@ -19,6 +19,4 @@ class Impresion(Base):
     estado_impresion = Column(String(50))
 
     usuario = relationship("Usuario", back_populates="impresiones", lazy="select")
-    articulo = relationship(
-        "Articulo", back_populates="impresiones", lazy="select"
-    )
+    articulo = relationship("Articulo", back_populates="impresiones", lazy="select")

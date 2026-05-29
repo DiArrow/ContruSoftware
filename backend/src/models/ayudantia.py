@@ -25,6 +25,4 @@ class Ayudantia(Base):
     usos_impresora = relationship(
         "UsoImpresora", back_populates="ayudantia", lazy="select"
     )
-    reservas = relationship(
-        "Reserva", back_populates="ayudantia", lazy="select"
-    )
+    reservas = relationship("Reserva", back_populates="ayudantia", lazy="select")
