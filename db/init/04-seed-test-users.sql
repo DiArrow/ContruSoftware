@@ -14,7 +14,7 @@ INSERT INTO usuario (
     'sol@uc.cl',
     'SOL',
     true,
-    '$2b$12$LgQ.frDQCIygXqt8Bn3lFOu/QPA448z/Nl3faCbxRobRuTGa8dwDG',
+    '$2b$12$mfVES./yx3ugwK366xrJBeEZ30uCAZJ6e1mpey8YH2WRNHY8azUXO',
     NOW(),
     NOW()
 ),
@@ -26,7 +26,7 @@ INSERT INTO usuario (
     'est@uc.cl',
     'EST',
     true,
-    '$2b$12$LgQ.frDQCIygXqt8Bn3lFOu/QPA448z/Nl3faCbxRobRuTGa8dwDG',
+    '$2b$12$kIEUgfcPSoigNIU1awrLz.6eiXIDbxqLig6AeCUX7mmZnqB.ILNzW',
     NOW(),
     NOW()
 ),
@@ -38,7 +38,7 @@ INSERT INTO usuario (
     'ayu@uc.cl',
     'AYU',
     true,
-    '$2b$12$LgQ.frDQCIygXqt8Bn3lFOu/QPA448z/Nl3faCbxRobRuTGa8dwDG',
+    '$2b$12$moZepdWEYIvc81hQI/iUwuWVfGKK8h9qpxIxdQEDXpRcW812TdTny',
     NOW(),
     NOW()
 ),
@@ -50,7 +50,7 @@ INSERT INTO usuario (
     'pro@uc.cl',
     'PRO',
     true,
-    '$2b$12$LgQ.frDQCIygXqt8Bn3lFOu/QPA448z/Nl3faCbxRobRuTGa8dwDG',
+    '$2b$12$slVzj90A7CxEj9v1.gxJiuqvlgpXSFpIBJ4sIPVf54RQnb66dLxki',
     NOW(),
     NOW()
 ),
@@ -62,7 +62,7 @@ INSERT INTO usuario (
     'adm@uc.cl',
     'ADM',
     true,
-    '$2b$12$LgQ.frDQCIygXqt8Bn3lFOu/QPA448z/Nl3faCbxRobRuTGa8dwDG',
+    '$2b$12$Bq2ZJ8phT6WrK.LWLadiMOjOEX892ac9J4r/yFDNMZILZAxEd0Gr.',
     NOW(),
     NOW()
 );

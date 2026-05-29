@@ -149,6 +149,22 @@ const IconUser = () => (
         <circle cx="12" cy="7" r="4" />
     </svg>
 );
+const IconLogout = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+);
 
 //Icono para el central panel
 const IconCentral = () => (
@@ -275,7 +291,7 @@ function Sidebar() {
 }
 
 //Topbar
-function Topbar({ user }) {
+function Topbar({ user, onLogout }) {
     return (
         <div
             style={{
@@ -359,6 +375,35 @@ function Topbar({ user }) {
                             border: '1.5px solid #ffffff',
                         }}
                     />
+                </button>
+
+                {/* Logout */}
+                <button
+                    style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(0,0,0,0.08)',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        color: '#6b7280',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#ede9fe';
+                        e.currentTarget.style.color = '#5b21b6';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#fff';
+                        e.currentTarget.style.color = '#6b7280';
+                    }}
+                    title="Cerrar sesión"
+                    onClick={onLogout}
+                >
+                    <IconLogout />
                 </button>
 
                 {/* Perfil */}
@@ -561,7 +606,7 @@ function LowerPanel({ children }) {
 }
 
 function AppContent() {
-    const { currentUser, isAuthenticated, isLoading } = useAuth();
+    const { currentUser, isAuthenticated, isLoading, logout } = useAuth();
 
     if (isLoading) {
         return (
@@ -599,7 +644,7 @@ function AppContent() {
             >
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <TopPanel>
-                        <Topbar user={currentUser} />
+                        <Topbar user={currentUser} onLogout={logout} />
                     </TopPanel>
                     <CentralPanel></CentralPanel>
                     <LowerPanel></LowerPanel>
