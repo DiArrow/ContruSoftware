@@ -392,8 +392,14 @@ function Topbar({ user, onLogout }) {
                         transition: 'all 0.2s',
                         color: '#6b7280',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#ede9fe'; e.currentTarget.style.color = '#5b21b6'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#6b7280'; }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#ede9fe';
+                        e.currentTarget.style.color = '#5b21b6';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#fff';
+                        e.currentTarget.style.color = '#6b7280';
+                    }}
                     title="Cerrar sesión"
                     onClick={onLogout}
                 >

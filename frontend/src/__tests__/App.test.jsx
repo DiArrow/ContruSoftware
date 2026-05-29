@@ -129,7 +129,9 @@ describe('Logout button', () => {
         render(<App />);
 
         await waitFor(() =>
-            expect(screen.getByText(/Bienvenid@ a MakerBox/i)).toBeInTheDocument()
+            expect(
+                screen.getByText(/Bienvenid@ a MakerBox/i)
+            ).toBeInTheDocument()
         );
 
         expect(screen.getByTitle('Cerrar sesión')).toBeInTheDocument();
@@ -148,7 +150,9 @@ describe('Logout button', () => {
         render(<App />);
 
         await waitFor(() =>
-            expect(screen.getByText(/Bienvenid@ a MakerBox/i)).toBeInTheDocument()
+            expect(
+                screen.getByText(/Bienvenid@ a MakerBox/i)
+            ).toBeInTheDocument()
         );
 
         fireEvent.click(screen.getByTitle('Cerrar sesión'));
