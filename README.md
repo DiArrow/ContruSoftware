@@ -107,17 +107,15 @@ GitLab Flow adaptado:
 
 ### 🔑 Credenciales de Prueba
 
-Todos los usuarios de prueba usan la misma contraseña: **`test123`**
+Los siguientes usuarios se crean automáticamente al inicializar la base de datos Docker mediante los scripts en `db/init/`.
 
-| Rol          | Email        | Password | Descripción        |
-| ------------ | ------------ | -------- | ------------------ |
-| Solicitante  | `sol@uc.cl`  | test123  | Usuario SOL        |
-| Estudiante   | `est@uc.cl`  | test123  | Usuario EST        |
-| Ayudante     | `ayu@uc.cl`  | test123  | Usuario AYU        |
-| Profesor     | `pro@uc.cl`  | test123  | Usuario PRO        |
-| Admin        | `adm@uc.cl`  | test123  | Usuario ADM        |
-
-> **Nota:** Estos usuarios se crean automáticamente al levantar los contenedores con `docker compose up --build`. No requieren ejecutar migraciones manuales.
+| Email     | Rol          | Password |
+| --------- | ------------ | -------- |
+| sol@uc.cl | Solicitante  | sol123   |
+| est@uc.cl | Estudiante   | est123   |
+| ayu@uc.cl | Ayudante     | ayu123   |
+| pro@uc.cl | Profesor     | pro123   |
+| adm@uc.cl | Administrador| adm123   |
 
 #### Endpoints de Autenticación
 
@@ -132,7 +130,7 @@ Todos los usuarios de prueba usan la misma contraseña: **`test123`**
 # Obtener token JWT
 curl -X POST http://localhost:8000/auth/token \
   -H "Content-Type: application/json" \
-  -d '{"email": "sol@uc.cl", "password": "test123"}'
+  -d '{"email": "pro@uc.cl", "password": "pro123"}'
 
 # Usar token para obtener perfil
 curl http://localhost:8000/auth/me \

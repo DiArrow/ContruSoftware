@@ -14,9 +14,7 @@ class BloqueReservado(Base):
     bloque_id = Column(
         String(36), ForeignKey("bloque_horario.id_bloque_horario"), primary_key=True
     )
-    reserva_id = Column(
-        String(36), ForeignKey("reserva.id_reserva"), primary_key=True
-    )
+    reserva_id = Column(String(36), ForeignKey("reserva.id_reserva"), primary_key=True)
 
     bloque_horario = relationship(
         "BloqueHorario", back_populates="bloques_reservados", lazy="select"

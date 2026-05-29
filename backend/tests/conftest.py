@@ -16,12 +16,12 @@ _env_path = _project_root / ".env"
 if _env_path.exists():
     load_dotenv(_env_path)
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy.orm import Session  # noqa: E402
 
-from main import app
+from main import app  # noqa: E402
 
 
 def _get_database_url() -> str:

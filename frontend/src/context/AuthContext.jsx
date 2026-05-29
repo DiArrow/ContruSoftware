@@ -28,12 +28,28 @@ export function AuthProvider({ children }) {
     }, [logout]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchMe().finally(() => setIsLoading(false));
-        } else {
-            setIsLoading(false);
-        }
+        let isMounted = true;
+
+        const initializeAuth = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    await fetchMe();
+                } catch {
+                    // El manejo de errores se desarrollan internamente
+                } finally {
+                    if (isMounted) setIsLoading(false);
+                }
+            } else {
+                if (isMounted) setIsLoading(false);
+            }
+        };
+
+        initializeAuth();
+
+        return () => {
+            isMounted = false;
+        };
     }, [fetchMe]);
 
     const login = async (email, password) => {
@@ -60,6 +76,7 @@ export function AuthProvider({ children }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const context = useContext(AuthContext);
     if (!context) {
