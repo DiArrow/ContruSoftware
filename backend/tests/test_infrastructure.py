@@ -39,4 +39,3 @@ def test_client_can_make_post_requests(client):
     # Use a non-existent endpoint to verify POST mechanics without side effects
     response = client.post("/health", json={"probe": True})
     assert response.status_code == 405  # Method Not Allowed — confirms POST works
-

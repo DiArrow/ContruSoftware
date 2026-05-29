@@ -61,8 +61,7 @@ def requiere_rol(roles: list[str]) -> callable:
     """
     if not roles:
         raise HTTPException(
-            status_code=403,
-            detail="Configuración inválida: lista de roles vacía"
+            status_code=403, detail="Configuración inválida: lista de roles vacía"
         )
 
     def _check_role(user: dict = Depends(get_current_user)) -> dict:

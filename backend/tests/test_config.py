@@ -41,7 +41,10 @@ def test_valid_env_vars_produce_connection_url():
     with patch.dict(os.environ, env, clear=True):
         import config
 
-        assert config.SQLALCHEMY_DATABASE_URL == "postgresql+psycopg2://admin:secret@db.example.com:5433/mydb"
+        assert (
+            config.SQLALCHEMY_DATABASE_URL
+            == "postgresql+psycopg2://admin:secret@db.example.com:5433/mydb"
+        )
 
 
 def test_default_port_when_postgres_port_not_set():
@@ -56,4 +59,7 @@ def test_default_port_when_postgres_port_not_set():
     with patch.dict(os.environ, env, clear=True):
         import config
 
-        assert config.SQLALCHEMY_DATABASE_URL == "postgresql+psycopg2://user:pass@localhost:5432/db"
+        assert (
+            config.SQLALCHEMY_DATABASE_URL
+            == "postgresql+psycopg2://user:pass@localhost:5432/db"
+        )
