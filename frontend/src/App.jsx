@@ -646,7 +646,9 @@ function AppContent() {
                     <TopPanel>
                         <Topbar user={currentUser} onLogout={logout} />
                     </TopPanel>
+
                     <CentralPanel></CentralPanel>
+                    
                     <LowerPanel></LowerPanel>
                 </div>
             </div>
