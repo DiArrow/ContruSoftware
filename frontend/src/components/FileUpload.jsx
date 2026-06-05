@@ -64,7 +64,7 @@ export default function FileUpload() {
                 border: dragActive ? '2px dashed #5b21b6' : '2px dashed #ddd',
                 backgroundColor: dragActive ? '#ede9fe' : '#fafafa',
                 borderRadius: '16px',
-                padding: '40px 20px',
+                padding: file ? '30px 18px' : '40px 20px',
                 textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
@@ -73,7 +73,7 @@ export default function FileUpload() {
                 alignItems: 'center',
                 gap: '12px',
                 width: '100%',
-                maxWidth: '500px',
+                maxWidth: file ? '420px' : '500px',
                 margin: '20px auto',
                 boxSizing: 'border-box',
                 marginTop: '-2px',
@@ -88,7 +88,7 @@ export default function FileUpload() {
                 multiple={false}
             />
             <IconUpload />
-            <div>
+            <div style={{ width: '100%', maxWidth: '100%' }}>
                 <p
                     style={{
                         margin: '0 0 4px 0',
@@ -100,7 +100,15 @@ export default function FileUpload() {
                         ? 'Archivo seleccionado:'
                         : 'Arrastra tu archivo aquí o haz clic para buscar'}
                 </p>
-                <p style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>
+                <p
+                    style={{
+                        margin: 0,
+                        fontSize: '14px',
+                        color: '#6b7280',
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
+                    }}
+                >
                     {file
                         ? `${file.name} (${(file.size / 1024).toFixed(1)} KB)`
                         : 'Soporta cualquier formato de impresión'}

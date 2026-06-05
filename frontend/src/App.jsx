@@ -561,7 +561,7 @@ function CentralPanel({ children, showDefaultLogo }) {
     );
 }
 
-function LowerPanel({ children, showDefaultLogo = true }) {
+function LowerPanel({ children }) {
     const { hovered, ...handlers } = useHover();
     return (
         <div
