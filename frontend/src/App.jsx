@@ -54,7 +54,7 @@ const IconBag = () => (
         <path d="M16 10a4 4 0 0 1-8 0" />
     </svg>
 );
-const IconChart = () => (
+const IconPrinter = () => (
     <svg
         width="20"
         height="20"
@@ -65,25 +65,9 @@ const IconChart = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <line x1="18" y1="20" x2="18" y2="10" />
-        <line x1="12" y1="20" x2="12" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="14" />
-        <line x1="2" y1="20" x2="22" y2="20" />
-    </svg>
-);
-const IconBook = () => (
-    <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        <polyline points="6 9 6 2 18 2 18 9" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+        <rect x="6" y="14" width="12" height="8" />
     </svg>
 );
 const IconSettings = () => (
@@ -187,11 +171,10 @@ const IconCentral = () => (
 //Items de navegación
 const navItems = [
     { icon: <IconGrid />, label: 'Dashboard' },
-    { icon: <IconUsers />, label: 'Students' },
-    { icon: <IconBag />, label: 'Inventory' },
-    { icon: <IconChart />, label: 'Reports' },
-    { icon: <IconBook />, label: 'Courses' },
-    { icon: <IconSettings />, label: 'Settings' },
+    { icon: <IconUsers />, label: 'Estudiantes' },
+    { icon: <IconBag />, label: 'Inventario' },
+    { icon: <IconPrinter />, label: 'Impresiones' },
+    { icon: <IconSettings />, label: 'Ajustes' },
 ];
 
 // Sidebar
