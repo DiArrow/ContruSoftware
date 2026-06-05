@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Login from './components/Login';
+import FileUpload from './components/FileUpload';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 //Iconos presentes mediante figuras geométricas
@@ -178,8 +179,7 @@ const navItems = [
 ];
 
 // Sidebar
-function Sidebar() {
-    const [active, setActive] = useState(0);
+function Sidebar({ active, setActive }) {
     return (
         <aside
             style={{
@@ -488,7 +488,7 @@ function TopPanel({ children }) {
     );
 }
 
-function CentralPanel({ children }) {
+function CentralPanel({ children, showDefaultLogo }) {
     const { hovered, ...handlers } = useHover();
     return (
         <div
@@ -503,63 +503,65 @@ function CentralPanel({ children }) {
         >
             {children}
 
-            {/* Logo makerbox */}
-            <div
-                style={{
-                    position: 'relative',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-93%, -50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}
-            >
+            {/* Logo makerbox (solo mostrar si showDefaultLogo es true) */}
+            {showDefaultLogo && (
                 <div
                     style={{
-                        width: '150px',
-                        height: '150px',
-                        backgroundColor: '#ede9fe',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#5b21b6',
-                    }}
-                >
-                    <IconCentral />
-                </div>
-                <span
-                    style={{
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        color: '#5b21b6',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                    }}
-                ></span>
-                <span
-                    style={{
-                        position: 'absolute',
+                        position: 'relative',
                         top: '50%',
                         left: '50%',
-                        transform: 'translate(20%, -80%)',
-                        fontSize: '50px',
-                        fontWeight: 100,
-                        color: '#000000',
-                        letterSpacing: '0.05em',
-                        marginTop: '10px',
+                        transform: 'translate(-93%, -50%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
                     }}
                 >
-                    Proyectos realizados: 0
-                </span>
-            </div>
+                    <div
+                        style={{
+                            width: '150px',
+                            height: '150px',
+                            backgroundColor: '#ede9fe',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#5b21b6',
+                        }}
+                    >
+                        <IconCentral />
+                    </div>
+                    <span
+                        style={{
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            color: '#5b21b6',
+                            letterSpacing: '0.05em',
+                            textTransform: 'uppercase',
+                        }}
+                    ></span>
+                    <span
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(20%, -80%)',
+                            fontSize: '50px',
+                            fontWeight: 100,
+                            color: '#000000',
+                            letterSpacing: '0.05em',
+                            marginTop: '10px',
+                        }}
+                    >
+                        Proyectos realizados: 0
+                    </span>
+                </div>
+            )}
         </div>
     );
 }
 
-function LowerPanel({ children }) {
+function LowerPanel({ children, showDefaultLogo = true }) {
     const { hovered, ...handlers } = useHover();
     return (
         <div
@@ -572,25 +574,27 @@ function LowerPanel({ children }) {
             }}
             {...handlers}
         >
-            <span
-                style={{
-                    fontSize: '30px',
-                    fontWeight: 100,
-                    color: '#000000',
-                    fontFamily: 'inter',
-                    letterSpacing: '0.05em',
-                }}
-            >
-                Progreso de proyecto actual: 0%
-            </span>
-            {children}
+            <>
+                <span
+                    style={{
+                        fontSize: '30px',
+                        fontWeight: 100,
+                        color: '#000000',
+                        fontFamily: 'inter',
+                        letterSpacing: '0.05em',
+                    }}
+                >
+                    Progreso de proyecto actual: 0%
+                </span>
+                {children}
+            </>
         </div>
     );
 }
 
 function AppContent() {
     const { currentUser, isAuthenticated, isLoading, logout } = useAuth();
-
+    const [activeTab, setActiveTab] = useState(0);
     if (isLoading) {
         return (
             <div
@@ -616,7 +620,7 @@ function AppContent() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar />
+            <Sidebar active={activeTab} setActive={setActiveTab} />
             <div
                 style={{
                     flex: 1,
@@ -629,8 +633,10 @@ function AppContent() {
                     <TopPanel>
                         <Topbar user={currentUser} onLogout={logout} />
                     </TopPanel>
-                    <CentralPanel></CentralPanel>
-                    <LowerPanel></LowerPanel>
+                    <CentralPanel showDefaultLogo={activeTab !== 3}>
+                        {activeTab === 3 && <FileUpload />}
+                    </CentralPanel>
+                    <LowerPanel showDefaultLogo={activeTab !== 3}></LowerPanel>
                 </div>
             </div>
         </div>

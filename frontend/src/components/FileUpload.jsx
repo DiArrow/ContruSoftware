@@ -55,6 +55,7 @@ export default function FileUpload() {
 
     return (
         <div
+            // Estos eventos permiten manejar el arrastre de archivos
             onDragEnter={handleDrag}
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
@@ -75,6 +76,7 @@ export default function FileUpload() {
                 maxWidth: '500px',
                 margin: '20px auto',
                 boxSizing: 'border-box',
+                marginTop: '-2px',
             }}
             onClick={onButtonClick}
         >
@@ -111,7 +113,7 @@ export default function FileUpload() {
                         alert(
                             `Enviando ${file.name} a la cola de impresión...`
                         );
-                        // Aquí conectarías con tu endpoint de backend en el futuro
+                        // Futuramente se conectará con el backend para enviar el archivo a imprimir
                     }}
                     style={{
                         marginTop: '10px',
