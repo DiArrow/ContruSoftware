@@ -292,6 +292,14 @@ function Sidebar() {
 
 //Topbar
 function Topbar({ user, onLogout }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Lista de notificaciones ficticias para mostrar en el menú
+    const notifications = [
+        { id: 1, text: 'Nueva solicitud de proyecto asignada', time: 'Hace 5 min' },
+        { id: 2, text: 'El stock de filamento morado se está agotando', time: 'Hace 2 horas' },
+    ];  
+
     return (
         <div
             style={{
@@ -342,40 +350,79 @@ function Topbar({ user, onLogout }) {
                     gap: '12px',
                 }}
             >
-                {/* Campana */}
-                <button
-                    title="Notificaciones"
-                    style={{
-                        width: '40px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(0,0,0,0.08)',
-                        backgroundColor: '#ffffff',
-                        color: '#6b7280',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        transition: 'background 0.2s, color 0.2s',
-                    }}
-                >
-                    <IconBell />
-
-                    {/* Badge de notificación */}
-                    <span
+                {/* Contenedor relativo para posicionar el menú flotante justo bajo la campana */}
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    {/* Campana */}
+                    <button
+                        title="Notificaciones"
+                        onClick={() => setIsOpen(!isOpen)}
                         style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            width: '7px',
-                            height: '7px',
-                            borderRadius: '50%',
-                            backgroundColor: '#7c3aed',
-                            border: '1.5px solid #ffffff',
+                            width: '40px',
+                            height: '40px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(0,0,0,0.08)',
+                            backgroundColor: isOpen ? '#ede9fe' : '#ffffff',
+                            color: isOpen ? '#5b21b6' : '#6b7280',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            transition: 'background 0.2s, color 0.2s',
                         }}
-                    />
-                </button>
+                    >
+                        <IconBell />
+
+                        {/* Badge de notificación */}
+                        <span
+                            style={{
+                                position: 'absolute',
+                                top: '8px',
+                                right: '8px',
+                                width: '7px',
+                                height: '7px',
+                                borderRadius: '50%',
+                                backgroundColor: '#7c3aed',
+                                border: '1.5px solid #ffffff',
+                            }}
+                        />
+                    </button>
+
+                    {/* Menú Desplegable de Notificaciones */}
+                    {isOpen && (
+                        <div style={{ 
+                            position: 'absolute', 
+                            top: '48px', 
+                            right: '0', 
+                            width: '280px', 
+                            backgroundColor: '#ffffff', 
+                            borderRadius: '16px', 
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.1)', 
+                            border: '1px solid rgba(0,0,0,0.06)', 
+                            padding: '12px 0', 
+                            zIndex: 200, 
+                            fontFamily: 'system-ui, sans-serif' 
+                        }}>
+                            <div style={{ padding: '0 16px 8px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontWeight: 600, fontSize: '14px', color: '#1f2937' }}>Notificaciones</span>
+                            </div>
+                            
+                            <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                                {notifications.map((notif) => (
+                                    <div 
+                                        key={notif.id} 
+                                        style={{ padding: '12px 16px', borderBottom: '1px solid #f9fafb', cursor: 'pointer', transition: 'background 0.2s', textAlign: 'left' }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                    >
+                                        <p style={{ margin: '0 0 4px 0', fontSize: '13px', color: '#4b5563', lineHeight: '1.4', fontWeight: 'normal' }}>{notif.text}</p>
+                                        <span style={{ fontSize: '11px', color: '#9ca3af' }}>{notif.time}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Logout */}
                 <button
@@ -441,6 +488,7 @@ function Topbar({ user, onLogout }) {
     );
 }
 
+
 //Cards
 const baseCard = {
     backgroundColor: '#ffffff',
@@ -462,6 +510,8 @@ const styles = {
         ...baseCard,
         height: 'var(--top-panel-height)',
         paddingTop: '5px',
+        position: 'relative',
+        zIndex: 100,
     },
     CentralPanel: {
         ...baseCard,
