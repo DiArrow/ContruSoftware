@@ -18,7 +18,7 @@ const IconUpload = () => (
     </svg>
 );
 
-export default function FileUpload() {
+export default function FileUpload({ onFileUploaded = () => {} }) {
     const [dragActive, setDragActive] = useState(false);
     const [file, setFile] = useState(null);
     const inputRef = useRef(null);
@@ -120,8 +120,12 @@ export default function FileUpload() {
                         e.stopPropagation();
                         alert(
                             `Enviando ${file.name} a la cola de impresión...`
-                        );
-                        // Futuramente se conectará con el backend para enviar el archivo a imprimir
+                        ); // Futuramente se conectará con el backend para enviar el archivo a imprimir
+                        onFileUploaded({
+                            id: Date.now(),
+                            text: `El archivo ${file.name} se subió correctamente`,
+                            time: 'Ahora',
+                        });
                     }}
                     style={{
                         marginTop: '10px',

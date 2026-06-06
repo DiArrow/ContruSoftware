@@ -22,28 +22,36 @@ describe('FileUpload Component', () => {
         ).toBeInTheDocument();
     });
 
-    it('should load a file through input selection', async () => {
-        const { container } = render(<FileUpload />);
+    it('should load a file through input selection and create notification', async () => {
+        const mockNotification = vi.fn();
 
-        // Crear un archivo simulado
+        const { container } = render(
+            <FileUpload onFileUploaded={mockNotification} />
+        );
+
         const fakeFile = new File(['contenido-3d'], 'modelo_pieza.stl', {
             type: 'application/sla',
         });
+
         const input = container.querySelector('input[type="file"]');
 
         expect(input).toBeInTheDocument();
-        fireEvent.change(input, { target: { files: [fakeFile] } });
 
-        // Verificar cambios en el texto
+        fireEvent.change(input, {
+            target: { files: [fakeFile] },
+        });
+
         expect(screen.getByText('Archivo seleccionado:')).toBeInTheDocument();
         expect(screen.getByText(/modelo_pieza.stl/i)).toBeInTheDocument();
 
         const submitButton = screen.getByRole('button', {
             name: /enviar impresión/i,
         });
+
         expect(submitButton).toBeInTheDocument();
 
         fireEvent.click(submitButton);
+
         expect(alertMock).toHaveBeenCalledWith(
             'Enviando modelo_pieza.stl a la cola de impresión...'
         );
