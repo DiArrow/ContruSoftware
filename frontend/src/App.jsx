@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Login from './components/Login';
 import FileUpload from './components/FileUpload';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import SimpleChart from './components/SimpleChart';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -691,7 +692,7 @@ function LowerPanel({ children }) {
                         letterSpacing: '0.05em',
                     }}
                 >
-                    Progreso de proyecto actual: 0%
+                    Progreso de proyecto actual: 20%
                 </span>
                 {children}
             </>
@@ -758,7 +759,9 @@ function AppContent() {
                             <FileUpload onFileUploaded={addNotification} />
                         )}
                     </CentralPanel>
-                    <LowerPanel showDefaultLogo={activeTab !== 3}></LowerPanel>
+                    <LowerPanel showDefaultLogo={activeTab !== 3}>
+                        <SimpleChart />
+                    </LowerPanel>
                 </div>
             </div>
         </div>
