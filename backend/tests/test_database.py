@@ -14,6 +14,7 @@ from database import Base, SessionLocal, engine, get_db
 
 pytestmark = pytest.mark.integration
 
+
 def test_engine_is_created_and_exportable():
     """engine must be a SQLAlchemy Engine with pool_size=5."""
     assert isinstance(engine, Engine)

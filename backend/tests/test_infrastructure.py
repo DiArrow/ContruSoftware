@@ -5,6 +5,7 @@ from sqlalchemy import inspect, text
 
 pytestmark = pytest.mark.integration
 
+
 def test_db_session_can_execute_query(db_session):
     """Verify db_session fixture provides a working database session."""
     result = db_session.execute(text("SELECT 1"))
