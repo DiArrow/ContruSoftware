@@ -17,6 +17,8 @@ from database import get_db as db_get_db
 from main import app
 from models.usuario import Usuario
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.fixture
 def auth_client(client: TestClient, db_session: Session) -> TestClient:
