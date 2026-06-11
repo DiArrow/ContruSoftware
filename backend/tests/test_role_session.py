@@ -16,7 +16,9 @@ from sqlalchemy.orm import Session
 def _reload_database():
     """Elimina módulos cacheados para forzar reimportación fresca."""
     sys.modules.pop("src.database", None)
+    sys.modules.pop("database", None)
     sys.modules.pop("src.config", None)
+    sys.modules.pop("config", None)
     return importlib.import_module("src.database")
 
 
