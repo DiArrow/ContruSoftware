@@ -3,6 +3,9 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = [".", "src"]
 addopts = "-v --tb=short"
+markers = [
+    "integration: tests that require a live PostgreSQL database",
+]
 
 [tool.coverage.run]
 source = ["src"]

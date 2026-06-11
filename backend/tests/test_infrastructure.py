@@ -1,6 +1,9 @@
 """Infrastructure tests verifying test fixtures work correctly."""
 
+import pytest
 from sqlalchemy import inspect, text
+
+pytestmark = pytest.mark.integration
 
 
 def test_db_session_can_execute_query(db_session):

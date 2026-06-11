@@ -39,6 +39,7 @@ class TestUsuarioExtended:
                 rol="INVALID",
             )
 
+    @pytest.mark.integration
     @pytest.mark.filterwarnings("ignore::sqlalchemy.exc.SAWarning")
     def test_email_duplicate_raises_integrityerror(self, db_session):
         """Dos usuarios con el mismo email deben lanzar IntegrityError."""
