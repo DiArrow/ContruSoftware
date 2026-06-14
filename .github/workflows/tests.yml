@@ -110,7 +110,10 @@ jobs:
           POSTGRES_PASSWORD_PRO: test
           POSTGRES_USER_ADM: test
           POSTGRES_PASSWORD_ADM: test
-        run: PYTHONPATH=src python -c "from database import Base, engine; import models; Base.metadata.create_all(bind=engine); print('Tables created')"
+        run: >
+          PYTHONPATH=src python -c "from database import Base, engine;
+          import models; Base.metadata.create_all(bind=engine);
+          print('Tables created')"
 
       - name: Run integration tests
         env:
