@@ -24,5 +24,13 @@ if "src" not in sys.modules:
     src_pkg.__path__ = [_src_path]
     sys.modules["src"] = src_pkg
 
-# Try to import the application. Prefer top-level `main` so internal
-# absolute imports (e.g. `from auth.router import ...`) succeed.
+# Import and re-export the FastAPI application from the source package.
+# Prefer `src.main` to avoid importing this shim recursively.
+try:
+    from src.main import app  # re-export the FastAPI application
+except Exception:
+    # If importing fails, surface the error when tests or runtime import `app`.
+    raise
+
+__all__ = ["app"]
+
