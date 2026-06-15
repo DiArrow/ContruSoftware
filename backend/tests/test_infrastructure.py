@@ -27,7 +27,7 @@ def test_test_engine_has_expected_tables(test_engine):
     assert "usuario" in tables
     assert "semestre" in tables
     assert "curso" in tables
-    assert len(tables) == 14
+    assert len(tables) == 15
 
 
 def test_client_can_make_requests(client):
