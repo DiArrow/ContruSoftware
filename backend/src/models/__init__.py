@@ -1,10 +1,11 @@
 """Re-export all SQLAlchemy models for convenient importing.
 
 Usage::
-
     from models import Usuario, Curso, Reserva
+    from src.models.archivo_impresion import ArchivoImpresion
 """
 
+from models.archivo_impresion import ArchivoImpresion
 from models.articulo import Articulo
 from models.ayudantia import Ayudantia
 from models.bloque_horario import BloqueHorario
@@ -35,4 +36,5 @@ __all__ = [
     "UsoImpresora",
     "Reserva",
     "BloqueReservado",
+    "ArchivoImpresion",
 ]

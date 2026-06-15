@@ -7,8 +7,9 @@ Verifies table names, columns, primary keys, foreign keys, types,
 timestamps, and relationship attributes against the SQL schema.
 """
 
-from sqlalchemy import TIMESTAMP, Boolean, Integer, String, Time
+from sqlalchemy import TIMESTAMP, Boolean, Integer, LargeBinary, String, Time
 
+from models.archivo_impresion import ArchivoImpresion
 from models.articulo import Articulo
 from models.ayudantia import Ayudantia
 from models.bloque_horario import BloqueHorario
@@ -407,3 +408,49 @@ class TestAyudantia:
         assert Ayudantia.inscripciones is not None
         assert Ayudantia.usos_impresora is not None
         assert Ayudantia.reservas is not None
+
+
+class TestArchivoImpresion:
+    """Schema assertions for the ``archivo_impresion`` model."""
+
+    def test_tablename(self):
+        assert ArchivoImpresion.__tablename__ == "archivo_impresion"
+
+    def test_primary_key(self):
+        pk = ArchivoImpresion.__table__.primary_key
+        assert len(pk.columns) == 1
+        assert "id_archivo" in pk.columns
+
+    def test_id_archivo_type_and_length(self):
+        col = ArchivoImpresion.__table__.c.id_archivo
+        assert isinstance(col.type, String)
+        assert col.type.length == 36
+        assert col.primary_key
+        assert not col.nullable
+
+    def test_ref_impresion_foreign_key(self):
+        col = ArchivoImpresion.__table__.c.ref_impresion
+        assert isinstance(col.type, String)
+        assert col.type.length == 36
+        assert len(col.foreign_keys) == 1
+        fk = list(col.foreign_keys)[0]
+        assert fk.target_fullname == "impresion.id_impresion"
+
+    def test_nombre_archivo_column(self):
+        col = ArchivoImpresion.__table__.c.nombre_archivo
+        assert isinstance(col.type, String)
+        assert col.type.length == 255
+        assert not col.nullable
+
+    def test_contenido_column(self):
+        col = ArchivoImpresion.__table__.c.contenido
+        assert isinstance(col.type, LargeBinary)
+        assert not col.nullable
+
+    def test_no_timestamps(self):
+        assert "creado_en" not in ArchivoImpresion.__table__.c
+        assert "actualizado_en" not in ArchivoImpresion.__table__.c
+
+    def test_relationship_attributes_exist(self):
+        assert hasattr(ArchivoImpresion, "impresion")
+        assert ArchivoImpresion.impresion is not None
