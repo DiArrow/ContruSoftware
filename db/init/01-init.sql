@@ -1,6 +1,6 @@
 -- ============================================================
 -- init.sql — Esquema completo de la base de datos
--- 14 tablas en orden de dependencias (sin FKs primero)
+-- 15 tablas en orden de dependencias (sin FKs primero)
 -- Idempotente: DROP CASCADE + CREATE
 -- ============================================================
 
@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS uso_impresora CASCADE;
 DROP TABLE IF EXISTS inscripcion_ayudantia CASCADE;
 DROP TABLE IF EXISTS ayudantia CASCADE;
 DROP TABLE IF EXISTS movimiento_stock CASCADE;
+DROP TABLE IF EXISTS archivo_impresion CASCADE;
 DROP TABLE IF EXISTS impresion CASCADE;
 DROP TABLE IF EXISTS grupo_estudiante CASCADE;
 DROP TABLE IF EXISTS curso CASCADE;
@@ -79,7 +80,7 @@ CREATE TABLE bloque_horario (
 );
 
 -- ============================================================
--- CREATE TABLES — dependencias de un nivel (4 tablas)
+-- CREATE TABLES — dependencias de un nivel (5 tablas)
 -- ============================================================
 
 CREATE TABLE curso (
@@ -114,6 +115,17 @@ CREATE TABLE impresion (
     REFERENCES usuario (id_usuario),
     CONSTRAINT fk_imp_articulo FOREIGN KEY (ref_articulo)
     REFERENCES articulo (id_articulo)
+);
+
+CREATE TABLE archivo_impresion (
+    id_archivo VARCHAR(36) NOT NULL,
+    ref_impresion VARCHAR(36) NOT NULL,
+    nombre_archivo VARCHAR(255) NOT NULL,
+    contenido_archivo BYTEA NOT NULL,
+    CONSTRAINT pk_archivo_impresion PRIMARY KEY (id_archivo),
+    CONSTRAINT fk_archivo_impresion_impresion FOREIGN KEY (ref_impresion)
+    REFERENCES impresion (id_impresion)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE movimiento_stock (
