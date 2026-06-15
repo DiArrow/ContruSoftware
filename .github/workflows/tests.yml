@@ -55,7 +55,7 @@ jobs:
         run: pytest tests/ -m "not integration"
 
   # ── Backend integration tests ────────────────────────────────────
-  #     Necesitan PostgreSQL real con las 14 tablas del schema.
+  #     Necesitan PostgreSQL real con las 15 tablas del schema.
   backend-integration-tests:
     name: backend/integration-tests
     runs-on: ubuntu-latest
