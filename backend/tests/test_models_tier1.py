@@ -8,6 +8,7 @@ timestamps, and relationship attributes against the SQL schema.
 """
 
 from sqlalchemy import TIMESTAMP, Boolean, Integer, LargeBinary, String, Time
+from sqlalchemy.orm import RelationshipProperty
 
 from models.archivo_impresion import ArchivoImpresion
 from models.articulo import Articulo
@@ -297,8 +298,18 @@ class TestImpresion:
     def test_relationship_attributes_exist(self):
         assert hasattr(Impresion, "usuario")
         assert hasattr(Impresion, "articulo")
+        assert hasattr(Impresion, "archivos")
         assert Impresion.usuario is not None
         assert Impresion.articulo is not None
+        assert Impresion.archivos is not None
+
+    def test_archivos_relationship_is_list(self):
+        """La relación archivos debe ser uselist=True (1:N, carga lista)."""
+        prop = Impresion.archivos.property
+        assert isinstance(prop, RelationshipProperty)
+        assert prop.uselist is True, (
+            "Impresion.archivos debe configurarse como lista (uselist=True)"
+        )
 
 
 class TestMovimientoStock:
@@ -454,3 +465,31 @@ class TestArchivoImpresion:
     def test_relationship_attributes_exist(self):
         assert hasattr(ArchivoImpresion, "impresion")
         assert ArchivoImpresion.impresion is not None
+
+
+class TestArchivoImpresionMigration:
+    """Verifica la calidad de la migración SQL de archivo_impresion."""
+
+    @staticmethod
+    def _migration_path() -> str:
+        from pathlib import Path
+
+        project_root = Path(__file__).resolve().parents[2]
+        return str(project_root / "db" / "migrations" / "03-create-archivo-impresion.sql")
+
+    def test_migration_is_idempotent(self):
+        """La migración debe usar IF NOT EXISTS para ser idempotente."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "IF NOT EXISTS" in sql, (
+            "La migración debe incluir IF NOT EXISTS para ser idempotente"
+        )
+
+    def test_migration_column_matches_model(self):
+        """La columna contenido en la migración debe coincidir con el modelo."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "contenido BYTEA" in sql or "contenido " in sql, (
+            "La migración debe usar 'contenido' (no 'contenido_archivo') "
+            "para coincidir con el modelo SQLAlchemy"
+        )
