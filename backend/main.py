@@ -33,4 +33,3 @@ except Exception:
     raise
 
 __all__ = ["app"]
-
