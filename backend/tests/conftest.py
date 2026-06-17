@@ -6,6 +6,7 @@ to ensure test isolation without requiring a separate test database.
 
 import os
 from collections.abc import Generator
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -104,3 +105,33 @@ def client(db_session) -> Generator[TestClient, None, None]:
         app.dependency_overrides.pop(get_db, None)
     except ImportError:
         pass
+
+
+def _create_token_with_role(role: str) -> str:
+    """Create a valid JWT token with the specified role.
+
+    Args:
+        role: The role to include in the token (e.g., 'admin', 'estudiante').
+
+    Returns:
+        A valid JWT token string.
+    """
+    from auth.jwt_handler import crear_token_jwt
+
+    data = {"sub": "test_user@test.com", "role": role}
+    expires_delta = timedelta(hours=24)
+    return crear_token_jwt(data, expires_delta)
+
+
+@pytest.fixture
+def admin_headers() -> dict:
+    """Return headers with a valid admin token."""
+    token = _create_token_with_role("admin")
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def estudiante_headers() -> dict:
+    """Return headers with a valid estudiante token."""
+    token = _create_token_with_role("estudiante")
+    return {"Authorization": f"Bearer {token}"}

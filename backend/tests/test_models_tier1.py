@@ -475,7 +475,9 @@ class TestArchivoImpresionMigration:
         from pathlib import Path
 
         project_root = Path(__file__).resolve().parents[2]
-        return str(project_root / "db" / "migrations" / "03-create-archivo-impresion.sql")
+        return str(
+            project_root / "db" / "migrations" / "03-create-archivo-impresion.sql"
+        )
 
     def test_migration_is_idempotent(self):
         """La migración debe usar IF NOT EXISTS para ser idempotente."""
