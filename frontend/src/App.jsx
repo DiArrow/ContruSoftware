@@ -556,15 +556,19 @@ const styles = {
     },
     CentralPanel: {
         ...baseCard,
-        height: 'var(--central-panel-height)',
+        minHeight: 'var(--central-panel-height)',
+        height: 'auto',
         border: '1px solid rgba(0, 0, 0, 0.08)',
         marginTop: '70px',
         marginBottom: '30px',
+        paddingBottom: '30px',
     },
     LowerPanel: {
         ...baseCard,
-        height: 'var(--lower-panel-height)',
+        minHeight: 'var(--lower-panel-height)',
+        height: 'auto',
         border: '1px solid rgba(0, 0, 0, 0.08)',
+        paddingBottom: '30px',
     },
 };
 
@@ -709,6 +713,11 @@ function AppContent() {
         setNotifications((prev) => [notification, ...prev]);
         setHasUnread(true);
     };
+    const mockArticulos = [
+        { id_articulo: 'art-001', nombre_articulo: 'Filamento PLA Morado' },
+        { id_articulo: 'art-002', nombre_articulo: 'Resina Estándar Gris' },
+        { id_articulo: 'art-003', nombre_articulo: 'Filamento ABS Negro' }
+    ];
 
     if (isLoading) {
         return (
@@ -756,7 +765,10 @@ function AppContent() {
                     </TopPanel>
                     <CentralPanel showDefaultLogo={activeTab !== 3}>
                         {activeTab === 3 && (
-                            <FileUpload onFileUploaded={addNotification} />
+                            <FileUpload onFileUploaded={addNotification} 
+                            articulos={mockArticulos} 
+                            onFileUploaded={(data) => console.log("Notificación:", data)}
+                            />
                         )}
                     </CentralPanel>
                     <LowerPanel showDefaultLogo={activeTab !== 3}>

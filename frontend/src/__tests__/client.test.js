@@ -92,3 +92,38 @@ describe('client.js', () => {
         });
     });
 });
+
+describe('apiPostFormData', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks();
+        global.fetch = vi.fn();
+        localStorage.clear();
+    });
+
+    it('debería enviar un FormData mediante POST sin establecer Content-Type manual para que fetch asigne el boundary', async () => {
+        localStorage.setItem('token', 'fake-jwt-token');
+        
+        global.fetch.mockResolvedValueOnce({
+            ok: true,
+            headers: {
+                get: () => 'application/json',
+            },
+            json: async () => ({ success: true }),
+        });
+
+        const formData = new FormData();
+        formData.append('testKey', 'testValue');
+
+        const result = await apiPostFormData('impresiones', formData);
+
+        expect(global.fetch).toHaveBeenCalledWith('/api/impresiones', expect.objectContaining({
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': 'Bearer fake-jwt-token'
+                // No debe contener 'Content-Type'
+            }
+        }));
+        expect(result).toEqual({ success: true });
+    });
+});
