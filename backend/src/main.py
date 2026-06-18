@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
+from auth.admin import router as admin_router
 from auth.router import router as auth_router
 from database import get_db
 
@@ -13,6 +14,7 @@ app = FastAPI(title="ContruSoftware API")
 
 # Include routers
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 
 @app.get("/health")
