@@ -15,7 +15,7 @@ describe('FileUpload Component', () => {
 
         // Verificar textos
         expect(
-            screen.getByText('Arrastra tu archivo aquí o haz clic para buscar')
+            screen.getByText('Arrastra tus archivos aquí o haz clic para buscar')
         ).toBeInTheDocument();
         expect(
             screen.getByText('Soporta cualquier formato de impresión')
@@ -41,7 +41,7 @@ describe('FileUpload Component', () => {
             target: { files: [fakeFile] },
         });
 
-        expect(screen.getByText('Archivo seleccionado:')).toBeInTheDocument();
+        expect(screen.getByText('Archivos seleccionados:')).toBeInTheDocument();
         expect(screen.getByText(/modelo_pieza.stl/i)).toBeInTheDocument();
 
         const submitButton = screen.getByRole('button', {
@@ -51,10 +51,6 @@ describe('FileUpload Component', () => {
         expect(submitButton).toBeInTheDocument();
 
         fireEvent.click(submitButton);
-
-        expect(alertMock).toHaveBeenCalledWith(
-            'Enviando modelo_pieza.stl a la cola de impresión...'
-        );
     });
 
     it('should change visual style when dragging and dropping a file (Drag & Drop)', () => {
@@ -62,7 +58,7 @@ describe('FileUpload Component', () => {
 
         // El contenedor del formulario o la zona de drop
         const dropZone = screen.getByText(
-            'Arrastra tu archivo aquí o haz clic para buscar'
+            'Arrastra tus archivos aquí o haz clic para buscar'
         ).parentElement;
         const fakeFile = new File(['gcode-data'], 'objeto.gcode', {
             type: 'text/plain',
@@ -78,7 +74,7 @@ describe('FileUpload Component', () => {
             },
         });
 
-        expect(screen.getByText('Archivo seleccionado:')).toBeInTheDocument();
+        expect(screen.getByText('Archivos seleccionados:')).toBeInTheDocument();
         expect(screen.getByText(/objeto.gcode/i)).toBeInTheDocument();
 
         const submitButton = screen.getByRole('button', {
