@@ -17,6 +17,7 @@ app.include_router(auth_router)
 
 app.include_router(impresiones_router)
 
+
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     """Health check endpoint that validates database connectivity."""

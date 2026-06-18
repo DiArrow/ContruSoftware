@@ -716,7 +716,7 @@ function AppContent() {
     const mockArticulos = [
         { id_articulo: 'art-001', nombre_articulo: 'Filamento PLA Morado' },
         { id_articulo: 'art-002', nombre_articulo: 'Resina Estándar Gris' },
-        { id_articulo: 'art-003', nombre_articulo: 'Filamento ABS Negro' }
+        { id_articulo: 'art-003', nombre_articulo: 'Filamento ABS Negro' },
     ];
 
     if (isLoading) {
@@ -765,9 +765,9 @@ function AppContent() {
                     </TopPanel>
                     <CentralPanel showDefaultLogo={activeTab !== 3}>
                         {activeTab === 3 && (
-                            <FileUpload onFileUploaded={addNotification} 
-                            articulos={mockArticulos} 
-                            onFileUploaded={(data) => console.log("Notificación:", data)}
+                            <FileUpload
+                                onFileUploaded={addNotification}
+                                articulos={mockArticulos}
                             />
                         )}
                     </CentralPanel>

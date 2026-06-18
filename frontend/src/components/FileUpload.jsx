@@ -1,12 +1,12 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { apiPostFormData } from '../api/client';
 
-// NOTA: Recuerda importar aquí tu IconUpload 
+// NOTA: Recuerda importar aquí tu IconUpload
 
 export default function FileUpload({ articulos = [], onFileUploaded }) {
     const [cantidad, setCantidad] = useState(1);
     const [articuloSeleccionado, setArticuloSeleccionado] = useState('');
-    const [archivos, setArchivos] = useState([]); 
+    const [archivos, setArchivos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -49,7 +49,7 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Validaciones antes de enviar
         if (archivos.length === 0) {
             setError('Por favor, selecciona al menos un archivo.');
@@ -67,7 +67,7 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
         const formData = new FormData();
         formData.append('cantidad', cantidad);
         formData.append('ref_articulo', articuloSeleccionado);
-        
+
         archivos.forEach((file) => {
             formData.append('archivos', file);
         });
@@ -76,15 +76,16 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
             // Petición real al backend
             const data = await apiPostFormData('impresiones', formData);
             setSuccess('¡Solicitud enviada con éxito!');
-            
+
             // RESTAURAMOS EL FORMATO: Le damos al componente padre exactamente lo que necesita para mostrar la notificación
             if (onFileUploaded) {
                 onFileUploaded({
                     id: data.id_impresion || Date.now(),
-                    text: archivos.length === 1 
-                        ? `El archivo ${archivos[0].name} se subió correctamente`
-                        : `Se subieron ${archivos.length} archivos correctamente`,
-                    time: 'Ahora'
+                    text:
+                        archivos.length === 1
+                            ? `El archivo ${archivos[0].name} se subió correctamente`
+                            : `Se subieron ${archivos.length} archivos correctamente`,
+                    time: 'Ahora',
                 });
             }
 
@@ -94,7 +95,10 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
             setArchivos([]);
         } catch (err) {
             // Si el backend no existe, está apagado o falla, te lo dirá aquí en color rojo
-            setError(err.message || 'Error de conexión con el servidor. Verifica que el backend esté funcionando.');
+            setError(
+                err.message ||
+                    'Error de conexión con el servidor. Verifica que el backend esté funcionando.'
+            );
         } finally {
             setLoading(false);
         }
@@ -134,55 +138,120 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
                 onClick={(e) => e.stopPropagation()} // <-- Evita que el archivo no cargue por conflicto de clicks
                 multiple={true}
             />
-            
+
             {/* Aquí debes poner tu componente original <IconUpload /> */}
-            <div style={{ fontSize: '30px', marginBottom: '10px' }}>📁</div> 
+            <div style={{ fontSize: '30px', marginBottom: '10px' }}>📁</div>
 
             {/* Mensajes de Error y Éxito */}
             {error && (
-                <div 
-                    style={{ color: '#dc2626', backgroundColor: '#fee2e2', padding: '10px', borderRadius: '8px', width: '100%', fontSize: '14px', boxSizing: 'border-box', fontWeight: 500 }}
+                <div
+                    style={{
+                        color: '#dc2626',
+                        backgroundColor: '#fee2e2',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        width: '100%',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        fontWeight: 500,
+                    }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {error}
                 </div>
             )}
-            
+
             {success && (
-                <div 
-                    style={{ color: '#16a34a', backgroundColor: '#dcfce7', padding: '10px', borderRadius: '8px', width: '100%', fontSize: '14px', boxSizing: 'border-box', fontWeight: 500 }}
+                <div
+                    style={{
+                        color: '#16a34a',
+                        backgroundColor: '#dcfce7',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        width: '100%',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                        fontWeight: 500,
+                    }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {success}
                 </div>
             )}
 
-            <div 
-                style={{ display: 'flex', gap: '12px', width: '100%', boxSizing: 'border-box' }}
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '12px',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                }}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div style={{ flex: 1, textAlign: 'left' }}>
-                    <label htmlFor="cantidad" style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '600', color: '#374151' }}>Cantidad</label>
+                    <label
+                        htmlFor="cantidad"
+                        style={{
+                            display: 'block',
+                            marginBottom: '4px',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            color: '#374151',
+                        }}
+                    >
+                        Cantidad
+                    </label>
                     <input
                         id="cantidad"
                         type="number"
                         min="1"
                         value={cantidad}
-                        onChange={(e) => setCantidad(parseInt(e.target.value) || 1)}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }}
+                        onChange={(e) =>
+                            setCantidad(parseInt(e.target.value) || 1)
+                        }
+                        style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid #ddd',
+                            boxSizing: 'border-box',
+                        }}
                     />
                 </div>
                 <div style={{ flex: 2, textAlign: 'left' }}>
-                    <label htmlFor="articulo" style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: '600', color: '#374151' }}>Artículo</label>
+                    <label
+                        htmlFor="articulo"
+                        style={{
+                            display: 'block',
+                            marginBottom: '4px',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            color: '#374151',
+                        }}
+                    >
+                        Artículo
+                    </label>
                     <select
                         id="articulo"
                         value={articuloSeleccionado}
-                        onChange={(e) => setArticuloSeleccionado(e.target.value)}
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box', backgroundColor: '#fff' }}
+                        onChange={(e) =>
+                            setArticuloSeleccionado(e.target.value)
+                        }
+                        style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            border: '1px solid #ddd',
+                            boxSizing: 'border-box',
+                            backgroundColor: '#fff',
+                        }}
                     >
                         <option value="">Seleccione un artículo...</option>
                         {articulos.map((art) => (
-                            <option key={art.id_articulo} value={art.id_articulo}>
+                            <option
+                                key={art.id_articulo}
+                                value={art.id_articulo}
+                            >
                                 {art.nombre_articulo}
                             </option>
                         ))}
@@ -191,23 +260,54 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
             </div>
 
             <div style={{ width: '100%', maxWidth: '100%' }}>
-                <p style={{ margin: '0 0 6px 0', fontWeight: '600', color: '#374151' }}>
-                    {archivos.length > 0 ? 'Archivos seleccionados:' : 'Arrastra tus archivos aquí o haz clic para buscar'}
+                <p
+                    style={{
+                        margin: '0 0 6px 0',
+                        fontWeight: '600',
+                        color: '#374151',
+                    }}
+                >
+                    {archivos.length > 0
+                        ? 'Archivos seleccionados:'
+                        : 'Arrastra tus archivos aquí o haz clic para buscar'}
                 </p>
-                
+
                 {archivos.length > 0 ? (
-                    <div 
-                        style={{ width: '100%', maxHeight: '120px', overflowY: 'auto', padding: '2px 0' }}
+                    <div
+                        style={{
+                            width: '100%',
+                            maxHeight: '120px',
+                            overflowY: 'auto',
+                            padding: '2px 0',
+                        }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         {archivos.map((file, idx) => (
-                            <p key={idx} style={{ margin: '4px 0', fontSize: '13px', color: '#6b7280', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-                                📄 <strong>{file.name}</strong> ({(file.size / 1024).toFixed(1)} KB)
+                            <p
+                                key={idx}
+                                style={{
+                                    margin: '4px 0',
+                                    fontSize: '13px',
+                                    color: '#6b7280',
+                                    overflowWrap: 'anywhere',
+                                    wordBreak: 'break-word',
+                                }}
+                            >
+                                📄 <strong>{file.name}</strong> (
+                                {(file.size / 1024).toFixed(1)} KB)
                             </p>
                         ))}
                     </div>
                 ) : (
-                    <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+                    <p
+                        style={{
+                            margin: 0,
+                            fontSize: '14px',
+                            color: '#6b7280',
+                            overflowWrap: 'anywhere',
+                            wordBreak: 'break-word',
+                        }}
+                    >
                         Soporta cualquier formato de impresión
                     </p>
                 )}
@@ -218,8 +318,8 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
                     type="button"
                     disabled={loading}
                     onClick={(e) => {
-                        e.stopPropagation(); 
-                        handleSubmit(e);     
+                        e.stopPropagation();
+                        handleSubmit(e);
                     }}
                     style={{
                         marginTop: '10px',

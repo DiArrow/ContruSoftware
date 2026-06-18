@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { apiGet, apiPost } from '../api/client';
+import { apiGet, apiPost, apiPostFormData } from '../api/client';
 
 function mockHeaders(contentType) {
     return {
@@ -96,14 +96,14 @@ describe('client.js', () => {
 describe('apiPostFormData', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
-        global.fetch = vi.fn();
+        vi.stubGlobal('fetch', vi.fn());
         localStorage.clear();
     });
 
     it('debería enviar un FormData mediante POST sin establecer Content-Type manual para que fetch asigne el boundary', async () => {
         localStorage.setItem('token', 'fake-jwt-token');
-        
-        global.fetch.mockResolvedValueOnce({
+
+        fetch.mockResolvedValueOnce({
             ok: true,
             headers: {
                 get: () => 'application/json',
@@ -116,14 +116,17 @@ describe('apiPostFormData', () => {
 
         const result = await apiPostFormData('impresiones', formData);
 
-        expect(global.fetch).toHaveBeenCalledWith('/api/impresiones', expect.objectContaining({
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Authorization': 'Bearer fake-jwt-token'
-                // No debe contener 'Content-Type'
-            }
-        }));
+        expect(fetch).toHaveBeenCalledWith(
+            '/api/impresiones',
+            expect.objectContaining({
+                method: 'POST',
+                body: formData,
+                headers: {
+                    Authorization: 'Bearer fake-jwt-token',
+                    // No debe contener 'Content-Type'
+                },
+            })
+        );
         expect(result).toEqual({ success: true });
     });
 });

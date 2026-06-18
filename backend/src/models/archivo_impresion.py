@@ -14,5 +14,5 @@ class ArchivoImpresion(Base):
     )
 
     nombre_archivo = Column(String(255), nullable=False)
-    contenido = Column(LargeBinary, nullable=False)
+    contenido = Column("contenido_archivo", LargeBinary, nullable=False)
     impresion = relationship("Impresion", back_populates="archivos")

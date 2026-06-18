@@ -13,28 +13,29 @@ from models.impresion import Impresion
 
 router = APIRouter()
 
+
 # Función pura para validar la extensión aislada de la BD
 def validar_extension(filename: str) -> bool:
     if not filename or "." not in filename:
         return False
-    ext = filename.rsplit('.', 1)[-1].lower()
-    return ext in ['stl', 'obj', 'gcode']
+    ext = filename.rsplit(".", 1)[-1].lower()
+    return ext in ["stl", "obj", "gcode"]
+
 
 @router.post("/impresiones", status_code=status.HTTP_201_CREATED)
 async def crear_impresion(
     cantidad: int = Form(...),
     ref_articulo: str = Form(...),
     archivos: List[UploadFile] = File(...),
-
     # Protegido por rol. Extrae el JWT automáticamente y verifica "SOL" o "EST"
     current_user: dict = Depends(requiere_rol(["SOL", "EST"])),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     # Validación: Sin archivos
     if not archivos or len(archivos) == 0:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Se requiere al menos un archivo adjunto."
+            detail="Se requiere al menos un archivo adjunto.",
         )
 
     # Validación: Extensiones permitidas
@@ -42,7 +43,7 @@ async def crear_impresion(
         if not validar_extension(archivo.filename):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Extensión no permitida en el archivo: {archivo.filename}"
+                detail=f"Extensión no permitida en el archivo: {archivo.filename}",
             )
 
     try:
@@ -57,7 +58,7 @@ async def crear_impresion(
             ref_articulo=ref_articulo,
             cantidad=cantidad,
             fecha_impresion=datetime.now(),
-            estado_impresion="Pendiente"
+            estado_impresion="Pendiente",
         )
         db.add(nueva_impresion)
 
@@ -71,17 +72,16 @@ async def crear_impresion(
                 id_archivo=str(uuid.uuid4()),
                 ref_impresion=id_impresion,
                 nombre_archivo=archivo.filename,
-                contenido=datos_archivo  # Aquí pasamos los bytes leídos
+                contenido=datos_archivo,  # Aquí pasamos los bytes leídos
             )
             db.add(nuevo_archivo)
 
-        # 3. Transacción principal: Guarda ambas tablas. Si algo falló antes de esto, no guarda nada.
         db.commit()
 
         return {
             "id_impresion": id_impresion,
             "estado": nueva_impresion.estado_impresion,
-            "archivos_subidos": len(archivos)
+            "archivos_subidos": len(archivos),
         }
 
     except Exception as e:
@@ -89,5 +89,5 @@ async def crear_impresion(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error de BD: {str(e)}"
+            detail=f"Error de BD: {str(e)}",
         )
