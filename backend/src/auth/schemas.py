@@ -27,6 +27,16 @@ class TokenData(BaseModel):
     exp: datetime
 
 
+class UsuarioCreate(BaseModel):
+    """Payload for creating a new user."""
+
+    nombre: str
+    apellido: str
+    email: EmailStr
+    password: str
+    rol: str
+
+
 class UsuarioResponse(BaseModel):
     """Payload returned for authenticated user profile."""
 
@@ -35,3 +45,6 @@ class UsuarioResponse(BaseModel):
     apellido: str
     email: str
     rol: str
+
+    class Config:
+        from_attributes = True
