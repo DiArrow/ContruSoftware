@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from routers.impresiones import validar_extension
 
 # ==========================================
@@ -29,9 +30,10 @@ def test_validar_extension_case_insensitive():
 # Nota: Ajusta las importaciones de TestClient y app según tu proyecto
 
 from fastapi.testclient import TestClient
-from main import app 
-from database import get_db
+
 from auth.dependencies import requiere_rol
+from database import get_db
+from main import app
 
 client = TestClient(app)
 
@@ -49,21 +51,21 @@ def mock_db():
 
 def test_happy_path_un_archivo(mock_db):
     app.dependency_overrides[get_db] = lambda: mock_db
-    
+
     file_content = b"fake-bytea-content-for-stl"
-    
+
     response = client.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("test.stl", file_content, "application/octet-stream"))]
     )
-    
+
     assert response.status_code == 201
     assert response.json()["estado"] == "Pendiente"
     # Verificamos que se llamó a db.add dos veces (Impresion y ArchivoImpresion)
     assert mock_db.add.call_count == 2
     mock_db.commit.assert_called_once()
-    
+
     # Test del Binario: Verificamos que el archivo se guardó byte a byte correctamente
     args_archivo = mock_db.add.call_args_list[1][0][0]
     assert args_archivo.contenido == file_content
@@ -81,7 +83,7 @@ def test_archivos_multiples(mock_db):
     assert response.status_code == 201
     assert response.json()["archivos_subidos"] == 2
     # 1 modelo Impresion + 2 modelos ArchivoImpresion = 3 llamadas
-    assert mock_db.add.call_count == 3 
+    assert mock_db.add.call_count == 3
 
 def test_extension_no_permitida(mock_db):
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -96,16 +98,16 @@ def test_extension_no_permitida(mock_db):
 
 def test_rollback_falla_guardado_archivos(mock_db):
     app.dependency_overrides[get_db] = lambda: mock_db
-    
+
     # Simulamos que al intentar guardar el archivo en la base de datos se cae el servidor
     mock_db.add.side_effect = [None, Exception("Error simulado de base de datos")]
-    
+
     response = client.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("test.stl", b"content", "application/octet-stream"))]
     )
-    
+
     assert response.status_code == 500
     # Verificamos que el ROLLBACK actuó y eliminó el registro de Impresión que iba a guardar
     mock_db.rollback.assert_called_once()

@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 # Importamos tu dependencia de roles
 from auth.dependencies import requiere_rol
 from database import get_db
-from models.impresion import Impresion
 from models.archivo_impresion import ArchivoImpresion
+from models.impresion import Impresion
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ async def crear_impresion(
     cantidad: int = Form(...),
     ref_articulo: str = Form(...),
     archivos: List[UploadFile] = File(...),
-    
+
     # Protegido por rol. Extrae el JWT automáticamente y verifica "SOL" o "EST"
     current_user: dict = Depends(requiere_rol(["SOL", "EST"])),
     db: Session = Depends(get_db)
@@ -33,7 +33,7 @@ async def crear_impresion(
     # Validación: Sin archivos
     if not archivos or len(archivos) == 0:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Se requiere al menos un archivo adjunto."
         )
 
@@ -41,14 +41,14 @@ async def crear_impresion(
     for archivo in archivos:
         if not validar_extension(archivo.filename):
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, 
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=f"Extensión no permitida en el archivo: {archivo.filename}"
             )
 
     try:
         id_impresion = str(uuid.uuid4())
         # El ID de usuario se extrae del JWT de forma segura
-        ref_usuario = current_user["sub"] 
+        ref_usuario = current_user["sub"]
 
         # 1. Crear el registro en 'impresion' (estado inicial "Pendiente")
         nueva_impresion = Impresion(
@@ -65,7 +65,7 @@ async def crear_impresion(
         for archivo in archivos:
             # 2.1 Leemos los bytes y los guardamos en la variable 'datos_archivo'
             datos_archivo = await archivo.read()
-            
+
             # 2.2 Creamos el registro usando la columna 'contenido' de tu base de datos
             nuevo_archivo = ArchivoImpresion(
                 id_archivo=str(uuid.uuid4()),
