@@ -34,7 +34,7 @@ def test_usuario_create_schema_invalid_email():
         )
 
 
-# fail
+@pytest.mark.integration
 def test_admin_crear_estudiante_happy_path(
     client: TestClient, db_session, admin_headers
 ):
@@ -64,8 +64,7 @@ def test_admin_crear_estudiante_happy_path(
         mock_hash.assert_called_once_with("estudiantepassword")
 
 
-# fail
-def test_crear_usuario_403_rol_no_autorizado(client: TestClient, estudiante_headers):
+def test_crear_usuario_403_rol_no_autorizado(client_unit: TestClient, estudiante_headers):
     """403: Responce if don't have the required role (ex. EST, PRO)."""
     payload = {
         "nombre": "Test",
@@ -74,19 +73,19 @@ def test_crear_usuario_403_rol_no_autorizado(client: TestClient, estudiante_head
         "password": "password123",
         "rol": "EST",
     }
-    response = client.post(
+    response = client_unit.post(
         "/api/admin/usuarios", json=payload, headers=estudiante_headers
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-# fail
+@pytest.mark.integration
 def test_crear_usuario_409_email_duplicado(
     client: TestClient, db_session, admin_headers
 ):
     """409: Response if the email already exists in db."""
     usuario_existente = Usuario(
-        id_usuario=99999999,
+        id_usuario="99999999-9999-9999-9999-999999999999",
         nombre="Existente",
         apellido="User",
         email="duplicado@test.com",
@@ -109,7 +108,7 @@ def test_crear_usuario_409_email_duplicado(
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-def test_crear_usuario_401_sin_token(client: TestClient):
+def test_crear_usuario_401_sin_token(client_unit: TestClient):
     """401: Response if the request dosen't contain credentials/token."""
     payload = {
         "nombre": "Anon",
@@ -118,5 +117,5 @@ def test_crear_usuario_401_sin_token(client: TestClient):
         "password": "password123",
         "rol": "EST",
     }
-    response = client.post("/api/admin/usuarios", json=payload)
+    response = client_unit.post("/api/admin/usuarios", json=payload)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

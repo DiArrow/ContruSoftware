@@ -17,6 +17,8 @@ _env_path = _project_root / ".env"
 if _env_path.exists():
     load_dotenv(_env_path)
 
+from unittest.mock import MagicMock  # noqa: E402
+
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
@@ -105,6 +107,21 @@ def client(db_session) -> Generator[TestClient, None, None]:
         app.dependency_overrides.pop(get_db, None)
     except ImportError:
         pass
+
+
+@pytest.fixture(scope="function")
+def client_unit() -> Generator[TestClient, None, None]:
+    """Yield a FastAPI TestClient that does NOT require a live database.
+
+    Overrides ``get_db`` with a mock session so tests that only check
+    auth/authorization (401, 403) can run without PostgreSQL.
+    """
+    from database import get_db
+
+    app.dependency_overrides[get_db] = lambda: MagicMock(spec=Session)
+    with TestClient(app) as test_client:
+        yield test_client
+    app.dependency_overrides.pop(get_db, None)
 
 
 def _create_token_with_role(role: str) -> str:
