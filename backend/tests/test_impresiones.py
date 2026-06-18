@@ -2,11 +2,11 @@ from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
-from models.impresiones import validar_extension
 
 from auth.dependencies import get_current_user
 from database import get_db
 from main import app
+from models.impresiones import validar_extension
 
 # ==========================================
 # TESTS UNITARIOS: FUNCIÓN PURA
