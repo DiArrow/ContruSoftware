@@ -10,5 +10,11 @@ build/
 .parcel-cache/
 .next/
 
+# Coverage
+.coverage
+coverage/
+htmlcov/
+.nyc_output/
+
 .DS_Store
 Thumbs.db
