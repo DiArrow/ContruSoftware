@@ -561,7 +561,6 @@ const styles = {
         border: '1px solid rgba(0, 0, 0, 0.08)',
         marginTop: '70px',
         marginBottom: '30px',
-        paddingBottom: '30px',
     },
     LowerPanel: {
         ...baseCard,

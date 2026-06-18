@@ -55,7 +55,10 @@ def mock_db():
 
 @pytest.fixture(autouse=True)
 def _override_auth():
-    app.dependency_overrides[get_current_user] = lambda: {"sub": "user-123", "role": "EST"}
+    app.dependency_overrides[get_current_user] = lambda: {
+        "sub": "user-123",
+        "role": "EST",
+    }
     yield
     app.dependency_overrides.pop(get_current_user, None)
 

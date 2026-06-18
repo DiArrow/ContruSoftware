@@ -91,6 +91,35 @@ describe('client.js', () => {
             body: JSON.stringify({ email: 'a@b.cl', password: 'pw' }),
         });
     });
+
+    // Agregar al final de frontend/src/__tests__/client.test.js, dentro del describe block
+
+    it('apiPostFormData envía FormData sin cabecera Content-Type', async () => {
+        localStorage.setItem('token', 'tok456');
+        fetch.mockResolvedValue({
+            ok: true,
+            headers: mockHeaders('application/json'),
+            json: async () => ({ success: true }),
+        });
+
+        const formData = new FormData();
+        formData.append('archivo', new Blob(['test'], { type: 'text/plain' }));
+
+        await apiPostFormData('impresiones', formData);
+
+        // Comprobamos la llamada a fetch
+        const fetchOptions = fetch.mock.calls[0][1];
+
+        // 1. Que el body sea el objeto FormData
+        expect(fetchOptions.body).toBe(formData);
+
+        // 2. Que tenga la autorización
+        expect(fetchOptions.headers['Authorization']).toBe('Bearer tok456');
+
+        // 3. EL CRITERIO DE ACEPTACIÓN: Que no exista Content-Type
+        expect(fetchOptions.headers['Content-Type']).toBeUndefined();
+        expect(fetchOptions.headers['content-type']).toBeUndefined();
+    });
 });
 
 describe('apiPostFormData', () => {

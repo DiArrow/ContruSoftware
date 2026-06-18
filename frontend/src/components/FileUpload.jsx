@@ -38,7 +38,7 @@ export default function FileUpload({ articulos = [], onFileUploaded }) {
             setArchivos(Array.from(e.target.files));
         }
         // Esto es clave: resetea el valor para que puedas volver a seleccionar el mismo archivo si te equivocas
-        e.target.value = null;
+        e.target.value = '';
     };
 
     const onButtonClick = () => {
