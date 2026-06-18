@@ -15,7 +15,9 @@ describe('FileUpload Component', () => {
 
         // Verificar textos
         expect(
-            screen.getByText('Arrastra tus archivos aquí o haz clic para buscar')
+            screen.getByText(
+                'Arrastra tus archivos aquí o haz clic para buscar'
+            )
         ).toBeInTheDocument();
         expect(
             screen.getByText('Soporta cualquier formato de impresión')
