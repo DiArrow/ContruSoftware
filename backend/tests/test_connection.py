@@ -5,10 +5,13 @@ Covers:
 - Unreachable database → 503 + {"status": "error"}
 """
 
+import pytest
 from sqlalchemy.exc import OperationalError
 
 from database import get_db
 from main import app
+
+pytestmark = pytest.mark.integration
 
 
 def test_health_returns_ok(client):

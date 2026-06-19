@@ -10,7 +10,7 @@ call npx prettier --write .
 cd ..
 
 echo === [2/4] Creando Entorno Virtual Temporal de Python ===
-python -m venv test_linters\.temp_venv
+py -m venv test_linters\.temp_venv
 call test_linters\.temp_venv\Scripts\activate.bat
 pip install --quiet ruff sqlfluff yamllint
 

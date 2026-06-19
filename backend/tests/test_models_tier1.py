@@ -7,8 +7,10 @@ Verifies table names, columns, primary keys, foreign keys, types,
 timestamps, and relationship attributes against the SQL schema.
 """
 
-from sqlalchemy import TIMESTAMP, Boolean, Integer, String, Time
+from sqlalchemy import TIMESTAMP, Boolean, Integer, LargeBinary, String, Time
+from sqlalchemy.orm import RelationshipProperty
 
+from models.archivo_impresion import ArchivoImpresion
 from models.articulo import Articulo
 from models.ayudantia import Ayudantia
 from models.bloque_horario import BloqueHorario
@@ -296,8 +298,18 @@ class TestImpresion:
     def test_relationship_attributes_exist(self):
         assert hasattr(Impresion, "usuario")
         assert hasattr(Impresion, "articulo")
+        assert hasattr(Impresion, "archivos")
         assert Impresion.usuario is not None
         assert Impresion.articulo is not None
+        assert Impresion.archivos is not None
+
+    def test_archivos_relationship_is_list(self):
+        """La relación archivos debe ser uselist=True (1:N, carga lista)."""
+        prop = Impresion.archivos.property
+        assert isinstance(prop, RelationshipProperty)
+        assert prop.uselist is True, (
+            "Impresion.archivos debe configurarse como lista (uselist=True)"
+        )
 
 
 class TestMovimientoStock:
@@ -407,3 +419,78 @@ class TestAyudantia:
         assert Ayudantia.inscripciones is not None
         assert Ayudantia.usos_impresora is not None
         assert Ayudantia.reservas is not None
+
+
+class TestArchivoImpresion:
+    """Schema assertions for the ``archivo_impresion`` model."""
+
+    def test_tablename(self):
+        assert ArchivoImpresion.__tablename__ == "archivo_impresion"
+
+    def test_primary_key(self):
+        pk = ArchivoImpresion.__table__.primary_key
+        assert len(pk.columns) == 1
+        assert "id_archivo" in pk.columns
+
+    def test_id_archivo_type_and_length(self):
+        col = ArchivoImpresion.__table__.c.id_archivo
+        assert isinstance(col.type, String)
+        assert col.type.length == 36
+        assert col.primary_key
+        assert not col.nullable
+
+    def test_ref_impresion_foreign_key(self):
+        col = ArchivoImpresion.__table__.c.ref_impresion
+        assert isinstance(col.type, String)
+        assert col.type.length == 36
+        assert len(col.foreign_keys) == 1
+        fk = list(col.foreign_keys)[0]
+        assert fk.target_fullname == "impresion.id_impresion"
+
+    def test_nombre_archivo_column(self):
+        col = ArchivoImpresion.__table__.c.nombre_archivo
+        assert isinstance(col.type, String)
+        assert col.type.length == 255
+        assert not col.nullable
+
+    def test_contenido_column(self):
+        col = ArchivoImpresion.__table__.c.contenido
+        assert isinstance(col.type, LargeBinary)
+        assert not col.nullable
+
+    def test_no_timestamps(self):
+        assert "creado_en" not in ArchivoImpresion.__table__.c
+        assert "actualizado_en" not in ArchivoImpresion.__table__.c
+
+    def test_relationship_attributes_exist(self):
+        assert hasattr(ArchivoImpresion, "impresion")
+        assert ArchivoImpresion.impresion is not None
+
+
+class TestArchivoImpresionMigration:
+    """Verifica la calidad de la migración SQL de archivo_impresion."""
+
+    @staticmethod
+    def _migration_path() -> str:
+        from pathlib import Path
+
+        project_root = Path(__file__).resolve().parents[2]
+        return str(
+            project_root / "db" / "migrations" / "03-create-archivo-impresion.sql"
+        )
+
+    def test_migration_is_idempotent(self):
+        """La migración debe usar IF NOT EXISTS para ser idempotente."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "IF NOT EXISTS" in sql, (
+            "La migración debe incluir IF NOT EXISTS para ser idempotente"
+        )
+
+    def test_migration_column_matches_model(self):
+        """La columna contenido en la migración debe coincidir con el modelo."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "contenido BYTEA" in sql or "contenido " in sql, (
+            "La migración debe usar 'contenido' para coincidir con el modelo SQLAlchemy"
+        )

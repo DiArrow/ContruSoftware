@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
 
     const fetchMe = useCallback(async () => {
         try {
-            const user = await apiGet('auth/me');
+            const user = await apiGet('impresiones/auth/me');
             setCurrentUser(user);
         } catch {
             logout();
@@ -53,7 +53,10 @@ export function AuthProvider({ children }) {
     }, [fetchMe]);
 
     const login = async (email, password) => {
-        const data = await apiPost('auth/token', { email, password });
+        const data = await apiPost('impresiones/auth/token', {
+            email,
+            password,
+        });
         localStorage.setItem('token', data.access_token);
         await fetchMe();
         return data;

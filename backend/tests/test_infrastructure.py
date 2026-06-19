@@ -1,6 +1,9 @@
 """Infrastructure tests verifying test fixtures work correctly."""
 
+import pytest
 from sqlalchemy import inspect, text
+
+pytestmark = pytest.mark.integration
 
 
 def test_db_session_can_execute_query(db_session):
@@ -24,7 +27,7 @@ def test_test_engine_has_expected_tables(test_engine):
     assert "usuario" in tables
     assert "semestre" in tables
     assert "curso" in tables
-    assert len(tables) == 14
+    assert len(tables) == 15
 
 
 def test_client_can_make_requests(client):

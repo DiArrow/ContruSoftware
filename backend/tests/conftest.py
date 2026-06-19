@@ -6,6 +6,7 @@ to ensure test isolation without requiring a separate test database.
 
 import os
 from collections.abc import Generator
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -15,6 +16,8 @@ _project_root = Path(__file__).resolve().parents[2]
 _env_path = _project_root / ".env"
 if _env_path.exists():
     load_dotenv(_env_path)
+
+from unittest.mock import MagicMock  # noqa: E402
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -104,3 +107,48 @@ def client(db_session) -> Generator[TestClient, None, None]:
         app.dependency_overrides.pop(get_db, None)
     except ImportError:
         pass
+
+
+@pytest.fixture(scope="function")
+def client_unit() -> Generator[TestClient, None, None]:
+    """Yield a FastAPI TestClient that does NOT require a live database.
+
+    Overrides ``get_db`` with a mock session so tests that only check
+    auth/authorization (401, 403) can run without PostgreSQL.
+    """
+    from database import get_db
+
+    app.dependency_overrides[get_db] = lambda: MagicMock(spec=Session)
+    with TestClient(app) as test_client:
+        yield test_client
+    app.dependency_overrides.pop(get_db, None)
+
+
+def _create_token_with_role(role: str) -> str:
+    """Create a valid JWT token with the specified role.
+
+    Args:
+        role: The role to include in the token (e.g., 'admin', 'estudiante').
+
+    Returns:
+        A valid JWT token string.
+    """
+    from auth.jwt_handler import crear_token_jwt
+
+    data = {"sub": "test_user@test.com", "role": role}
+    expires_delta = timedelta(hours=24)
+    return crear_token_jwt(data, expires_delta)
+
+
+@pytest.fixture
+def admin_headers() -> dict:
+    """Return headers with a valid admin token."""
+    token = _create_token_with_role("ADM")
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def estudiante_headers() -> dict:
+    """Return headers with a valid estudiante token."""
+    token = _create_token_with_role("estudiante")
+    return {"Authorization": f"Bearer {token}"}

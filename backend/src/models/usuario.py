@@ -1,5 +1,7 @@
 """SQLAlchemy model for the ``usuario`` table."""
 
+import uuid
+
 from sqlalchemy import TIMESTAMP, Boolean, Column, String, func, text
 from sqlalchemy.orm import relationship, validates
 
@@ -13,7 +15,7 @@ class Usuario(Base):
 
     __tablename__ = "usuario"
 
-    id_usuario = Column(String(36), primary_key=True)
+    id_usuario = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     nombre = Column(String(255))
     apellido = Column(String(255))
     correo = Column(String(255))

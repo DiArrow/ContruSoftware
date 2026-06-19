@@ -96,11 +96,10 @@ describe('App with auth', () => {
 
         const items = [
             'Dashboard',
-            'Students',
-            'Inventory',
-            'Reports',
-            'Courses',
-            'Settings',
+            'Estudiantes',
+            'Inventario',
+            'Impresiones',
+            'Ajustes',
         ];
         items.forEach((label) => {
             const button = screen.getByTitle(label);
