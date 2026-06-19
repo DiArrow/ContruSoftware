@@ -12,7 +12,7 @@
 # Enlace página en producción
 
 
-URL: [Proyecto-Construcción-De-Software](proy-const.cfuentes.dev)
+URL: proy-const.cfuentes.dev
 
 
 ---
