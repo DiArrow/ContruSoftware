@@ -157,12 +157,12 @@ def mock_auth_est():
     app.dependency_overrides.pop(get_current_user, None)
 
 
-def test_happy_path_un_archivo(mock_db, client, mock_auth_est):
+def test_happy_path_un_archivo(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
 
     file_content = b"fake-bytea-content-for-stl"
 
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("test.stl", file_content, "application/octet-stream"))],
@@ -177,9 +177,9 @@ def test_happy_path_un_archivo(mock_db, client, mock_auth_est):
     assert args_archivo.contenido == file_content
 
 
-def test_archivos_multiples(mock_db, client, mock_auth_est):
+def test_archivos_multiples(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 2, "ref_articulo": "art-002"},
         files=[
@@ -192,9 +192,9 @@ def test_archivos_multiples(mock_db, client, mock_auth_est):
     assert mock_db.add.call_count == 3
 
 
-def test_extension_no_permitida(mock_db, client, mock_auth_est):
+def test_extension_no_permitida(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("foto.png", b"content", "image/png"))],
@@ -203,12 +203,12 @@ def test_extension_no_permitida(mock_db, client, mock_auth_est):
     mock_db.add.assert_not_called()
 
 
-def test_rollback_falla_guardado_archivos(mock_db, client, mock_auth_est):
+def test_rollback_falla_guardado_archivos(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
 
     mock_db.add.side_effect = [None, Exception("Error simulado de base de datos")]
 
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("test.stl", b"content", "application/octet-stream"))],
@@ -266,31 +266,31 @@ def test_crear_impresion_extension_no_permitida(db_session, client):
     assert "Extensión de archivo no permitida" in response.json()["detail"]
 
 
-def test_crear_impresion_sin_archivos(client):
+def test_crear_impresion_sin_archivos(client_unit):
     headers = token_headers("EST")
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client.post("/api/impresiones/upload", headers=headers, data=data)
+    response = client_unit.post("/api/impresiones/upload", headers=headers, data=data)
     assert response.status_code == 422
 
 
-def test_crear_impresiones_sin_token(client):
+def test_crear_impresiones_sin_token(client_unit):
     archivos = [
         ("archivos", ("modelo1.stl", b"contenido1", "application/octet-stream"))
     ]
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client.post("/api/impresiones/upload", data=data, files=archivos)
+    response = client_unit.post("/api/impresiones/upload", data=data, files=archivos)
     assert response.status_code == 401
 
 
 @pytest.mark.parametrize("rol_invalido", ["ADM", "AYU", "SOL"])
-def test_crear_impresion_roles_no_permitidos(rol_invalido, client):
+def test_crear_impresion_roles_no_permitidos(rol_invalido, client_unit):
     headers = token_headers(rol_invalido)
     archivos = [("archivos", ("test.stl", b"data", "application/octet-stream"))]
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client.post(
+    response = client_unit.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 403
@@ -317,9 +317,9 @@ def test_crear_impresion_coincidencia_byte_a_byte(db_session, client, seed_est):
 # ==========================================
 
 
-def test_impresiones_sin_archivos(mock_db, client, mock_auth_est):
+def test_impresiones_sin_archivos(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
     )
@@ -327,9 +327,9 @@ def test_impresiones_sin_archivos(mock_db, client, mock_auth_est):
     mock_db.add.assert_not_called()
 
 
-def test_impresiones_sin_token(mock_db, client):
+def test_impresiones_sin_token(mock_db, client_unit):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("test.stl", b"data", "application/octet-stream"))],
@@ -338,14 +338,14 @@ def test_impresiones_sin_token(mock_db, client):
 
 
 @pytest.mark.parametrize("rol_invalido", ["PRO", "ADM", "AYU"])
-def test_impresiones_rol_no_permitido(rol_invalido, mock_db, client):
+def test_impresiones_rol_no_permitido(rol_invalido, mock_db, client_unit):
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: {
         "sub": "user-123",
         "role": rol_invalido,
     }
     try:
-        response = client.post(
+        response = client_unit.post(
             "/impresiones",
             data={"cantidad": 1, "ref_articulo": "art-001"},
             files=[("archivos", ("test.stl", b"data", "application/octet-stream"))],
@@ -355,9 +355,9 @@ def test_impresiones_rol_no_permitido(rol_invalido, mock_db, client):
         app.dependency_overrides.pop(get_current_user, None)
 
 
-def test_impresiones_extension_no_permitida(mock_db, client, mock_auth_est):
+def test_impresiones_extension_no_permitida(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("documento.pdf", b"content", "application/pdf"))],
@@ -366,9 +366,9 @@ def test_impresiones_extension_no_permitida(mock_db, client, mock_auth_est):
     mock_db.add.assert_not_called()
 
 
-def test_impresiones_archivos_mixtos(mock_db, client, mock_auth_est):
+def test_impresiones_archivos_mixtos(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[
@@ -380,9 +380,9 @@ def test_impresiones_archivos_mixtos(mock_db, client, mock_auth_est):
     mock_db.add.assert_not_called()
 
 
-def test_impresiones_nombre_con_espacios(mock_db, client, mock_auth_est):
+def test_impresiones_nombre_con_espacios(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[
@@ -392,9 +392,9 @@ def test_impresiones_nombre_con_espacios(mock_db, client, mock_auth_est):
     assert response.status_code == 201
 
 
-def test_impresiones_archivo_vacio(mock_db, client, mock_auth_est):
+def test_impresiones_archivo_vacio(mock_db, client_unit, mock_auth_est):
     app.dependency_overrides[get_db] = lambda: mock_db
-    response = client.post(
+    response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
         files=[("archivos", ("vacio.stl", b"", "application/octet-stream"))],
