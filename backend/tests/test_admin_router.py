@@ -64,7 +64,9 @@ def test_admin_crear_estudiante_happy_path(
         mock_hash.assert_called_once_with("estudiantepassword")
 
 
-def test_crear_usuario_403_rol_no_autorizado(client_unit: TestClient, estudiante_headers):
+def test_crear_usuario_403_rol_no_autorizado(
+    client_unit: TestClient, estudiante_headers
+):
     """403: Responce if don't have the required role (ex. EST, PRO)."""
     payload = {
         "nombre": "Test",

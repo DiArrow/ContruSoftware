@@ -454,7 +454,7 @@ class TestArchivoImpresion:
         assert not col.nullable
 
     def test_contenido_column(self):
-        col = ArchivoImpresion.__table__.c.contenido_archivo
+        col = ArchivoImpresion.__table__.c.contenido
         assert isinstance(col.type, LargeBinary)
         assert not col.nullable
 
@@ -488,10 +488,9 @@ class TestArchivoImpresionMigration:
         )
 
     def test_migration_column_matches_model(self):
-        """La columna contenido_archivo en la migración debe coincidir con el modelo."""
+        """La columna contenido en la migración debe coincidir con el modelo."""
         with open(self._migration_path()) as f:
             sql = f.read()
-        assert "contenido_archivo BYTEA" in sql or "contenido_archivo " in sql, (
-            "La migración debe usar 'contenido_archivo' "
-            "para coincidir con el modelo SQLAlchemy"
+        assert "contenido BYTEA" in sql or "contenido " in sql, (
+            "La migración debe usar 'contenido' para coincidir con el modelo SQLAlchemy"
         )
