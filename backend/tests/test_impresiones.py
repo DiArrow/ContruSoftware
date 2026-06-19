@@ -22,10 +22,10 @@ USER_IDS = {
 }
 
 
-def token_headers(rol: str) -> dict:
-    user_id = USER_IDS.get(rol, "test_user@test.com")
+def token_headers(rol: str, user_id: str | None = None) -> dict:
+    sub = user_id if user_id else USER_IDS.get(rol, "test_user@test.com")
     token = crear_token_jwt(
-        data={"sub": user_id, "role": rol},
+        data={"sub": sub, "role": rol},
         expires_delta=timedelta(hours=24),
     )
     return {"Authorization": f"Bearer {token}"}
@@ -79,6 +79,72 @@ def test_validar_extension(filename, expected):
 def mock_db():
     session = MagicMock()
     yield session
+
+
+@pytest.fixture
+def seed_est(db_session):
+    import uuid
+
+    from auth.hasher import hash_password
+    from models.articulo import Articulo
+    from models.usuario import Usuario
+
+    user_id = str(uuid.uuid4())
+    art_id = str(uuid.uuid4())[:8]
+
+    usuario = Usuario(
+        id_usuario=user_id,
+        nombre="Test",
+        apellido="Estudiante",
+        email=f"est-{user_id[:8]}@test.com",
+        rol="EST",
+        estado=True,
+        password_hash=hash_password("test123"),
+    )
+    db_session.add(usuario)
+    articulo = Articulo(
+        id_articulo=art_id,
+        nombre_articulo="Test",
+        stock_actual=10,
+        stock_minimo=1,
+        alerta_stock=False,
+    )
+    db_session.add(articulo)
+    db_session.flush()
+    yield user_id, art_id
+
+
+@pytest.fixture
+def seed_pro(db_session):
+    import uuid
+
+    from auth.hasher import hash_password
+    from models.articulo import Articulo
+    from models.usuario import Usuario
+
+    user_id = str(uuid.uuid4())
+    art_id = str(uuid.uuid4())[:8]
+
+    usuario = Usuario(
+        id_usuario=user_id,
+        nombre="Test",
+        apellido="Profe",
+        email=f"pro-{user_id[:8]}@test.com",
+        rol="PRO",
+        estado=True,
+        password_hash=hash_password("test123"),
+    )
+    db_session.add(usuario)
+    articulo = Articulo(
+        id_articulo=art_id,
+        nombre_articulo="Test",
+        stock_actual=10,
+        stock_minimo=1,
+        alerta_stock=False,
+    )
+    db_session.add(articulo)
+    db_session.flush()
+    yield user_id, art_id
 
 
 @pytest.fixture
@@ -154,12 +220,13 @@ def test_rollback_falla_guardado_archivos(mock_db, client, mock_auth_est):
 
 
 @pytest.mark.integration
-def test_crear_impresion_un_archivo(db_session, client):
-    headers = token_headers("EST")
+def test_crear_impresion_un_archivo(db_session, client, seed_est):
+    user_id, art_id = seed_est
+    headers = token_headers("EST", user_id=user_id)
     archivos = [
         ("archivos", ("test.stl", b"contenido_binario_stl", "application/octet-stream"))
     ]
-    data = {"cantidad": 2, "ref_articulo": "art-001"}
+    data = {"cantidad": 2, "ref_articulo": art_id}
 
     response = client.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
@@ -172,13 +239,14 @@ def test_crear_impresion_un_archivo(db_session, client):
 
 
 @pytest.mark.integration
-def test_crear_impresion_multiples_archivos(db_session, client):
-    headers = token_headers("EST")
+def test_crear_impresion_multiples_archivos(db_session, client, seed_est):
+    user_id, art_id = seed_est
+    headers = token_headers("EST", user_id=user_id)
     archivos = [
         ("archivos", ("modelo1.stl", b"contenido1", "application/octet-stream")),
         ("archivos", ("modelo2.obj", b"contenido2", "application/octet-stream")),
     ]
-    data = {"cantidad": 1, "ref_articulo": "art-001"}
+    data = {"cantidad": 1, "ref_articulo": art_id}
     response = client.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
     )
@@ -229,13 +297,14 @@ def test_crear_impresion_roles_no_permitidos(rol_invalido, client):
 
 
 @pytest.mark.integration
-def test_crear_impresion_coincidencia_byte_a_byte(db_session, client):
-    headers = token_headers("EST")
+def test_crear_impresion_coincidencia_byte_a_byte(db_session, client, seed_est):
+    user_id, art_id = seed_est
+    headers = token_headers("EST", user_id=user_id)
     contenido_original = b"\x01\x02\x03\x04_string_complejo_STL"
     archivos = [
         ("archivos", ("test.gcode", contenido_original, "application/octet-stream"))
     ]
-    data = {"cantidad": 1, "ref_articulo": "art-001"}
+    data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
@@ -353,10 +422,11 @@ def test_api_impresiones_rol_no_permitido(rol_invalido, db_session, client):
 
 
 @pytest.mark.integration
-def test_api_impresiones_con_rol_permitido(db_session, client):
-    headers = token_headers("EST")
+def test_api_impresiones_con_rol_permitido(db_session, client, seed_est):
+    user_id, art_id = seed_est
+    headers = token_headers("EST", user_id=user_id)
     archivos = [("archivos", ("test.stl", b"data", "application/octet-stream"))]
-    data = {"cantidad": 1, "ref_articulo": "art-001"}
+    data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
@@ -389,10 +459,11 @@ def test_api_impresiones_sin_archivos(db_session, client):
 
 
 @pytest.mark.integration
-def test_api_impresiones_archivo_vacio(db_session, client):
-    headers = token_headers("EST")
+def test_api_impresiones_archivo_vacio(db_session, client, seed_est):
+    user_id, art_id = seed_est
+    headers = token_headers("EST", user_id=user_id)
     archivos = [("archivos", ("vacio.gcode", b"", "application/octet-stream"))]
-    data = {"cantidad": 1, "ref_articulo": "art-001"}
+    data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
@@ -401,10 +472,11 @@ def test_api_impresiones_archivo_vacio(db_session, client):
 
 
 @pytest.mark.integration
-def test_api_impresiones_extension_case_insensitive(db_session, client):
-    headers = token_headers("PRO")
+def test_api_impresiones_extension_case_insensitive(db_session, client, seed_pro):
+    user_id, art_id = seed_pro
+    headers = token_headers("PRO", user_id=user_id)
     archivos = [("archivos", ("MODELO.STL", b"content", "application/octet-stream"))]
-    data = {"cantidad": 1, "ref_articulo": "art-001"}
+    data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
         "/api/impresiones/upload", headers=headers, data=data, files=archivos
