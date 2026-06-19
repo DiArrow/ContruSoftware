@@ -229,7 +229,7 @@ def test_crear_impresion_un_archivo(db_session, client, seed_est):
     data = {"cantidad": 2, "ref_articulo": art_id}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
 
     assert response.status_code == 201
@@ -248,7 +248,7 @@ def test_crear_impresion_multiples_archivos(db_session, client, seed_est):
     ]
     data = {"cantidad": 1, "ref_articulo": art_id}
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -259,7 +259,7 @@ def test_crear_impresion_extension_no_permitida(db_session, client):
     archivos = [("archivos", ("foto.png", b"contenido", "image/png"))]
     data = {"cantidad": 1, "ref_articulo": 3}
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
 
     assert response.status_code == 422
@@ -270,7 +270,7 @@ def test_crear_impresion_sin_archivos(client_unit):
     headers = token_headers("EST")
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client_unit.post("/api/impresiones/upload", headers=headers, data=data)
+    response = client_unit.post("/impresiones/upload", headers=headers, data=data)
     assert response.status_code == 422
 
 
@@ -280,7 +280,7 @@ def test_crear_impresiones_sin_token(client_unit):
     ]
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client_unit.post("/api/impresiones/upload", data=data, files=archivos)
+    response = client_unit.post("/impresiones/upload", data=data, files=archivos)
     assert response.status_code == 401
 
 
@@ -291,7 +291,7 @@ def test_crear_impresion_roles_no_permitidos(rol_invalido, client_unit):
     data = {"cantidad": 1, "ref_articulo": 5}
 
     response = client_unit.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 403
 
@@ -307,7 +307,7 @@ def test_crear_impresion_coincidencia_byte_a_byte(db_session, client, seed_est):
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -404,7 +404,7 @@ def test_impresiones_archivo_vacio(mock_db, client_unit, mock_auth_est):
 
 
 # ==========================================
-# NUEVOS TESTS: /api/impresiones/upload (roles: EST, PRO)
+# NUEVOS TESTS: /impresiones/upload (roles: EST, PRO)
 # ==========================================
 
 
@@ -416,7 +416,7 @@ def test_api_impresiones_rol_no_permitido(rol_invalido, db_session, client):
     data = {"cantidad": 1, "ref_articulo": 5}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 403
 
@@ -429,7 +429,7 @@ def test_api_impresiones_con_rol_permitido(db_session, client, seed_est):
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -444,7 +444,7 @@ def test_api_impresiones_archivos_mixtos(db_session, client):
     data = {"cantidad": 1, "ref_articulo": 5}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 422
 
@@ -454,7 +454,7 @@ def test_api_impresiones_sin_archivos(db_session, client):
     headers = token_headers("EST")
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client.post("/api/impresiones/upload", headers=headers, data=data)
+    response = client.post("/impresiones/upload", headers=headers, data=data)
     assert response.status_code == 422
 
 
@@ -466,7 +466,7 @@ def test_api_impresiones_archivo_vacio(db_session, client, seed_est):
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -479,6 +479,6 @@ def test_api_impresiones_extension_case_insensitive(db_session, client, seed_pro
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/api/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones/upload", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201

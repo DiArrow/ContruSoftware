@@ -18,7 +18,7 @@ from models.archivo_impresion import ArchivoImpresion
 from models.impresion import Impresion
 from models.usuario import Usuario
 
-router = APIRouter(prefix="/api/impresiones", tags=["ArchivoImpresion"])
+router = APIRouter(prefix="/impresiones", tags=["ArchivoImpresion"])
 ALLOWED_EXTENSIONS = {".stl", ".obj", ".gcode"}
 
 

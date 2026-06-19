@@ -1,6 +1,6 @@
 -- ============================================================
 -- Seed: usuarios de prueba determinísticos por rol
--- Todos usan contraseña: test123
+-- SOL: sol123, EST: est123, AYU: ayu123, PRO: pro123, ADM: adm123
 -- ============================================================
 
 INSERT INTO usuario (
@@ -14,7 +14,7 @@ INSERT INTO usuario (
     'sol@uc.cl',
     'SOL',
     true,
-    '$2b$12$mfVES./yx3ugwK366xrJBeEZ30uCAZJ6e1mpey8YH2WRNHY8azUXO',
+    '$2b$12$NzODyh/yOXJ3DqKB6C/0aeaowSgy/E71YYIVP5y3e3uRHPI5V6eOe',
     NOW(),
     NOW()
 ),
@@ -26,7 +26,7 @@ INSERT INTO usuario (
     'est@uc.cl',
     'EST',
     true,
-    '$2b$12$kIEUgfcPSoigNIU1awrLz.6eiXIDbxqLig6AeCUX7mmZnqB.ILNzW',
+    '$2b$12$J12hG1Us7bRqf1swwGYJ5u4ise/.H8dySRNzq9.90OSY781pcz96e',
     NOW(),
     NOW()
 ),
@@ -38,7 +38,7 @@ INSERT INTO usuario (
     'ayu@uc.cl',
     'AYU',
     true,
-    '$2b$12$moZepdWEYIvc81hQI/iUwuWVfGKK8h9qpxIxdQEDXpRcW812TdTny',
+    '$2b$12$cIlYuQSNRK8IuiGvsxnHeeYvaVhyKMvvA2WuEIcP/UI9VisN7hYAG',
     NOW(),
     NOW()
 ),
@@ -50,7 +50,7 @@ INSERT INTO usuario (
     'pro@uc.cl',
     'PRO',
     true,
-    '$2b$12$slVzj90A7CxEj9v1.gxJiuqvlgpXSFpIBJ4sIPVf54RQnb66dLxki',
+    '$2b$12$P833NTXpyENa6ol9eCOBU.EWN4qZS8Pe8xrKsT.jI8SBI3n0b8lNC',
     NOW(),
     NOW()
 ),
@@ -62,7 +62,7 @@ INSERT INTO usuario (
     'adm@uc.cl',
     'ADM',
     true,
-    '$2b$12$Bq2ZJ8phT6WrK.LWLadiMOjOEX892ac9J4r/yFDNMZILZAxEd0Gr.',
+    '$2b$12$T04y1O1OiTAzNG7kEcmBuel.XCxGDcpg2biTqB/RX98fv1gxO8dP2',
     NOW(),
     NOW()
 );
