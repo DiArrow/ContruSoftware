@@ -53,7 +53,10 @@ export function AuthProvider({ children }) {
     }, [fetchMe]);
 
     const login = async (email, password) => {
-        const data = await apiPost('impresiones/auth/token', { email, password });
+        const data = await apiPost('impresiones/auth/token', {
+            email,
+            password,
+        });
         localStorage.setItem('token', data.access_token);
         await fetchMe();
         return data;
