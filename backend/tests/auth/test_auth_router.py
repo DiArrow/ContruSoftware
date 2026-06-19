@@ -57,7 +57,7 @@ class TestLogin:
     def test_login_success(self, auth_client: TestClient, test_usuario: Usuario):
         """Credenciales válidas → 200 + access_token + token_type."""
         response = auth_client.post(
-            "/auth/token",
+            "/api/impresiones/auth/token",
             json={"email": test_usuario.email, "password": "secret123"},
         )
         assert response.status_code == 200
@@ -68,7 +68,7 @@ class TestLogin:
     def test_login_wrong_password(self, auth_client: TestClient, test_usuario: Usuario):
         """Contraseña incorrecta → 401."""
         response = auth_client.post(
-            "/auth/token",
+            "/api/impresiones/auth/token",
             json={"email": test_usuario.email, "password": "wrongpassword"},
         )
         assert response.status_code == 401
@@ -77,7 +77,7 @@ class TestLogin:
     def test_login_unknown_email(self, auth_client: TestClient):
         """Email inexistente → 401."""
         response = auth_client.post(
-            "/auth/token",
+            "/api/impresiones/auth/token",
             json={"email": "noexiste@example.com", "password": "secret123"},
         )
         assert response.status_code == 401
@@ -85,19 +85,19 @@ class TestLogin:
 
     def test_login_empty_body(self, auth_client: TestClient):
         """Cuerpo JSON vacío → 422."""
-        response = auth_client.post("/auth/token", json={})
+        response = auth_client.post("/api/impresiones/auth/token", json={})
         assert response.status_code == 422
 
     def test_login_missing_fields(self, auth_client: TestClient):
         """Falta email o password → 422."""
         response = auth_client.post(
-            "/auth/token",
+            "/api/impresiones/auth/token",
             json={"email": "test@example.com"},
         )
         assert response.status_code == 422
 
         response = auth_client.post(
-            "/auth/token",
+            "/api/impresiones/auth/token",
             json={"password": "secret123"},
         )
         assert response.status_code == 422
@@ -113,7 +113,7 @@ class TestGetMe:
             expires_delta=timedelta(minutes=10),
         )
         response = auth_client.get(
-            "/auth/me",
+            "/api/impresiones/auth/me",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == 200
@@ -126,7 +126,7 @@ class TestGetMe:
 
     def test_get_me_no_token(self, auth_client: TestClient):
         """Sin header Authorization → 401."""
-        response = auth_client.get("/auth/me")
+        response = auth_client.get("/api/impresiones/auth/me")
         assert response.status_code == 401
 
     def test_get_me_expired_token(self, auth_client: TestClient, test_usuario: Usuario):
@@ -136,7 +136,7 @@ class TestGetMe:
             expires_delta=timedelta(seconds=-1),
         )
         response = auth_client.get(
-            "/auth/me",
+            "/api/impresiones/auth/me",
             headers={"Authorization": f"Bearer {expired_token}"},
         )
         assert response.status_code == 401
@@ -153,7 +153,7 @@ class TestGetMe:
         db_session.flush()
 
         response = auth_client.get(
-            "/auth/me",
+            "/api/impresiones/auth/me",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert response.status_code == 404

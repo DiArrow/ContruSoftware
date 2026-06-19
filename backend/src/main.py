@@ -16,7 +16,6 @@ app = FastAPI(title="ContruSoftware API")
 # Include routers
 app.include_router(auth_router)
 app.include_router(admin_router)
-
 app.include_router(impresiones_router)
 
 
