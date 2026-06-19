@@ -143,7 +143,7 @@ def _create_token_with_role(role: str) -> str:
 @pytest.fixture
 def admin_headers() -> dict:
     """Return headers with a valid admin token."""
-    token = _create_token_with_role("admin")
+    token = _create_token_with_role("ADM")
     return {"Authorization": f"Bearer {token}"}
 
 

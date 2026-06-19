@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 def crear_usuario(
     payload: UsuarioCreate,
     db: Session = Depends(get_db),
-    current_admin: Usuario = Depends(requiere_rol("admin")),
+    current_admin: Usuario = Depends(requiere_rol(["ADM"])),
 ):
     """Endpoint para que un administrador cree nuevos usuarios.
     Verifica duplicados de email, hashea la contraseña y persiste el registro."""
