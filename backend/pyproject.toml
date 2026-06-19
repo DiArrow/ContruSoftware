@@ -3,6 +3,11 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = [".", "src"]
 addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning:httpx._client:",
+    "ignore::DeprecationWarning:passlib.utils:",
+    "ignore::PendingDeprecationWarning:starlette.formparsers:",
+]
 markers = [
     "integration: tests that require a live PostgreSQL database",
 ]

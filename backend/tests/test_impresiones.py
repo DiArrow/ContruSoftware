@@ -153,6 +153,7 @@ def test_rollback_falla_guardado_archivos(mock_db, client, mock_auth_est):
     mock_db.commit.assert_not_called()
 
 
+@pytest.mark.integration
 def test_crear_impresion_un_archivo(db_session, client):
     headers = token_headers("EST")
     archivos = [
@@ -170,6 +171,7 @@ def test_crear_impresion_un_archivo(db_session, client):
     assert json_data["cantidad"] == 2
 
 
+@pytest.mark.integration
 def test_crear_impresion_multiples_archivos(db_session, client):
     headers = token_headers("EST")
     archivos = [
@@ -183,6 +185,7 @@ def test_crear_impresion_multiples_archivos(db_session, client):
     assert response.status_code == 201
 
 
+@pytest.mark.integration
 def test_crear_impresion_extension_no_permitida(db_session, client):
     headers = token_headers("EST")
     archivos = [("archivos", ("foto.png", b"contenido", "image/png"))]
@@ -225,6 +228,7 @@ def test_crear_impresion_roles_no_permitidos(rol_invalido, client):
     assert response.status_code == 403
 
 
+@pytest.mark.integration
 def test_crear_impresion_coincidencia_byte_a_byte(db_session, client):
     headers = token_headers("EST")
     contenido_original = b"\x01\x02\x03\x04_string_complejo_STL"
@@ -336,6 +340,7 @@ def test_impresiones_archivo_vacio(mock_db, client, mock_auth_est):
 
 
 @pytest.mark.parametrize("rol_invalido", ["ADM", "AYU", "SOL"])
+@pytest.mark.integration
 def test_api_impresiones_rol_no_permitido(rol_invalido, db_session, client):
     headers = token_headers(rol_invalido)
     archivos = [("archivos", ("test.stl", b"data", "application/octet-stream"))]
@@ -347,6 +352,7 @@ def test_api_impresiones_rol_no_permitido(rol_invalido, db_session, client):
     assert response.status_code == 403
 
 
+@pytest.mark.integration
 def test_api_impresiones_con_rol_permitido(db_session, client):
     headers = token_headers("EST")
     archivos = [("archivos", ("test.stl", b"data", "application/octet-stream"))]
@@ -358,6 +364,7 @@ def test_api_impresiones_con_rol_permitido(db_session, client):
     assert response.status_code == 201
 
 
+@pytest.mark.integration
 def test_api_impresiones_archivos_mixtos(db_session, client):
     headers = token_headers("EST")
     archivos = [
@@ -372,6 +379,7 @@ def test_api_impresiones_archivos_mixtos(db_session, client):
     assert response.status_code == 422
 
 
+@pytest.mark.integration
 def test_api_impresiones_sin_archivos(db_session, client):
     headers = token_headers("EST")
     data = {"cantidad": 1, "ref_articulo": 5}
@@ -380,6 +388,7 @@ def test_api_impresiones_sin_archivos(db_session, client):
     assert response.status_code == 422
 
 
+@pytest.mark.integration
 def test_api_impresiones_archivo_vacio(db_session, client):
     headers = token_headers("EST")
     archivos = [("archivos", ("vacio.gcode", b"", "application/octet-stream"))]
@@ -391,6 +400,7 @@ def test_api_impresiones_archivo_vacio(db_session, client):
     assert response.status_code == 201
 
 
+@pytest.mark.integration
 def test_api_impresiones_extension_case_insensitive(db_session, client):
     headers = token_headers("PRO")
     archivos = [("archivos", ("MODELO.STL", b"content", "application/octet-stream"))]
