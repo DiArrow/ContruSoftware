@@ -19,17 +19,19 @@ MIGRATIONS_DIR="$PROJECT_ROOT/db/migrations"
 : "${POSTGRES_HOST:=localhost}"
 : "${POSTGRES_PORT:=5432}"
 : "${POSTGRES_DB:=makerbox}"
-: "${POSTGRES_APP_USER:=backend}"
-: "${POSTGRES_APP_PASSWORD:=}"
+# Migrations require a user with DDL permissions (table owner).
+# Default to POSTGRES_USER (admin) since the app user typically only has DML.
+: "${MIGRATE_USER:=${POSTGRES_USER}}"
+: "${MIGRATE_PASSWORD:=${POSTGRES_PASSWORD}}"
 
-if [ -z "$POSTGRES_APP_PASSWORD" ]; then
-  echo "ERROR: POSTGRES_APP_PASSWORD is not set." >&2
+if [ -z "$MIGRATE_PASSWORD" ]; then
+  echo "ERROR: MIGRATE_PASSWORD / POSTGRES_PASSWORD is not set." >&2
   echo "       Create a .env file or export the variable." >&2
   exit 1
 fi
 
-export PGPASSWORD="$POSTGRES_APP_PASSWORD"
-PSQL=(psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_APP_USER" -d "$POSTGRES_DB")
+export PGPASSWORD="$MIGRATE_PASSWORD"
+PSQL=(psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$MIGRATE_USER" -d "$POSTGRES_DB")
 
 # ---- Helpers -------------------------------------------------------------
 DRY_RUN=false

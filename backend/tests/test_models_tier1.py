@@ -539,3 +539,14 @@ class TestRefProfesorMigration:
         assert "REFERENCES usuario" in sql, (
             "La migración debe referenciar la tabla usuario"
         )
+
+    def test_migration_includes_index(self):
+        """La migración debe crear un índice para ref_profesor."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "CREATE INDEX" in sql, (
+            "La migración debe incluir CREATE INDEX"
+        )
+        assert "idx_curso_ref_profesor" in sql, (
+            "El índice debe llamarse idx_curso_ref_profesor"
+        )
