@@ -25,6 +25,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from main import app  # noqa: E402
+from database import get_db  # noqa: E402
 
 
 def _get_database_url() -> str:
@@ -69,12 +70,23 @@ def test_engine() -> Generator:
 def db_session(test_engine) -> Generator[Session, None, None]:
     """Yield a database session that rolls back after each test.
 
-    Uses a nested transaction so that any changes made during the test
-    are rolled back, keeping the business database clean.
+    Uses an outer transaction plus SAVEPOINTs so that any ``session.commit()``
+    calls inside the code under test create SAVEPOINTs instead of real
+    COMMITs. The outer transaction rollback at teardown undoes everything,
+    including the SAVEPOINTs, keeping the business database clean across
+    tests without requiring a separate test database.
+
+    The ``join_transaction_mode="create_savepoint"`` argument tells the
+    Session to enlist in the outer transaction via a SAVEPOINT, so
+    ``session.commit()`` releases the SAVEPOINT rather than committing
+    the outer transaction.
     """
     connection = test_engine.connect()
     transaction = connection.begin()
-    session = Session(bind=connection)
+    session = Session(
+        bind=connection,
+        join_transaction_mode="create_savepoint",
+    )
 
     yield session
 
@@ -91,22 +103,12 @@ def client(db_session) -> Generator[TestClient, None, None]:
     created in a later PR), the fixture falls back to a plain
     ``TestClient``.
     """
-    try:
-        from database import get_db
-
-        app.dependency_overrides[get_db] = lambda: db_session
-    except ImportError:
-        pass
+    app.dependency_overrides[get_db] = lambda: db_session
 
     with TestClient(app) as test_client:
         yield test_client
 
-    try:
-        from database import get_db
-
-        app.dependency_overrides.pop(get_db, None)
-    except ImportError:
-        pass
+    app.dependency_overrides.pop(get_db, None)
 
 
 @pytest.fixture(scope="function")
