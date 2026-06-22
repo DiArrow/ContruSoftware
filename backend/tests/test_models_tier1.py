@@ -206,8 +206,26 @@ class TestCurso:
     def test_relationship_attributes_exist(self):
         assert hasattr(Curso, "semestre")
         assert hasattr(Curso, "ayudantias")
+        assert hasattr(Curso, "profesor")
         assert Curso.semestre is not None
         assert Curso.ayudantias is not None
+        assert Curso.profesor is not None
+
+    def test_ref_profesor_column(self):
+        col = Curso.__table__.c.ref_profesor
+        assert isinstance(col.type, String)
+        assert col.type.length == 36
+        assert col.nullable
+
+    def test_ref_profesor_foreign_key(self):
+        col = Curso.__table__.c.ref_profesor
+        assert len(col.foreign_keys) == 1
+        fk = list(col.foreign_keys)[0]
+        assert fk.target_fullname == "usuario.id_usuario"
+
+    def test_profesor_relationship(self):
+        assert hasattr(Curso, "profesor")
+        assert Curso.profesor is not None
 
 
 class TestGrupoEstudiante:
@@ -493,4 +511,31 @@ class TestArchivoImpresionMigration:
             sql = f.read()
         assert "contenido BYTEA" in sql or "contenido " in sql, (
             "La migración debe usar 'contenido' para coincidir con el modelo SQLAlchemy"
+        )
+
+
+class TestRefProfesorMigration:
+    """Verifica la calidad de la migración SQL de ref_profesor en curso."""
+
+    @staticmethod
+    def _migration_path() -> str:
+        from pathlib import Path
+
+        project_root = Path(__file__).resolve().parents[2]
+        return str(project_root / "db" / "migrations" / "04-add-ref-profesor-to-curso.sql")
+
+    def test_migration_is_idempotent(self):
+        """La migración debe usar IF NOT EXISTS para ser idempotente."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "IF NOT EXISTS" in sql, (
+            "La migración debe incluir IF NOT EXISTS para ser idempotente"
+        )
+
+    def test_migration_includes_foreign_key(self):
+        """La migración debe declarar una foreign key hacia usuario."""
+        with open(self._migration_path()) as f:
+            sql = f.read()
+        assert "REFERENCES usuario" in sql, (
+            "La migración debe referenciar la tabla usuario"
         )

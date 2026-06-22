@@ -60,9 +60,15 @@ class TestUsuario:
     def test_relationship_attributes_exist(self):
         assert hasattr(Usuario, "impresiones")
         assert hasattr(Usuario, "reservas")
+        assert hasattr(Usuario, "cursos_profesor")
         # In SQLAlchemy 2.0 relationship descriptors become InstrumentedAttribute
         assert Usuario.impresiones is not None
         assert Usuario.reservas is not None
+        assert Usuario.cursos_profesor is not None
+
+    def test_cursos_profesor_relationship(self):
+        assert hasattr(Usuario, "cursos_profesor")
+        assert Usuario.cursos_profesor is not None
 
 
 class TestSemestre:
