@@ -1,7 +1,7 @@
 """SQLAlchemy model for the ``curso`` table."""
 
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, String, func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from database import Base
 
@@ -24,3 +24,10 @@ class Curso(Base):
     profesor = relationship(
         "Usuario", foreign_keys=[ref_profesor], back_populates="cursos_profesor", lazy="select"
     )
+
+    @validates("profesor")
+    def _validate_profesor_rol(self, key: str, value) -> object:
+        """Valida que el usuario asignado como profesor tenga rol PRO."""
+        if value is not None and value.rol != "PRO":
+            raise ValueError("El profesor debe tener rol PRO")
+        return value
