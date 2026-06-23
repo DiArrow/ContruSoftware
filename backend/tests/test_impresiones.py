@@ -5,7 +5,6 @@ import pytest
 
 from auth.dependencies import get_current_user, get_role_db
 from auth.jwt_handler import crear_token_jwt
-from database import get_db
 from main import app
 from utils.files import validar_extension
 

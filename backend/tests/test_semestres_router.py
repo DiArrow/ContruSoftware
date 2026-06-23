@@ -1,6 +1,5 @@
 """Tests for the Semestre router."""
 
-from datetime import date
 
 import pytest
 from fastapi import status

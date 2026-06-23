@@ -8,7 +8,6 @@ import os
 import sys
 from unittest.mock import patch
 
-import pytest
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 

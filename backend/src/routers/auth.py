@@ -1,6 +1,6 @@
 """Router de autenticación — endpoints de login y perfil."""
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
