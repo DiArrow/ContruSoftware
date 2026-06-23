@@ -59,8 +59,8 @@ def test_get_role_session_uses_correct_engine():
         assert engine.pool._max_overflow == 1
 
 
-def test_get_role_session_invalid_role_raises_keyerror():
-    """Un rol sin URL configurada debe lanzar KeyError."""
+def test_get_role_session_invalid_role_falls_back_to_sessionlocal():
+    """Un rol sin URL configurada debe hacer fallback al engine genérico."""
     env = {
         "POSTGRES_HOST": "localhost",
         "POSTGRES_PORT": "5432",
@@ -70,6 +70,7 @@ def test_get_role_session_invalid_role_raises_keyerror():
     }
     with patch.dict(os.environ, env, clear=False):
         db_mod = _reload_database()
-        with pytest.raises(KeyError):
-            gen = db_mod.get_role_session("INVALID")
-            next(gen)
+        gen = db_mod.get_role_session("INVALID")
+        session = next(gen)
+        assert isinstance(session, Session)
+        gen.close()
