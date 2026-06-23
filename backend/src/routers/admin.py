@@ -1,10 +1,12 @@
+"""Router de administración — gestión de usuarios."""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from auth.dependencies import requiere_rol
-from auth.hasher import hash_password
+from auth import hasher
+from auth.dependencies import get_role_db, requiere_rol
+from auth.roles import ADMIN
 from auth.schemas import UsuarioCreate, UsuarioResponse
-from database import get_db
 from models.usuario import Usuario
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -15,12 +17,13 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 )
 def crear_usuario(
     payload: UsuarioCreate,
-    db: Session = Depends(get_db),
-    current_admin: Usuario = Depends(requiere_rol(["ADM"])),
+    db: Session = Depends(get_role_db),
+    current_admin: Usuario = Depends(requiere_rol([ADMIN])),
 ):
     """Endpoint para que un administrador cree nuevos usuarios.
-    Verifica duplicados de email, hashea la contraseña y persiste el registro."""
 
+    Verifica duplicados de email, hashea la contraseña y persiste el registro.
+    """
     email_existente = db.query(Usuario).filter(Usuario.email == payload.email).first()
     if email_existente:
         raise HTTPException(
@@ -28,7 +31,7 @@ def crear_usuario(
             # Criterio de aceptacion 409
             detail="El email ya se encuentra registrado",
         )
-    hashed_password = hash_password(payload.password)
+    hashed_password = hasher.hash_password(payload.password)
 
     nuevo_usuario = Usuario(
         nombre=payload.nombre,

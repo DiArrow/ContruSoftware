@@ -24,3 +24,8 @@ class Impresion(Base):
     archivos = relationship(
         "ArchivoImpresion", back_populates="impresion", lazy="select"
     )
+
+    @property
+    def archivos_subidos(self) -> int:
+        """Cantidad de archivos asociados a la impresión."""
+        return len(self.archivos)
