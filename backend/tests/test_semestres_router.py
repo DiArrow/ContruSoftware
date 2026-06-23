@@ -135,3 +135,22 @@ class TestCrearSemestre:
             "/api/semestres", json=payload, headers=admin_headers
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    @pytest.mark.parametrize(
+        "nombre_invalido",
+        ["", "   ", "\t\n"],
+        ids=["vacio", "solo_espacios", "whitespace_variado"],
+    )
+    def test_422_nombre_vacio_o_whitespace(
+        self, client_unit, admin_headers, nombre_invalido
+    ):
+        """nombre vacío o solo whitespace devuelve 422."""
+        payload = {
+            "nombre": nombre_invalido,
+            "fecha_inicio": "2026-03-01",
+            "fecha_fin": "2026-07-15",
+        }
+        response = client_unit.post(
+            "/api/semestres", json=payload, headers=admin_headers
+        )
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
