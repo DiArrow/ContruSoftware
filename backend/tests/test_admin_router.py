@@ -48,7 +48,7 @@ def test_admin_crear_estudiante_happy_path(
     }
 
     with patch(
-        "auth.admin.hash_password", return_value="mocked_bcrypt_hash"
+        "auth.hasher.hash_password", return_value="mocked_bcrypt_hash"
     ) as mock_hash:
         response = client.post(
             "/api/admin/usuarios", json=payload, headers=admin_headers

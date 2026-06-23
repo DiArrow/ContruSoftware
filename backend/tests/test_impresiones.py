@@ -3,11 +3,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from auth.dependencies import get_current_user
+from auth.dependencies import get_current_user, get_role_db
 from auth.jwt_handler import crear_token_jwt
 from database import get_db
 from main import app
-from models.impresiones import validar_extension
+from utils.files import validar_extension
 
 # ==========================================
 # TESTS UNITARIOS: FUNCIÓN PURA
@@ -158,7 +158,7 @@ def mock_auth_est():
 
 
 def test_happy_path_un_archivo(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
 
     file_content = b"fake-bytea-content-for-stl"
 
@@ -169,7 +169,7 @@ def test_happy_path_un_archivo(mock_db, client_unit, mock_auth_est):
     )
 
     assert response.status_code == 201
-    assert response.json()["estado"] == "Pendiente"
+    assert response.json()["estado_impresion"] == "Pendiente"
     assert mock_db.add.call_count == 2
     mock_db.commit.assert_called_once()
 
@@ -178,7 +178,7 @@ def test_happy_path_un_archivo(mock_db, client_unit, mock_auth_est):
 
 
 def test_archivos_multiples(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 2, "ref_articulo": "art-002"},
@@ -193,7 +193,7 @@ def test_archivos_multiples(mock_db, client_unit, mock_auth_est):
 
 
 def test_extension_no_permitida(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -204,7 +204,7 @@ def test_extension_no_permitida(mock_db, client_unit, mock_auth_est):
 
 
 def test_rollback_falla_guardado_archivos(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
 
     mock_db.add.side_effect = [None, Exception("Error simulado de base de datos")]
 
@@ -229,7 +229,7 @@ def test_crear_impresion_un_archivo(db_session, client, seed_est):
     data = {"cantidad": 2, "ref_articulo": art_id}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
 
     assert response.status_code == 201
@@ -248,7 +248,7 @@ def test_crear_impresion_multiples_archivos(db_session, client, seed_est):
     ]
     data = {"cantidad": 1, "ref_articulo": art_id}
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -259,7 +259,7 @@ def test_crear_impresion_extension_no_permitida(db_session, client):
     archivos = [("archivos", ("foto.png", b"contenido", "image/png"))]
     data = {"cantidad": 1, "ref_articulo": 3}
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
 
     assert response.status_code == 422
@@ -270,7 +270,7 @@ def test_crear_impresion_sin_archivos(client_unit):
     headers = token_headers("EST")
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client_unit.post("/impresiones/upload", headers=headers, data=data)
+    response = client_unit.post("/impresiones", headers=headers, data=data)
     assert response.status_code == 422
 
 
@@ -280,18 +280,18 @@ def test_crear_impresiones_sin_token(client_unit):
     ]
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client_unit.post("/impresiones/upload", data=data, files=archivos)
+    response = client_unit.post("/impresiones", data=data, files=archivos)
     assert response.status_code == 401
 
 
-@pytest.mark.parametrize("rol_invalido", ["ADM", "AYU", "SOL"])
+@pytest.mark.parametrize("rol_invalido", ["ADM", "AYU", "PRO"])
 def test_crear_impresion_roles_no_permitidos(rol_invalido, client_unit):
     headers = token_headers(rol_invalido)
     archivos = [("archivos", ("test.stl", b"data", "application/octet-stream"))]
     data = {"cantidad": 1, "ref_articulo": 5}
 
     response = client_unit.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 403
 
@@ -307,7 +307,7 @@ def test_crear_impresion_coincidencia_byte_a_byte(db_session, client, seed_est):
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -318,7 +318,7 @@ def test_crear_impresion_coincidencia_byte_a_byte(db_session, client, seed_est):
 
 
 def test_impresiones_sin_archivos(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -328,7 +328,7 @@ def test_impresiones_sin_archivos(mock_db, client_unit, mock_auth_est):
 
 
 def test_impresiones_sin_token(mock_db, client_unit):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -339,7 +339,7 @@ def test_impresiones_sin_token(mock_db, client_unit):
 
 @pytest.mark.parametrize("rol_invalido", ["PRO", "ADM", "AYU"])
 def test_impresiones_rol_no_permitido(rol_invalido, mock_db, client_unit):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: {
         "sub": "user-123",
         "role": rol_invalido,
@@ -356,7 +356,7 @@ def test_impresiones_rol_no_permitido(rol_invalido, mock_db, client_unit):
 
 
 def test_impresiones_extension_no_permitida(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -367,7 +367,7 @@ def test_impresiones_extension_no_permitida(mock_db, client_unit, mock_auth_est)
 
 
 def test_impresiones_archivos_mixtos(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -381,7 +381,7 @@ def test_impresiones_archivos_mixtos(mock_db, client_unit, mock_auth_est):
 
 
 def test_impresiones_nombre_con_espacios(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -393,7 +393,7 @@ def test_impresiones_nombre_con_espacios(mock_db, client_unit, mock_auth_est):
 
 
 def test_impresiones_archivo_vacio(mock_db, client_unit, mock_auth_est):
-    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_role_db] = lambda: mock_db
     response = client_unit.post(
         "/impresiones",
         data={"cantidad": 1, "ref_articulo": "art-001"},
@@ -404,11 +404,11 @@ def test_impresiones_archivo_vacio(mock_db, client_unit, mock_auth_est):
 
 
 # ==========================================
-# NUEVOS TESTS: /impresiones/upload (roles: EST, PRO)
+# NUEVOS TESTS: /impresiones (roles: EST, PRO)
 # ==========================================
 
 
-@pytest.mark.parametrize("rol_invalido", ["ADM", "AYU", "SOL"])
+@pytest.mark.parametrize("rol_invalido", ["ADM", "AYU", "PRO"])
 @pytest.mark.integration
 def test_api_impresiones_rol_no_permitido(rol_invalido, db_session, client):
     headers = token_headers(rol_invalido)
@@ -416,7 +416,7 @@ def test_api_impresiones_rol_no_permitido(rol_invalido, db_session, client):
     data = {"cantidad": 1, "ref_articulo": 5}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 403
 
@@ -429,7 +429,7 @@ def test_api_impresiones_con_rol_permitido(db_session, client, seed_est):
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
@@ -444,7 +444,7 @@ def test_api_impresiones_archivos_mixtos(db_session, client):
     data = {"cantidad": 1, "ref_articulo": 5}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 422
 
@@ -454,7 +454,7 @@ def test_api_impresiones_sin_archivos(db_session, client):
     headers = token_headers("EST")
     data = {"cantidad": 1, "ref_articulo": 5}
 
-    response = client.post("/impresiones/upload", headers=headers, data=data)
+    response = client.post("/impresiones", headers=headers, data=data)
     assert response.status_code == 422
 
 
@@ -466,19 +466,19 @@ def test_api_impresiones_archivo_vacio(db_session, client, seed_est):
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201
 
 
 @pytest.mark.integration
-def test_api_impresiones_extension_case_insensitive(db_session, client, seed_pro):
-    user_id, art_id = seed_pro
-    headers = token_headers("PRO", user_id=user_id)
+def test_api_impresiones_extension_case_insensitive(db_session, client, seed_est):
+    user_id, art_id = seed_est
+    headers = token_headers("EST", user_id=user_id)
     archivos = [("archivos", ("MODELO.STL", b"content", "application/octet-stream"))]
     data = {"cantidad": 1, "ref_articulo": art_id}
 
     response = client.post(
-        "/impresiones/upload", headers=headers, data=data, files=archivos
+        "/impresiones", headers=headers, data=data, files=archivos
     )
     assert response.status_code == 201

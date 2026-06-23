@@ -7,9 +7,12 @@ Exports:
     get_role_session: Re-export of ``src.database.get_role_session`` for convenience.
 """
 
+from collections.abc import Generator
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
+from sqlalchemy.orm import Session
 
 from auth.jwt_handler import validar_token_jwt
 from database import get_role_session
@@ -19,6 +22,7 @@ __all__ = [
     "get_current_user",
     "requiere_rol",
     "get_role_session",
+    "get_role_db",
 ]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -46,11 +50,27 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     return payload
 
 
-def requiere_rol(roles: list[str]) -> callable:
+def get_role_db(
+    current_user: dict = Depends(get_current_user),
+) -> Generator[Session, None, None]:
+    """Yield a database session for the current user's role.
+
+    Acts as a FastAPI dependency: reads the role from the authenticated
+    user's JWT and delegates to ``get_role_session`` for the actual session.
+    Falls back to the generic engine if the role is not configured.
+
+    Yields:
+        Sesión de SQLAlchemy apropiada para el rol del usuario.
+    """
+    role = current_user.get("role", "")
+    yield from get_role_session(role)
+
+
+def requiere_rol(roles: list[str] | set[str]) -> callable:
     """Return a dependency that enforces role-based access.
 
     Args:
-        roles: List of allowed role strings.
+        roles: List or set of allowed role strings.
 
     Returns:
         A callable suitable for ``Depends()`` that validates the user's role.

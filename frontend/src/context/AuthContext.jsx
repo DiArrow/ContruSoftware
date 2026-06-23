@@ -20,7 +20,8 @@ export function AuthProvider({ children }) {
 
     const fetchMe = useCallback(async () => {
         try {
-            const user = await apiGet('impresiones/auth/me');
+            // Nuevo path del endpoint de perfil tras el refactor de routers
+            const user = await apiGet('auth/me');
             setCurrentUser(user);
         } catch {
             logout();
@@ -53,7 +54,8 @@ export function AuthProvider({ children }) {
     }, [fetchMe]);
 
     const login = async (email, password) => {
-        const data = await apiPost('impresiones/auth/token', {
+        // Nuevo path del endpoint de login tras el refactor de routers
+        const data = await apiPost('auth/token', {
             email,
             password,
         });
