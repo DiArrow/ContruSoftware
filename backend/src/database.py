@@ -1,12 +1,14 @@
-"""Database engine, session factory, declarative base, and dependency injection.
+"""Engine de base de datos, fábrica de sesiones, base declarativa e inyección de dependencias.
 
-Exports:
-    engine:     SQLAlchemy Engine (pool_size=5, max_overflow=10)
-    SessionLocal:  Session factory bound to engine
-    Base:       Declarative base for all ORM models
-    get_db:     FastAPI-compatible generator yielding Session instances
+Exporta:
+    engine:         SQLAlchemy Engine (pool_size=5, max_overflow=10)
+    SessionLocal:   Fábrica de sesiones ligada al engine
+    Base:           Base declarativa para todos los modelos ORM
+    get_db:         Generador compatible con FastAPI que produce sesiones
+    get_role_session: Generador que produce sesiones específicas por rol
 """
 
+import warnings
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
@@ -27,9 +29,11 @@ Base = declarative_base()
 
 
 def get_db() -> Generator[Session, None, None]:
-    """Yield a database session and ensure it is closed after use.
+    """Proporciona una sesión de base de datos y asegura su cierre tras su uso.
 
-    Intended for FastAPI ``Depends(get_db)``.
+    Diseñada para usarse con ``Depends(get_db)`` de FastAPI. Pensada para
+    endpoints sin autenticación (login, health check). Para endpoints
+    autenticados, usar ``get_role_db`` desde ``auth.dependencies``.
     """
     db = SessionLocal()
     try:
@@ -44,22 +48,21 @@ _role_sessions: dict[str, object] = {}
 
 
 def get_role_session(role: str) -> Generator[Session, None, None]:
-    """Yield a database session bound to the role-specific engine.
+    """Proporciona una sesión de base de datos ligada al engine del rol.
 
-    Si el rol tiene una URL configurada en ROL_DATABASE_URLS, usa el engine
-    específico. Si no, hace fallback al engine genérico (SessionLocal) con
-    un warning para no enmascarar errores de configuración.
+    Si el rol tiene una URL configurada en ``ROL_DATABASE_URLS``, usa el
+    engine específico. Si no, hace fallback al engine genérico
+    (``SessionLocal``) emitiendo un warning para no enmascarar errores
+    de configuración.
 
     Args:
-        role: Rol del usuario (e.g. "ADM", "EST").
+        role: Rol del usuario (por ejemplo, ``"ADM"`` o ``"EST"``).
 
     Yields:
-        Sesión de SQLAlchemy.
+        Sesión de SQLAlchemy apropiada para el rol.
     """
     url = ROL_DATABASE_URLS.get(role)
     if not url:
-        import warnings
-
         warnings.warn(
             f"Rol '{role}' sin URL configurada — usando engine genérico",
             stacklevel=2,

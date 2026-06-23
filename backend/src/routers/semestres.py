@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 
 from auth.dependencies import get_role_db, requiere_rol
 from auth.roles import PUEDEN_CREAR_SEMESTRE
-from database import get_db
 from models.semestre import Semestre
 
 router = APIRouter(prefix="/api/semestres", tags=["semestres"])
