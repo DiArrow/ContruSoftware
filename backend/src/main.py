@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from routers.admin import router as admin_router
 from routers.auth import router as auth_router
+from routers.cursos import router as cursos_router
 from routers.impresiones import router as impresiones_router
 from routers.semestres import router as semestres_router
 
@@ -17,6 +18,7 @@ app = FastAPI(title="ContruSoftware API")
 # Include routers
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(cursos_router)
 app.include_router(impresiones_router)
 app.include_router(semestres_router)
 

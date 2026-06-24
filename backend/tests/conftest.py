@@ -26,7 +26,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from auth.dependencies import get_role_db  # noqa: E402
-from auth.roles import ADMIN, AYUDANTE, ESTUDIANTE  # noqa: E402
+from auth.roles import ADMIN, AYUDANTE, ESTUDIANTE, PROFESOR  # noqa: E402
 from database import get_db  # noqa: E402
 from main import app  # noqa: E402
 
@@ -165,4 +165,11 @@ def estudiante_headers() -> dict:
 def ayu_headers() -> dict:
     """Retorna headers con un token de ayudante válido."""
     token = _create_token_with_role(AYUDANTE)
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def pro_headers() -> dict:
+    """Retorna headers con un token de profesor válido."""
+    token = _create_token_with_role(PROFESOR)
     return {"Authorization": f"Bearer {token}"}
