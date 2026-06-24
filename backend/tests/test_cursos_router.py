@@ -28,6 +28,25 @@ def _token_headers(rol: str, user_id: str | None = None) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
+def _crear_profesor(session, user_id: str | None = None) -> str:
+    """Crea un usuario con rol PRO y retorna su id."""
+    uid = user_id or str(uuid4())
+    session.add(Usuario(
+        id_usuario=uid, nombre="Profe", email=f"pro_{uid[:8]}@test.com",
+        password_hash="x", rol="PRO",
+    ))
+    session.flush()
+    return uid
+
+
+def _crear_semestre(session, nombre: str = "Semestre 2026-1") -> str:
+    """Crea un semestre y retorna su id."""
+    sid = str(uuid4())
+    session.add(Semestre(id_semestre=sid, nombre=nombre))
+    session.flush()
+    return sid
+
+
 # ───────────────────────────────
 # GET /api/cursos
 # ───────────────────────────────
@@ -37,23 +56,19 @@ class TestListarCursos:
     """GET /api/cursos scenarios."""
 
     @pytest.mark.integration
-    def test_lista_vacia_retorna_200(self, client):
+    def test_lista_vacia_retorna_200(self, client, ayu_headers):
         """An empty table returns 200 and an empty list."""
-        response = client.get("/api/cursos")
+        response = client.get("/api/cursos", headers=ayu_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == []
 
     @pytest.mark.integration
     def test_pro_ve_solo_sus_cursos(self, client, db_session):
         """PRO ve solo los cursos donde es profesor."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="S1"))
-        otro_semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=otro_semestre_id, nombre="S2"))
-        db_session.flush()
-
-        pro_id = str(USER_IDS["PRO"])
-        otro_pro_id = str(uuid4())
+        pro_id = _crear_profesor(db_session)
+        otro_pro_id = _crear_profesor(db_session)
+        semestre_id = _crear_semestre(db_session, "S1")
+        otro_semestre_id = _crear_semestre(db_session, "S2")
 
         curso_pro = Curso(id_curso=str(uuid4()), nombre="Mi curso",
                           ref_semestre=semestre_id, ref_profesor=pro_id)
@@ -72,15 +87,13 @@ class TestListarCursos:
     @pytest.mark.integration
     def test_ayu_ve_todos_los_cursos(self, client, db_session):
         """AYU ve todos los cursos."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="S1"))
-        db_session.flush()
+        semestre_id = _crear_semestre(db_session, "S1")
 
         cursos = [
             Curso(id_curso=str(uuid4()), nombre="Curso A",
-                  ref_semestre=semestre_id, ref_profesor=str(uuid4())),
+                  ref_semestre=semestre_id, ref_profesor=None),
             Curso(id_curso=str(uuid4()), nombre="Curso B",
-                  ref_semestre=semestre_id, ref_profesor=str(uuid4())),
+                  ref_semestre=semestre_id, ref_profesor=None),
         ]
         db_session.add_all(cursos)
         db_session.flush()
@@ -108,11 +121,9 @@ class TestCrearCurso:
     @pytest.mark.integration
     def test_happy_path_pro(self, client, db_session):
         """PRO crea curso con ref_profesor desde JWT → 201."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="Semestre 2026-1"))
-        db_session.flush()
+        pro_id = _crear_profesor(db_session)
+        semestre_id = _crear_semestre(db_session, "Semestre 2026-1")
 
-        pro_id = str(USER_IDS["PRO"])
         payload = {"nombre": "Matemáticas", "ref_semestre": semestre_id}
         headers = _token_headers("PRO", pro_id)
 
@@ -128,12 +139,8 @@ class TestCrearCurso:
     @pytest.mark.integration
     def test_happy_path_ayu(self, client, db_session):
         """AYU crea curso con ref_profesor explícito → 201."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="Semestre 2026-1"))
-        pro_id = str(USER_IDS["PRO"])
-        db_session.add(Usuario(id_usuario=pro_id, nombre="Profe", email="pro@test.com",
-                               password_hash="x", rol="PRO"))
-        db_session.flush()
+        pro_id = _crear_profesor(db_session)
+        semestre_id = _crear_semestre(db_session, "Semestre 2026-1")
 
         payload = {"nombre": "Física", "ref_semestre": semestre_id,
                    "ref_profesor": pro_id}
@@ -189,9 +196,7 @@ class TestCrearCurso:
     @pytest.mark.integration
     def test_422_ayu_sin_ref_profesor(self, client, db_session):
         """AYU sin ref_profesor en body → 422."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="S1"))
-        db_session.flush()
+        semestre_id = _crear_semestre(db_session, "S1")
 
         payload = {"nombre": "Curso", "ref_semestre": semestre_id}
         headers = _token_headers("AYU", str(USER_IDS["AYU"]))
@@ -201,9 +206,7 @@ class TestCrearCurso:
     @pytest.mark.integration
     def test_422_ayu_ref_profesor_invalido(self, client, db_session):
         """AYU con ref_profesor que no existe o no es PRO → 422."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="S1"))
-        db_session.flush()
+        semestre_id = _crear_semestre(db_session, "S1")
 
         payload = {"nombre": "Curso", "ref_semestre": semestre_id,
                    "ref_profesor": str(uuid4())}
@@ -223,11 +226,10 @@ class TestObtenerCurso:
     @pytest.mark.integration
     def test_happy_path(self, client, db_session):
         """Curso existente retorna detalle con nombre del semestre."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="Semestre 2026-1"))
+        semestre_id = _crear_semestre(db_session, "Semestre 2026-1")
         curso_id = str(uuid4())
         db_session.add(Curso(id_curso=curso_id, nombre="Matemáticas",
-                             ref_semestre=semestre_id, ref_profesor=str(uuid4())))
+                             ref_semestre=semestre_id, ref_profesor=None))
         db_session.flush()
 
         headers = _token_headers("PRO", str(USER_IDS["PRO"]))
@@ -260,11 +262,10 @@ class TestActualizarCurso:
     @pytest.mark.integration
     def test_happy_path_adm(self, client, db_session):
         """ADM actualiza curso → 200."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="S1"))
+        semestre_id = _crear_semestre(db_session, "S1")
         curso_id = str(uuid4())
         db_session.add(Curso(id_curso=curso_id, nombre="Original",
-                             ref_semestre=semestre_id, ref_profesor=str(uuid4())))
+                             ref_semestre=semestre_id, ref_profesor=None))
         db_session.flush()
 
         headers = _token_headers("ADM", str(USER_IDS["ADM"]))
@@ -300,11 +301,10 @@ class TestEliminarCurso:
     @pytest.mark.integration
     def test_happy_path_adm(self, client, db_session):
         """ADM elimina curso → 204."""
-        semestre_id = str(uuid4())
-        db_session.add(Semestre(id_semestre=semestre_id, nombre="S1"))
+        semestre_id = _crear_semestre(db_session, "S1")
         curso_id = str(uuid4())
         db_session.add(Curso(id_curso=curso_id, nombre="Borrar",
-                             ref_semestre=semestre_id, ref_profesor=str(uuid4())))
+                             ref_semestre=semestre_id, ref_profesor=None))
         db_session.flush()
 
         headers = _token_headers("ADM", str(USER_IDS["ADM"]))
