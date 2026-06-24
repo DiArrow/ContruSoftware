@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, ConfigDict, field_validator
 from sqlalchemy.orm import Session
 
-from auth.dependencies import get_current_user, get_role_db, requiere_rol
+from auth.dependencies import get_role_db, requiere_rol
 from models.curso import Curso
 from models.semestre import Semestre
 from models.usuario import Usuario

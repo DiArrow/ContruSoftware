@@ -11,7 +11,6 @@ from models.curso import Curso
 from models.semestre import Semestre
 from models.usuario import Usuario
 
-
 USER_IDS = {
     "PRO": uuid4(),
     "AYU": uuid4(),
