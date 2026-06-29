@@ -93,9 +93,7 @@ def test_get_role_session_emits_warning_on_fallback():
             gen = db_mod.get_role_session("SOL_NO_CONFIGURADO")
             next(gen)
             gen.close()
-        role_warnings = [
-            w for w in caught if "sin URL configurada" in str(w.message)
-        ]
+        role_warnings = [w for w in caught if "sin URL configurada" in str(w.message)]
         assert len(role_warnings) == 1
 
 
@@ -122,10 +120,7 @@ def test_different_roles_get_different_engines():
 
         assert "SOL" in db_mod._role_engines
         assert "EST" in db_mod._role_engines
-        assert (
-            db_mod._role_engines["SOL"]
-            is not db_mod._role_engines["EST"]
-        )
+        assert db_mod._role_engines["SOL"] is not db_mod._role_engines["EST"]
 
 
 def test_get_role_db_dependency_reads_role_from_jwt():

@@ -201,9 +201,7 @@ def actualizar_curso(
     for campo, valor in datos.items():
         if campo == "ref_semestre" and valor is not None:
             semestre = (
-                db.query(Semestre)
-                .filter(Semestre.id_semestre == str(valor))
-                .first()
+                db.query(Semestre).filter(Semestre.id_semestre == str(valor)).first()
             )
             if not semestre:
                 raise HTTPException(
@@ -213,9 +211,7 @@ def actualizar_curso(
 
         if campo == "ref_profesor" and valor is not None:
             profesor = (
-                db.query(Usuario)
-                .filter(Usuario.id_usuario == str(valor))
-                .first()
+                db.query(Usuario).filter(Usuario.id_usuario == str(valor)).first()
             )
             if not profesor or profesor.rol != "PRO":
                 raise HTTPException(

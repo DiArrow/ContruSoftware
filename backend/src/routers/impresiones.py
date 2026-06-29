@@ -31,7 +31,11 @@ class ImpresionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-@router.post("/impresiones", response_model=ImpresionResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/impresiones",
+    response_model=ImpresionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def crear_impresion(
     cantidad: int = Form(...),
     ref_articulo: str = Form(...),

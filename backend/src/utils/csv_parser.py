@@ -33,9 +33,7 @@ def parse_csv_rows(content: str) -> list[dict]:
     result: list[dict] = []
     for row_index, row in enumerate(rows[1:], start=2):
         if len(row) != 3:
-            raise ValueError(
-                f"Row {row_index} has {len(row)} columns, expected 3"
-            )
+            raise ValueError(f"Row {row_index} has {len(row)} columns, expected 3")
         result.append(
             {
                 "nombre": row[0],

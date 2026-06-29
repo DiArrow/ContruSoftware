@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { apiGet, apiPost } from '../api/client';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);

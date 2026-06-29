@@ -9,7 +9,7 @@ from auth.roles import ADMIN
 from auth.schemas import UsuarioCreate, UsuarioResponse
 from models.usuario import Usuario
 
-router = APIRouter(prefix="/api/admin", tags=["admin"])
+router = APIRouter(tags=["admin"])
 
 
 @router.post(

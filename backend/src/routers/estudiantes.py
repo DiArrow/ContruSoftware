@@ -83,9 +83,7 @@ def importar_estudiantes_csv(
     for row in rows:
         correo = row["correo"].strip()
         if not correo:
-            errors.append(
-                f"Fila sin correo: {row['nombre']} {row['apellido']}"
-            )
+            errors.append(f"Fila sin correo: {row['nombre']} {row['apellido']}")
             continue
 
         existing = db.query(Usuario).filter(Usuario.email == correo).first()

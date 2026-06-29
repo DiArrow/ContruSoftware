@@ -18,13 +18,8 @@ psql -v ON_ERROR_STOP=1 \
     \$\$;
     GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER_SOL:-sol_user};
     GRANT USAGE ON SCHEMA public TO ${POSTGRES_USER_SOL:-sol_user};
-    -- sol_user puede hacer SELECT (consultar sus propias solicitudes) e INSERT
-    -- (crear nuevas solicitudes de impresión). No puede UPDATE/DELETE porque
-    -- no debe poder modificar ni eliminar solicitudes ya enviadas.
-    -- La diferenciación real con est_user/ayu_user vendrá cuando se implemente
-    -- el módulo de cursos, donde el solicitante no podrá inscribirse.
-    GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA public TO ${POSTGRES_USER_SOL:-sol_user};
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT ON TABLES TO ${POSTGRES_USER_SOL:-sol_user};
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO ${POSTGRES_USER_SOL:-sol_user};
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO ${POSTGRES_USER_SOL:-sol_user};
 
     DO \$\$
     BEGIN

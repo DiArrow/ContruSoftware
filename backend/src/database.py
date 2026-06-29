@@ -1,5 +1,6 @@
-"""Engine de base de datos, fábrica de sesiones, base declarativa e inyección de dependencias.
-
+"""
+Engine de base de datos, fábrica de sesiones, base declarativa e
+inyección de dependencias.
 Exporta:
     engine:         SQLAlchemy Engine (pool_size=5, max_overflow=10)
     SessionLocal:   Fábrica de sesiones ligada al engine

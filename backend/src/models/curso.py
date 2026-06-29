@@ -22,7 +22,10 @@ class Curso(Base):
     semestre = relationship("Semestre", back_populates="cursos", lazy="select")
     ayudantias = relationship("Ayudantia", back_populates="curso", lazy="select")
     profesor = relationship(
-        "Usuario", foreign_keys=[ref_profesor], back_populates="cursos_profesor", lazy="select"
+        "Usuario",
+        foreign_keys=[ref_profesor],
+        back_populates="cursos_profesor",
+        lazy="select",
     )
 
     @validates("profesor")

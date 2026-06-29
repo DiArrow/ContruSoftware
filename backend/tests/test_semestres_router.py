@@ -1,6 +1,5 @@
 """Tests for the Semestre router."""
 
-
 import pytest
 from fastapi import status
 
@@ -43,9 +42,7 @@ class TestCrearSemestre:
     @pytest.mark.integration
     def test_happy_path_admin(self, client, db_session, admin_headers, payload):
         """Admin puede crear un semestre y recibe 201."""
-        response = client.post(
-            "/api/semestres", json=payload, headers=admin_headers
-        )
+        response = client.post("/api/semestres", json=payload, headers=admin_headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["nombre"] == payload["nombre"]
@@ -73,9 +70,7 @@ class TestCrearSemestre:
     @pytest.mark.integration
     def test_happy_path_ayu(self, client, db_session, ayu_headers, payload):
         """AYU puede crear un semestre y recibe 201."""
-        response = client.post(
-            "/api/semestres", json=payload, headers=ayu_headers
-        )
+        response = client.post("/api/semestres", json=payload, headers=ayu_headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["nombre"] == payload["nombre"]

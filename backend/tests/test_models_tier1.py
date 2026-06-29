@@ -522,7 +522,9 @@ class TestRefProfesorMigration:
         from pathlib import Path
 
         project_root = Path(__file__).resolve().parents[2]
-        return str(project_root / "db" / "migrations" / "04-add-ref-profesor-to-curso.sql")
+        return str(
+            project_root / "db" / "migrations" / "04-add-ref-profesor-to-curso.sql"
+        )
 
     def test_migration_is_idempotent(self):
         """La migración debe usar IF NOT EXISTS para ser idempotente."""
@@ -544,9 +546,7 @@ class TestRefProfesorMigration:
         """La migración debe crear un índice para ref_profesor."""
         with open(self._migration_path()) as f:
             sql = f.read()
-        assert "CREATE INDEX" in sql, (
-            "La migración debe incluir CREATE INDEX"
-        )
+        assert "CREATE INDEX" in sql, "La migración debe incluir CREATE INDEX"
         assert "idx_curso_ref_profesor" in sql, (
             "El índice debe llamarse idx_curso_ref_profesor"
         )

@@ -3,6 +3,7 @@ import Login from './components/Login';
 import FileUpload from './components/FileUpload';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import SimpleChart from './components/SimpleChart';
+import UserRegistrationForm from './components/UserRegistrationForm';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -567,7 +568,7 @@ const styles = {
         minHeight: 'var(--lower-panel-height)',
         height: 'auto',
         border: '1px solid rgba(0, 0, 0, 0.08)',
-        paddingBottom: '30px',
+        //paddingBottom: '30px',
     },
 };
 
@@ -762,13 +763,16 @@ function AppContent() {
                             setHasUnread={setHasUnread}
                         />
                     </TopPanel>
-                    <CentralPanel showDefaultLogo={activeTab !== 3}>
+                    <CentralPanel
+                        showDefaultLogo={activeTab !== 3 && activeTab !== 4}
+                    >
                         {activeTab === 3 && (
                             <FileUpload
                                 onFileUploaded={addNotification}
                                 articulos={mockArticulos}
                             />
                         )}
+                        {activeTab === 4 && <UserRegistrationForm />}
                     </CentralPanel>
                     <LowerPanel showDefaultLogo={activeTab !== 3}>
                         <SimpleChart />

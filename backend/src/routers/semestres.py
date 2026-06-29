@@ -46,16 +46,10 @@ class SemestreResponse(BaseModel):
 @router.get("", response_model=list[SemestreResponse])
 def listar_semestres(db: Session = Depends(get_role_db)):
     """Retorna todos los semestres ordenados por fecha_inicio DESC."""
-    return (
-        db.query(Semestre)
-        .order_by(Semestre.fecha_inicio.desc())
-        .all()
-    )
+    return db.query(Semestre).order_by(Semestre.fecha_inicio.desc()).all()
 
 
-@router.post(
-    "", response_model=SemestreResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("", response_model=SemestreResponse, status_code=status.HTTP_201_CREATED)
 def crear_semestre(
     payload: SemestreCreate,
     db: Session = Depends(get_role_db),

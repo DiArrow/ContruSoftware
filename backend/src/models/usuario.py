@@ -29,7 +29,10 @@ class Usuario(Base):
     impresiones = relationship("Impresion", back_populates="usuario", lazy="select")
     reservas = relationship("Reserva", back_populates="usuario", lazy="select")
     cursos_profesor = relationship(
-        "Curso", foreign_keys="Curso.ref_profesor", back_populates="profesor", lazy="select"
+        "Curso",
+        foreign_keys="Curso.ref_profesor",
+        back_populates="profesor",
+        lazy="select",
     )
 
     @validates("rol")

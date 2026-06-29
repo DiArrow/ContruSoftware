@@ -57,9 +57,7 @@ class TestParseCsvRows:
 
     def test_utf8_special_chars(self):
         csv = (
-            "nombre,apellido,correo\n"
-            "María,Peña,maria@test.cl\n"
-            "José,Muñoz,jose@test.cl"
+            "nombre,apellido,correo\nMaría,Peña,maria@test.cl\nJosé,Muñoz,jose@test.cl"
         )
         result = parse_csv_rows(csv)
         assert result[0]["nombre"] == "María"
@@ -127,9 +125,10 @@ class TestCsvImportEndpoint:
             .all()
         )
         assert len(usuarios) == 3
-        assert db_session.query(Estudiante).filter(
-            Estudiante.correo.in_(correos)
-        ).count() == 3
+        assert (
+            db_session.query(Estudiante).filter(Estudiante.correo.in_(correos)).count()
+            == 3
+        )
         assert (
             db_session.query(GrupoEstudiante)
             .filter(GrupoEstudiante.ref_grupo == curso_id)
@@ -286,10 +285,12 @@ class TestCsvImportEndpoint:
         """W03: row with empty email is reported in errors, not imported."""
         curso_id = _crear_curso(db_session)
 
-        csv = _csv_bytes([
-            "Sin,Correo,",
-            "Valido,Estudiante,valido@test.cl",
-        ])
+        csv = _csv_bytes(
+            [
+                "Sin,Correo,",
+                "Valido,Estudiante,valido@test.cl",
+            ]
+        )
 
         response = client.post(
             f"/api/cursos/{curso_id}/estudiantes/csv",
