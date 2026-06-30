@@ -92,7 +92,7 @@ def _crear_curso(session):
 
 
 class TestCsvImportEndpoint:
-    """Integration tests for POST /api/cursos/{id}/estudiantes/csv."""
+    """Integration tests for POST /cursos/{id}/estudiantes/csv."""
 
     @pytest.mark.integration
     def test_happy_path_three_students(self, client, db_session, pro_headers):
@@ -106,7 +106,7 @@ class TestCsvImportEndpoint:
         )
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv.encode("utf-8"), "text/csv")},
             headers=pro_headers,
         )
@@ -161,7 +161,7 @@ class TestCsvImportEndpoint:
         )
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv.encode("utf-8"), "text/csv")},
             headers=pro_headers,
         )
@@ -176,7 +176,7 @@ class TestCsvImportEndpoint:
     def test_est_role_forbidden(self, client_unit, estudiante_headers):
         """INT-03: EST role cannot import students."""
         response = client_unit.post(
-            f"/api/cursos/{uuid4()}/estudiantes/csv",
+            f"/cursos/{uuid4()}/estudiantes/csv",
             files={"file": ("test.csv", b"nombre,apellido,correo", "text/csv")},
             headers=estudiante_headers,
         )
@@ -187,7 +187,7 @@ class TestCsvImportEndpoint:
         """INT-04: non-existent course returns 404."""
         csv = "nombre,apellido,correo\nJuan,Pérez,juan@test.cl"
         response = client.post(
-            f"/api/cursos/{uuid4()}/estudiantes/csv",
+            f"/cursos/{uuid4()}/estudiantes/csv",
             files={"file": ("test.csv", csv.encode("utf-8"), "text/csv")},
             headers=pro_headers,
         )
@@ -197,7 +197,7 @@ class TestCsvImportEndpoint:
         """INT-05: missing token returns 401."""
         csv = "nombre,apellido,correo\nJuan,Pérez,juan@test.cl"
         response = client_unit.post(
-            f"/api/cursos/{uuid4()}/estudiantes/csv",
+            f"/cursos/{uuid4()}/estudiantes/csv",
             files={"file": ("test.csv", csv.encode("utf-8"), "text/csv")},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -210,7 +210,7 @@ class TestCsvImportEndpoint:
         csv = f"nombre,apellido,correo\nSeguro,Usuario,{email}"
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv.encode("utf-8"), "text/csv")},
             headers=pro_headers,
         )
@@ -234,7 +234,7 @@ class TestCsvImportEndpoint:
     def test_sol_role_forbidden(self, client_unit):
         """W02: SOL role returns 403."""
         response = client_unit.post(
-            f"/api/cursos/{uuid4()}/estudiantes/csv",
+            f"/cursos/{uuid4()}/estudiantes/csv",
             files={"file": ("test.csv", _csv_bytes(["X,Y,x@y.cl"]), "text/csv")},
             headers=sol_headers,
         )
@@ -247,7 +247,7 @@ class TestCsvImportEndpoint:
         csv = _csv_bytes(["Ana,Ayudante,ana@test.cl"])
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv, "text/csv")},
             headers=ayu_headers_no_db,
         )
@@ -261,7 +261,7 @@ class TestCsvImportEndpoint:
     def test_non_csv_file_extension(self, client_unit, pro_headers):
         """W03: non-.csv file extension returns 422."""
         response = client_unit.post(
-            f"/api/cursos/{uuid4()}/estudiantes/csv",
+            f"/cursos/{uuid4()}/estudiantes/csv",
             files={"file": ("data.txt", b"a,b,c", "text/plain")},
             headers=pro_headers,
         )
@@ -274,7 +274,7 @@ class TestCsvImportEndpoint:
         csv = _csv_bytes(["Juan,Pérez,juan@test.cl,extra"])
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv, "text/csv")},
             headers=pro_headers,
         )
@@ -293,7 +293,7 @@ class TestCsvImportEndpoint:
         )
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv, "text/csv")},
             headers=pro_headers,
         )
@@ -311,7 +311,7 @@ class TestCsvImportEndpoint:
         csv = b"nombre,apellido,correo\n"
 
         response = client.post(
-            f"/api/cursos/{curso_id}/estudiantes/csv",
+            f"/cursos/{curso_id}/estudiantes/csv",
             files={"file": ("test.csv", csv, "text/csv")},
             headers=pro_headers,
         )

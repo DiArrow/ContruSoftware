@@ -13,7 +13,7 @@ from models.curso import Curso
 from models.semestre import Semestre
 from models.usuario import Usuario
 
-router = APIRouter(prefix="/api/cursos", tags=["cursos"])
+router = APIRouter(prefix="/cursos", tags=["cursos"])
 
 
 class CursoCreate(BaseModel):

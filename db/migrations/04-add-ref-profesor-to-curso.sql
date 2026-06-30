@@ -1,6 +1,6 @@
 -- Migration: agrega columna ref_profesor a curso
 ALTER TABLE curso ADD COLUMN IF NOT EXISTS ref_profesor VARCHAR(36);
-CREATE INDEX IF NOT EXISTS idx_curso_ref_profesor ON curso (ref_profesor);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_curso_ref_profesor ON curso (ref_profesor);
 DO $$
 BEGIN
     IF NOT EXISTS (

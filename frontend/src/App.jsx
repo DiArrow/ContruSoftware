@@ -4,6 +4,7 @@ import FileUpload from './components/FileUpload';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import SimpleChart from './components/SimpleChart';
 import UserRegistrationForm from './components/UserRegistrationForm';
+import { DashboardDocente } from './components/DashboardDocente';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -773,6 +774,9 @@ function AppContent() {
                             />
                         )}
                         {activeTab === 4 && <UserRegistrationForm />}
+                        {activeTab === 0 && (
+                            <DashboardDocente setActiveTab={setActiveTab} />
+                        )}
                     </CentralPanel>
                     <LowerPanel showDefaultLogo={activeTab !== 3}>
                         <SimpleChart />

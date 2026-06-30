@@ -15,7 +15,7 @@ from models.grupo_estudiante import GrupoEstudiante
 from models.usuario import Usuario
 from utils.csv_parser import parse_csv_rows
 
-router = APIRouter(prefix="/api/cursos", tags=["estudiantes"])
+router = APIRouter(prefix="/cursos", tags=["estudiantes"])
 
 
 class PasswordEntry(BaseModel):

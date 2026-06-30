@@ -53,17 +53,17 @@ def _crear_semestre(session, nombre: str = "Semestre 2026-1") -> str:
 
 
 # ───────────────────────────────
-# GET /api/cursos
+# GET /cursos
 # ───────────────────────────────
 
 
 class TestListarCursos:
-    """GET /api/cursos scenarios."""
+    """GET /cursos scenarios."""
 
     @pytest.mark.integration
     def test_lista_vacia_retorna_200(self, client, ayu_headers):
         """An empty table returns 200 and an empty list."""
-        response = client.get("/api/cursos", headers=ayu_headers)
+        response = client.get("/cursos", headers=ayu_headers)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == []
 
@@ -91,7 +91,7 @@ class TestListarCursos:
         db_session.flush()
 
         headers = _token_headers("PRO", pro_id)
-        response = client.get("/api/cursos", headers=headers)
+        response = client.get("/cursos", headers=headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert len(data) == 1
@@ -120,24 +120,24 @@ class TestListarCursos:
         db_session.flush()
 
         headers = _token_headers("AYU", str(USER_IDS["AYU"]))
-        response = client.get("/api/cursos", headers=headers)
+        response = client.get("/cursos", headers=headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert len(data) == 2
 
     def test_401_sin_token(self, client_unit):
         """Request without token returns 401."""
-        response = client_unit.get("/api/cursos")
+        response = client_unit.get("/cursos")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 # ───────────────────────────────
-# POST /api/cursos
+# POST /cursos
 # ───────────────────────────────
 
 
 class TestCrearCurso:
-    """POST /api/cursos scenarios."""
+    """POST /cursos scenarios."""
 
     @pytest.mark.integration
     def test_happy_path_pro(self, client, db_session):
@@ -148,7 +148,7 @@ class TestCrearCurso:
         payload = {"nombre": "Matemáticas", "ref_semestre": semestre_id}
         headers = _token_headers("PRO", pro_id)
 
-        response = client.post("/api/cursos", json=payload, headers=headers)
+        response = client.post("/cursos", json=payload, headers=headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["nombre"] == payload["nombre"]
@@ -170,7 +170,7 @@ class TestCrearCurso:
         }
         headers = _token_headers("AYU", str(USER_IDS["AYU"]))
 
-        response = client.post("/api/cursos", json=payload, headers=headers)
+        response = client.post("/cursos", json=payload, headers=headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["nombre"] == payload["nombre"]
@@ -179,15 +179,13 @@ class TestCrearCurso:
     def test_403_rol_no_autorizado_est(self, client_unit, estudiante_headers):
         """EST no puede crear cursos → 403."""
         payload = {"nombre": "Curso", "ref_semestre": str(uuid4())}
-        response = client_unit.post(
-            "/api/cursos", json=payload, headers=estudiante_headers
-        )
+        response = client_unit.post("/cursos", json=payload, headers=estudiante_headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_401_sin_token(self, client_unit):
         """Request without token returns 401."""
         payload = {"nombre": "Curso", "ref_semestre": str(uuid4())}
-        response = client_unit.post("/api/cursos", json=payload)
+        response = client_unit.post("/cursos", json=payload)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_422_pro_con_ref_profesor_distinto(self, client_unit, pro_headers):
@@ -197,13 +195,13 @@ class TestCrearCurso:
             "ref_semestre": str(uuid4()),
             "ref_profesor": str(uuid4()),
         }
-        response = client_unit.post("/api/cursos", json=payload, headers=pro_headers)
+        response = client_unit.post("/cursos", json=payload, headers=pro_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     def test_422_nombre_vacio(self, client_unit, pro_headers):
         """Nombre vacío o whitespace returns 422."""
         payload = {"nombre": "", "ref_semestre": str(uuid4())}
-        response = client_unit.post("/api/cursos", json=payload, headers=pro_headers)
+        response = client_unit.post("/cursos", json=payload, headers=pro_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     @pytest.mark.parametrize("uuid_field", ["ref_semestre", "ref_profesor"])
@@ -214,14 +212,14 @@ class TestCrearCurso:
             "ref_semestre": str(uuid4()),
             uuid_field: "no-es-uuid",
         }
-        response = client_unit.post("/api/cursos", json=payload, headers=pro_headers)
+        response = client_unit.post("/cursos", json=payload, headers=pro_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     @pytest.mark.integration
     def test_404_semestre_no_existe(self, client, db_session, pro_headers):
         """ref_semestre inexistente → 404."""
         payload = {"nombre": "Curso", "ref_semestre": str(uuid4())}
-        response = client.post("/api/cursos", json=payload, headers=pro_headers)
+        response = client.post("/cursos", json=payload, headers=pro_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     @pytest.mark.integration
@@ -231,7 +229,7 @@ class TestCrearCurso:
 
         payload = {"nombre": "Curso", "ref_semestre": semestre_id}
         headers = _token_headers("AYU", str(USER_IDS["AYU"]))
-        response = client.post("/api/cursos", json=payload, headers=headers)
+        response = client.post("/cursos", json=payload, headers=headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     @pytest.mark.integration
@@ -245,17 +243,17 @@ class TestCrearCurso:
             "ref_profesor": str(uuid4()),
         }
         headers = _token_headers("AYU", str(USER_IDS["AYU"]))
-        response = client.post("/api/cursos", json=payload, headers=headers)
+        response = client.post("/cursos", json=payload, headers=headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 # ───────────────────────────────
-# GET /api/cursos/{id}
+# GET /cursos/{id}
 # ───────────────────────────────
 
 
 class TestObtenerCurso:
-    """GET /api/cursos/{id} scenarios."""
+    """GET /cursos/{id} scenarios."""
 
     @pytest.mark.integration
     def test_happy_path(self, client, db_session):
@@ -273,7 +271,7 @@ class TestObtenerCurso:
         db_session.flush()
 
         headers = _token_headers("PRO", str(USER_IDS["PRO"]))
-        response = client.get(f"/api/cursos/{curso_id}", headers=headers)
+        response = client.get(f"/cursos/{curso_id}", headers=headers)
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["nombre"] == "Matemáticas"
@@ -282,22 +280,22 @@ class TestObtenerCurso:
     @pytest.mark.integration
     def test_404_no_encontrado(self, client, db_session, pro_headers):
         """ID inexistente → 404."""
-        response = client.get(f"/api/cursos/{uuid4()}", headers=pro_headers)
+        response = client.get(f"/cursos/{uuid4()}", headers=pro_headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_401_sin_token(self, client_unit):
         """Request without token returns 401."""
-        response = client_unit.get(f"/api/cursos/{uuid4()}")
+        response = client_unit.get(f"/cursos/{uuid4()}")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 # ───────────────────────────────
-# PUT /api/cursos/{id}
+# PUT /cursos/{id}
 # ───────────────────────────────
 
 
 class TestActualizarCurso:
-    """PUT /api/cursos/{id} scenarios."""
+    """PUT /cursos/{id} scenarios."""
 
     @pytest.mark.integration
     def test_happy_path_adm(self, client, db_session):
@@ -316,7 +314,7 @@ class TestActualizarCurso:
 
         headers = _token_headers("ADM", str(USER_IDS["ADM"]))
         response = client.put(
-            f"/api/cursos/{curso_id}", json={"nombre": "Actualizado"}, headers=headers
+            f"/cursos/{curso_id}", json={"nombre": "Actualizado"}, headers=headers
         )
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -325,7 +323,7 @@ class TestActualizarCurso:
     def test_403_no_adm(self, client_unit, pro_headers):
         """Rol no ADM → 403."""
         response = client_unit.put(
-            f"/api/cursos/{uuid4()}", json={"nombre": "x"}, headers=pro_headers
+            f"/cursos/{uuid4()}", json={"nombre": "x"}, headers=pro_headers
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -334,18 +332,18 @@ class TestActualizarCurso:
         """ID inexistente → 404."""
         headers = _token_headers("ADM", str(USER_IDS["ADM"]))
         response = client.put(
-            f"/api/cursos/{uuid4()}", json={"nombre": "x"}, headers=headers
+            f"/cursos/{uuid4()}", json={"nombre": "x"}, headers=headers
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 # ───────────────────────────────
-# DELETE /api/cursos/{id}
+# DELETE /cursos/{id}
 # ───────────────────────────────
 
 
 class TestEliminarCurso:
-    """DELETE /api/cursos/{id} scenarios."""
+    """DELETE /cursos/{id} scenarios."""
 
     @pytest.mark.integration
     def test_happy_path_adm(self, client, db_session):
@@ -363,17 +361,17 @@ class TestEliminarCurso:
         db_session.flush()
 
         headers = _token_headers("ADM", str(USER_IDS["ADM"]))
-        response = client.delete(f"/api/cursos/{curso_id}", headers=headers)
+        response = client.delete(f"/cursos/{curso_id}", headers=headers)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_403_no_adm(self, client_unit, ayu_headers):
         """Rol no ADM → 403."""
-        response = client_unit.delete(f"/api/cursos/{uuid4()}", headers=ayu_headers)
+        response = client_unit.delete(f"/cursos/{uuid4()}", headers=ayu_headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     @pytest.mark.integration
     def test_404_no_encontrado(self, client, db_session):
         """ID inexistente → 404."""
         headers = _token_headers("ADM", str(USER_IDS["ADM"]))
-        response = client.delete(f"/api/cursos/{uuid4()}", headers=headers)
+        response = client.delete(f"/cursos/{uuid4()}", headers=headers)
         assert response.status_code == status.HTTP_404_NOT_FOUND

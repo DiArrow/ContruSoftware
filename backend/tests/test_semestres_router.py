@@ -5,18 +5,18 @@ from fastapi import status
 
 
 class TestListarSemestres:
-    """GET /api/semestres scenarios."""
+    """GET /semestres scenarios."""
 
     @pytest.mark.integration
     def test_lista_vacia_retorna_200(self, client):
         """An empty table returns 200 and an empty list."""
-        response = client.get("/api/semestres")
+        response = client.get("/semestres")
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == []
 
 
 class TestCrearSemestre:
-    """POST /api/semestres scenarios."""
+    """POST /semestres scenarios."""
 
     @pytest.mark.parametrize(
         "payload",
@@ -42,7 +42,7 @@ class TestCrearSemestre:
     @pytest.mark.integration
     def test_happy_path_admin(self, client, db_session, admin_headers, payload):
         """Admin puede crear un semestre y recibe 201."""
-        response = client.post("/api/semestres", json=payload, headers=admin_headers)
+        response = client.post("/semestres", json=payload, headers=admin_headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["nombre"] == payload["nombre"]
@@ -70,7 +70,7 @@ class TestCrearSemestre:
     @pytest.mark.integration
     def test_happy_path_ayu(self, client, db_session, ayu_headers, payload):
         """AYU puede crear un semestre y recibe 201."""
-        response = client.post("/api/semestres", json=payload, headers=ayu_headers)
+        response = client.post("/semestres", json=payload, headers=ayu_headers)
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["nombre"] == payload["nombre"]
@@ -95,7 +95,7 @@ class TestCrearSemestre:
     def test_403_rol_no_autorizado(self, client_unit, estudiante_headers, payload):
         """Rol no autorizado (EST) recibe 403."""
         response = client_unit.post(
-            "/api/semestres", json=payload, headers=estudiante_headers
+            "/semestres", json=payload, headers=estudiante_headers
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -107,7 +107,7 @@ class TestCrearSemestre:
             "fecha_fin": "2026-07-15",
         }
 
-        response = client_unit.post("/api/semestres", json=payload)
+        response = client_unit.post("/semestres", json=payload)
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -128,9 +128,7 @@ class TestCrearSemestre:
             "fecha_inicio": fecha_inicio,
             "fecha_fin": fecha_fin,
         }
-        response = client_unit.post(
-            "/api/semestres", json=payload, headers=admin_headers
-        )
+        response = client_unit.post("/semestres", json=payload, headers=admin_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     @pytest.mark.parametrize(
@@ -147,7 +145,5 @@ class TestCrearSemestre:
             "fecha_inicio": "2026-03-01",
             "fecha_fin": "2026-07-15",
         }
-        response = client_unit.post(
-            "/api/semestres", json=payload, headers=admin_headers
-        )
+        response = client_unit.post("/semestres", json=payload, headers=admin_headers)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

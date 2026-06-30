@@ -13,9 +13,9 @@ const crearRespuestaMock = (ok, status, data) => ({
 });
 
 // Helper para renderizar el componente inyectando el AuthContext
-const renderWithAuth = (ui, currentUser) => {
+const renderWithAuth = (ui, user) => {
     return render(
-        <AuthContext.Provider value={{ currentUser }}>
+        <AuthContext.Provider value={{ currentUser: user }}>
             {ui}
         </AuthContext.Provider>
     );

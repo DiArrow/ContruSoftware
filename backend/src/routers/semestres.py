@@ -11,7 +11,7 @@ from auth.dependencies import get_role_db, requiere_rol
 from auth.roles import PUEDEN_CREAR_SEMESTRE
 from models.semestre import Semestre
 
-router = APIRouter(prefix="/api/semestres", tags=["semestres"])
+router = APIRouter(prefix="/semestres", tags=["semestres"])
 
 
 class SemestreCreate(BaseModel):
