@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import SimpleChart from './components/SimpleChart';
 import UserRegistrationForm from './components/UserRegistrationForm';
 import { DashboardDocente } from './components/DashboardDocente';
+import { ImportadorCSV } from './components/ImportadorCSV';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -620,14 +621,14 @@ function CentralPanel({ children, showDefaultLogo }) {
             {showDefaultLogo && (
                 <div
                     style={{
-                        position: 'relative',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-93%, -50%)',
                         display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '8px',
+                        flexDirection: 'row', // Mantiene el logo y el texto lado a lado
+                        alignItems: 'center', // Los centra verticalmente entre sí
+                        justifyContent: 'flex-start', // ¡Alinea todo hacia el lado izquierdo!
+                        width: '100%',
+                        flex: 1,
+                        gap: '40px', // Espacio entre el cubo y el texto
+                        padding: '60px 24px', // 24px de margen a los lados para que respire
                     }}
                 >
                     <div
@@ -640,30 +641,18 @@ function CentralPanel({ children, showDefaultLogo }) {
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#5b21b6',
+                            flexShrink: 0,
                         }}
                     >
                         <IconCentral />
                     </div>
                     <span
                         style={{
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            color: '#5b21b6',
-                            letterSpacing: '0.05em',
-                            textTransform: 'uppercase',
-                        }}
-                    ></span>
-                    <span
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(20%, -80%)',
                             fontSize: '50px',
                             fontWeight: 100,
                             color: '#000000',
                             letterSpacing: '0.05em',
-                            marginTop: '10px',
+                            margin: 0,
                         }}
                     >
                         Proyectos realizados: 0
@@ -710,6 +699,7 @@ function AppContent() {
     const [activeTab, setActiveTab] = useState(0);
     const [notifications, setNotifications] = useState([]);
     const [hasUnread, setHasUnread] = useState(false);
+    const [cursoSeleccionadoId, setCursoSeleccionadoId] = useState(null); // <-- LÍNEA NUEVA
     const addNotification = (notification) => {
         setNotifications((prev) => [notification, ...prev]);
         setHasUnread(true);
@@ -764,9 +754,7 @@ function AppContent() {
                             setHasUnread={setHasUnread}
                         />
                     </TopPanel>
-                    <CentralPanel
-                        showDefaultLogo={activeTab !== 3 && activeTab !== 4}
-                    >
+                    <CentralPanel showDefaultLogo={activeTab === 2}>
                         {activeTab === 3 && (
                             <FileUpload
                                 onFileUploaded={addNotification}
@@ -775,12 +763,23 @@ function AppContent() {
                         )}
                         {activeTab === 4 && <UserRegistrationForm />}
                         {activeTab === 0 && (
-                            <DashboardDocente setActiveTab={setActiveTab} />
+                            <DashboardDocente
+                                setActiveTab={setActiveTab}
+                                setCursoSeleccionadoId={setCursoSeleccionadoId}
+                            />
+                        )}
+                        {activeTab === 1 && (
+                            <ImportadorCSV
+                                cursoId={cursoSeleccionadoId}
+                                onVolver={() => setActiveTab(0)}
+                            />
                         )}
                     </CentralPanel>
-                    <LowerPanel showDefaultLogo={activeTab !== 3}>
-                        <SimpleChart />
-                    </LowerPanel>
+                    {activeTab === 2 && (
+                        <LowerPanel>
+                            <SimpleChart />
+                        </LowerPanel>
+                    )}
                 </div>
             </div>
         </div>

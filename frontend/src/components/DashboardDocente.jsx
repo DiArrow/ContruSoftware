@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext'; // Revisa que la ruta sea correcta
 
-export const DashboardDocente = ({ setActiveTab }) => {
+export const DashboardDocente = ({ setActiveTab, setCursoSeleccionadoId }) => {
     const { currentUser } = useContext(AuthContext);
 
     const [cursos, setCursos] = useState([]);
@@ -81,15 +81,14 @@ export const DashboardDocente = ({ setActiveTab }) => {
         }
     };
 
-    // Funciones de navegación usando tus tabs
-    const handleVerEstudiantes = (cursoId) => {
-        console.log(`Navegando a estudiantes del curso: ${cursoId}`);
-        if (setActiveTab) setActiveTab(1);
+    const handleVerEstudiantes = (idCurso) => {
+        setCursoSeleccionadoId(idCurso);
+        setActiveTab(1);
     };
 
     const handleImportarCSV = (cursoId) => {
-        console.log(`Preparando importación para curso: ${cursoId}`);
-        if (setActiveTab) setActiveTab(1);
+        setCursoSeleccionadoId(cursoId);
+        setActiveTab(1);
     };
 
     // Estilos reutilizables (Paleta MakerBox)
@@ -352,9 +351,7 @@ export const DashboardDocente = ({ setActiveTab }) => {
                                     >
                                         <button
                                             onClick={() =>
-                                                handleVerEstudiantes(
-                                                    curso.id_curso
-                                                )
+                                                handleVerEstudiantes(curso.id)
                                             }
                                             style={btnStyle}
                                         >
