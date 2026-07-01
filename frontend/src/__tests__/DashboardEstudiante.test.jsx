@@ -28,19 +28,17 @@ describe('DashboardEstudiante Component', () => {
         expect(screen.getByText(/cargando/i)).toBeInTheDocument();
     });
 
-    it('muestra tarjetas de cursos con nombre, semestre y créditos', async () => {
+    it('muestra tarjetas de cursos con nombre y semestre', async () => {
         apiGet.mockResolvedValue([
             {
                 id_curso: '1',
                 nombre: 'Matemáticas',
                 semestre_nombre: '2026-1',
-                creditos: 4,
             },
             {
                 id_curso: '2',
                 nombre: 'Física',
                 semestre_nombre: '2026-1',
-                creditos: 3,
             },
         ]);
 
@@ -51,8 +49,6 @@ describe('DashboardEstudiante Component', () => {
         });
         expect(screen.getByText('Física')).toBeInTheDocument();
         expect(screen.getAllByText('2026-1')).toHaveLength(2);
-        expect(screen.getByText(/4 créditos/i)).toBeInTheDocument();
-        expect(screen.getByText(/3 créditos/i)).toBeInTheDocument();
     });
 
     it('muestra mensaje cuando no hay cursos', async () => {

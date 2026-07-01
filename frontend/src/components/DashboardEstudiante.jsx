@@ -129,21 +129,6 @@ export const DashboardEstudiante = () => {
                                 {curso.semestre_nombre ||
                                     'Semestre no asignado'}
                             </p>
-                            <span
-                                style={{
-                                    display: 'inline-block',
-                                    padding: '4px 12px',
-                                    backgroundColor: '#ede9fe',
-                                    color: '#5b21b6',
-                                    borderRadius: '9999px',
-                                    fontSize: '12px',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {curso.creditos != null
-                                    ? `${curso.creditos} créditos`
-                                    : '0 créditos'}
-                            </span>
                         </div>
                     ))}
                 </div>

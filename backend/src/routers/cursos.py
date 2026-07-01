@@ -76,7 +76,7 @@ class CursoEstudianteResponse(BaseModel):
     id_curso: str
     nombre: str
     semestre_nombre: Optional[str]
-    creditos: Optional[int] = None
+
 
     model_config = ConfigDict(from_attributes=True)
 
