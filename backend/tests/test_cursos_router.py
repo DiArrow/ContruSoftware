@@ -195,6 +195,7 @@ class TestMisCursos:
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == []
 
+    @pytest.mark.integration
     def test_est_sin_registro_retorna_404(self, client, db_session):
         """EST autenticado pero sin registro Estudiante → 404."""
         fake_id = str(uuid4())
