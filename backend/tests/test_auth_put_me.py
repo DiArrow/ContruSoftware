@@ -1,6 +1,5 @@
 """Tests for PUT /auth/me profile update endpoint."""
 
-from uuid import uuid4
 
 import pytest
 from fastapi import status
