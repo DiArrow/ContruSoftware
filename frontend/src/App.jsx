@@ -7,6 +7,7 @@ import UserRegistrationForm from './components/UserRegistrationForm';
 import { DashboardDocente } from './components/DashboardDocente';
 import { DashboardEstudiante } from './components/DashboardEstudiante';
 import { HistorialImpresiones } from './components/HistorialImpresiones';
+import { PerfilUsuario } from './components/PerfilUsuario';
 import { ImportadorCSV } from './components/ImportadorCSV';
 import SemestresPage from './components/SemestresPage';
 
@@ -219,6 +220,7 @@ const navItems = [
     { icon: <IconSettings />, label: 'Ajustes', roles: ['ADM'] },
     { icon: <IconBook />, label: 'Mis Cursos', roles: ['EST'] },
     { icon: <IconPrinter />, label: 'Historial Impresiones', roles: ['EST', 'SOL'] },
+    { icon: <IconUser />, label: 'Perfil', roles: ['EST', 'SOL'] },
 ];
 
 // Sidebar
@@ -830,6 +832,7 @@ function AppContent() {
                         )}
                         {activeTab === 6 && <DashboardEstudiante />}
                         {activeTab === 7 && <HistorialImpresiones />}
+                        {activeTab === 8 && <PerfilUsuario />}
                     </CentralPanel>
                     {activeTab === 3 && (
                         <LowerPanel>

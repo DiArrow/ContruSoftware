@@ -37,6 +37,14 @@ class UsuarioCreate(BaseModel):
     rol: str
 
 
+class UsuarioUpdate(BaseModel):
+    """Payload for updating the authenticated user profile."""
+
+    nombre: str | None = None
+    apellido: str | None = None
+    email: EmailStr | None = None
+
+
 class UsuarioResponse(BaseModel):
     """Payload returned for authenticated user profile."""
 
