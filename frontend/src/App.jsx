@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import SimpleChart from './components/SimpleChart';
 import UserRegistrationForm from './components/UserRegistrationForm';
 import { DashboardDocente } from './components/DashboardDocente';
+import { DashboardEstudiante } from './components/DashboardEstudiante';
 import { ImportadorCSV } from './components/ImportadorCSV';
 import SemestresPage from './components/SemestresPage';
 
@@ -825,6 +826,7 @@ function AppContent() {
                                 onVolver={() => setActiveTab(0)}
                             />
                         )}
+                        {activeTab === 6 && <DashboardEstudiante />}
                     </CentralPanel>
                     {activeTab === 3 && (
                         <LowerPanel>
