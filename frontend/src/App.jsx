@@ -191,19 +191,40 @@ const IconCalendar = () => (
         <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
 );
+const IconBook = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+);
 
 //Items de navegación
 const navItems = [
-    { icon: <IconGrid />, label: 'Dashboard' },
-    { icon: <IconCalendar />, label: 'Semestres' },
-    { icon: <IconUsers />, label: 'Estudiantes' },
-    { icon: <IconBag />, label: 'Inventario' },
-    { icon: <IconPrinter />, label: 'Impresiones' },
-    { icon: <IconSettings />, label: 'Ajustes' },
+    { icon: <IconGrid />, label: 'Dashboard', roles: ['EST', 'SOL', 'PRO', 'AYU', 'ADM'] },
+    { icon: <IconCalendar />, label: 'Semestres', roles: ['PRO', 'ADM'] },
+    { icon: <IconUsers />, label: 'Estudiantes', roles: ['PRO', 'ADM'] },
+    { icon: <IconBag />, label: 'Inventario', roles: ['PRO', 'ADM'] },
+    { icon: <IconPrinter />, label: 'Impresiones', roles: ['AYU', 'ADM', 'EST', 'SOL'] },
+    { icon: <IconSettings />, label: 'Ajustes', roles: ['ADM'] },
+    { icon: <IconBook />, label: 'Mis Cursos', roles: ['EST'] },
 ];
 
 // Sidebar
-function Sidebar({ active, setActive }) {
+function Sidebar({ active, setActive, currentUser }) {
+    const userRole = currentUser?.rol;
+    const visibleItems = navItems.filter(
+        (item) => !item.roles || item.roles.includes(userRole)
+    );
+
     return (
         <aside
             style={{
@@ -269,10 +290,10 @@ function Sidebar({ active, setActive }) {
                     flex: 1,
                 }}
             >
-                {navItems.map((item, i) => (
+                {visibleItems.map((item) => (
                     <button
-                        key={i}
-                        onClick={() => setActive(i)}
+                        key={item.label}
+                        onClick={() => setActive(navItems.indexOf(item))}
                         title={item.label}
                         style={{
                             width: '44px',
@@ -283,8 +304,13 @@ function Sidebar({ active, setActive }) {
                             borderRadius: '12px',
                             border: 'none',
                             backgroundColor:
-                                active === i ? '#ede9fe' : 'transparent',
-                            color: active === i ? '#5b21b6' : '#9ca3af',
+                                active === navItems.indexOf(item)
+                                    ? '#ede9fe'
+                                    : 'transparent',
+                            color:
+                                active === navItems.indexOf(item)
+                                    ? '#5b21b6'
+                                    : '#9ca3af',
                             cursor: 'pointer',
                             transition: 'background 0.2s, color 0.2s',
                         }}
@@ -755,7 +781,11 @@ function AppContent() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar active={activeTab} setActive={setActiveTab} />
+            <Sidebar
+                active={activeTab}
+                setActive={setActiveTab}
+                currentUser={currentUser}
+            />
             <div
                 style={{
                     flex: 1,

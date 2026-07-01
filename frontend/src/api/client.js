@@ -49,6 +49,21 @@ export async function apiPost(path, body) {
     return data;
 }
 
+export async function apiPut(path, body) {
+    const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'PUT',
+        headers: buildHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(body),
+    });
+    const data = await parseResponse(response);
+    if (!response.ok) {
+        throw new Error(
+            data.detail || data.message || data || 'Request failed'
+        );
+    }
+    return data;
+}
+
 export async function apiPostFormData(path, formData) {
     const response = await fetch(`${BASE_URL}${path}`, {
         method: 'POST',
