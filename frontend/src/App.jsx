@@ -6,6 +6,7 @@ import SimpleChart from './components/SimpleChart';
 import UserRegistrationForm from './components/UserRegistrationForm';
 import { DashboardDocente } from './components/DashboardDocente';
 import { ImportadorCSV } from './components/ImportadorCSV';
+import SemestresPage from './components/SemestresPage';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -173,9 +174,28 @@ const IconCentral = () => (
     </svg>
 );
 
+const IconCalendar = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
+
 //Items de navegación
 const navItems = [
     { icon: <IconGrid />, label: 'Dashboard' },
+    { icon: <IconCalendar />, label: 'Semestres' },
     { icon: <IconUsers />, label: 'Estudiantes' },
     { icon: <IconBag />, label: 'Inventario' },
     { icon: <IconPrinter />, label: 'Impresiones' },
@@ -754,28 +774,29 @@ function AppContent() {
                             setHasUnread={setHasUnread}
                         />
                     </TopPanel>
-                    <CentralPanel showDefaultLogo={activeTab === 2}>
-                        {activeTab === 3 && (
+                    <CentralPanel showDefaultLogo={activeTab === 3}>
+                        {activeTab === 1 && <SemestresPage />}
+                        {activeTab === 4 && (
                             <FileUpload
                                 onFileUploaded={addNotification}
                                 articulos={mockArticulos}
                             />
                         )}
-                        {activeTab === 4 && <UserRegistrationForm />}
+                        {activeTab === 5 && <UserRegistrationForm />}
                         {activeTab === 0 && (
                             <DashboardDocente
                                 setActiveTab={setActiveTab}
                                 setCursoSeleccionadoId={setCursoSeleccionadoId}
                             />
                         )}
-                        {activeTab === 1 && (
+                        {activeTab === 2 && (
                             <ImportadorCSV
                                 cursoId={cursoSeleccionadoId}
                                 onVolver={() => setActiveTab(0)}
                             />
                         )}
                     </CentralPanel>
-                    {activeTab === 2 && (
+                    {activeTab === 3 && (
                         <LowerPanel>
                             <SimpleChart />
                         </LowerPanel>
