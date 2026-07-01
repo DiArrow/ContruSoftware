@@ -10,6 +10,8 @@ from sqlalchemy.orm import Session
 
 from auth.dependencies import get_role_db, requiere_rol
 from models.curso import Curso
+from models.estudiante import Estudiante
+from models.grupo_estudiante import GrupoEstudiante
 from models.semestre import Semestre
 from models.usuario import Usuario
 
@@ -64,6 +66,17 @@ class CursoResponse(BaseModel):
     bloque_id: Optional[str]
     creado_en: datetime
     actualizado_en: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CursoEstudianteResponse(BaseModel):
+    """Payload de respuesta para un curso de un estudiante inscrito."""
+
+    id_curso: str
+    nombre: str
+    semestre_nombre: Optional[str]
+
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -157,6 +170,38 @@ def listar_cursos(
 
     cursos = query.all()
     return [_construir_respuesta(curso) for curso in cursos]
+
+
+@router.get("/mis-cursos", response_model=list[CursoEstudianteResponse])
+def listar_mis_cursos(
+    db: Session = Depends(get_role_db),
+    current_user: dict = Depends(requiere_rol(["EST"])),
+):
+    """Lista los cursos en los que el estudiante autenticado está inscrito."""
+    user_sub = current_user["sub"]
+
+    estudiante = db.query(Estudiante).filter(Estudiante.id_estudiante == user_sub).first()
+    if not estudiante:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Estudiante no encontrado",
+        )
+
+    cursos = (
+        db.query(Curso)
+        .join(GrupoEstudiante, Curso.id_curso == GrupoEstudiante.ref_grupo)
+        .join(Estudiante, GrupoEstudiante.ref_estudiante == Estudiante.id_estudiante)
+        .filter(Estudiante.id_estudiante == user_sub)
+        .all()
+    )
+    return [
+        CursoEstudianteResponse(
+            id_curso=curso.id_curso,
+            nombre=curso.nombre,
+            semestre_nombre=curso.semestre.nombre if curso.semestre else None,
+        )
+        for curso in cursos
+    ]
 
 
 @router.get("/{id_curso}", response_model=CursoResponse)

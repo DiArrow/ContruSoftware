@@ -8,6 +8,8 @@ from fastapi import status
 
 from auth.jwt_handler import crear_token_jwt
 from models.curso import Curso
+from models.estudiante import Estudiante
+from models.grupo_estudiante import GrupoEstudiante
 from models.semestre import Semestre
 from models.usuario import Usuario
 
@@ -50,6 +52,21 @@ def _crear_semestre(session, nombre: str = "Semestre 2026-1") -> str:
     session.add(Semestre(id_semestre=sid, nombre=nombre))
     session.flush()
     return sid
+
+
+def _crear_estudiante(session, user_id: str | None = None) -> str:
+    """Crea un estudiante y retorna su id."""
+    uid = user_id or str(uuid4())
+    session.add(
+        Estudiante(
+            id_estudiante=uid,
+            nombre="Estudiante",
+            apellido="Test",
+            correo=f"est_{uid[:8]}@test.com",
+        )
+    )
+    session.flush()
+    return uid
 
 
 # ───────────────────────────────
@@ -129,6 +146,67 @@ class TestListarCursos:
         """Request without token returns 401."""
         response = client_unit.get("/cursos")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+# ───────────────────────────────
+# GET /cursos/mis-cursos
+# ───────────────────────────────
+
+
+class TestMisCursos:
+    """GET /cursos/mis-cursos scenarios."""
+
+    @pytest.mark.integration
+    def test_est_ve_sus_cursos(self, client, db_session):
+        """EST inscrito en cursos retorna su lista."""
+        estudiante_id = _crear_estudiante(db_session)
+        semestre_id = _crear_semestre(db_session, "2026-1")
+
+        curso_id = str(uuid4())
+        db_session.add(
+            Curso(
+                id_curso=curso_id,
+                nombre="Matemáticas",
+                ref_semestre=semestre_id,
+                ref_profesor=None,
+            )
+        )
+        db_session.add(
+            GrupoEstudiante(ref_grupo=curso_id, ref_estudiante=estudiante_id)
+        )
+        db_session.flush()
+
+        headers = _token_headers("EST", estudiante_id)
+        response = client.get("/cursos/mis-cursos", headers=headers)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["id_curso"] == curso_id
+        assert data[0]["nombre"] == "Matemáticas"
+        assert data[0]["semestre_nombre"] == "2026-1"
+
+    @pytest.mark.integration
+    def test_est_sin_cursos_retorna_vacio(self, client, db_session):
+        """EST sin inscripciones retorna lista vacía."""
+        estudiante_id = _crear_estudiante(db_session)
+        headers = _token_headers("EST", estudiante_id)
+
+        response = client.get("/cursos/mis-cursos", headers=headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == []
+
+    @pytest.mark.integration
+    def test_est_sin_registro_retorna_404(self, client, db_session):
+        """EST autenticado pero sin registro Estudiante → 404."""
+        fake_id = str(uuid4())
+        headers = _token_headers("EST", fake_id)
+        response = client.get("/cursos/mis-cursos", headers=headers)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_pro_no_puede_ver_mis_cursos(self, client_unit, pro_headers):
+        """Rol no EST → 403."""
+        response = client_unit.get("/cursos/mis-cursos", headers=pro_headers)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 # ───────────────────────────────

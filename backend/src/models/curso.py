@@ -20,6 +20,13 @@ class Curso(Base):
     actualizado_en = Column(TIMESTAMP, server_default=func.now())
 
     semestre = relationship("Semestre", back_populates="cursos", lazy="select")
+    grupo_estudiantes = relationship(
+        "GrupoEstudiante",
+        primaryjoin="Curso.id_curso == GrupoEstudiante.ref_grupo",
+        foreign_keys="GrupoEstudiante.ref_grupo",
+        back_populates="curso",
+        lazy="select",
+    )
     ayudantias = relationship("Ayudantia", back_populates="curso", lazy="select")
     profesor = relationship(
         "Usuario",

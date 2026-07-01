@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from auth.dependencies import get_current_user, get_role_db
 from auth.hasher import verificar_password
 from auth.jwt_handler import crear_token_jwt
-from auth.schemas import LoginRequest, TokenResponse, UsuarioResponse
+from auth.schemas import LoginRequest, TokenResponse, UsuarioResponse, UsuarioUpdate
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_db
 from models.usuario import Usuario
@@ -56,3 +56,28 @@ def get_me(
         email=usuario.email,
         rol=usuario.rol,
     )
+
+
+@router.put("/me", response_model=UsuarioResponse)
+def update_me(
+    update: UsuarioUpdate,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_role_db),
+):
+    """Actualiza el perfil del usuario autenticado."""
+    usuario = (
+        db.query(Usuario).filter(Usuario.id_usuario == current_user["sub"]).first()
+    )
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    datos = update.model_dump(exclude_unset=True)
+    for campo, valor in datos.items():
+        setattr(usuario, campo, valor)
+
+    db.commit()
+    db.refresh(usuario)
+    return usuario
