@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { apiGet, apiPost } from '../api/client';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
@@ -20,6 +20,7 @@ export function AuthProvider({ children }) {
 
     const fetchMe = useCallback(async () => {
         try {
+            // Nuevo path del endpoint de perfil tras el refactor de routers
             const user = await apiGet('auth/me');
             setCurrentUser(user);
         } catch {
@@ -53,7 +54,11 @@ export function AuthProvider({ children }) {
     }, [fetchMe]);
 
     const login = async (email, password) => {
-        const data = await apiPost('auth/token', { email, password });
+        // Nuevo path del endpoint de login tras el refactor de routers
+        const data = await apiPost('auth/token', {
+            email,
+            password,
+        });
         localStorage.setItem('token', data.access_token);
         await fetchMe();
         return data;

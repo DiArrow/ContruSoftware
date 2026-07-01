@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import Login from './components/Login';
+import FileUpload from './components/FileUpload';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import SimpleChart from './components/SimpleChart';
+import UserRegistrationForm from './components/UserRegistrationForm';
+import { DashboardDocente } from './components/DashboardDocente';
+import { DashboardEstudiante } from './components/DashboardEstudiante';
+import { HistorialImpresiones } from './components/HistorialImpresiones';
+import { PerfilUsuario } from './components/PerfilUsuario';
+import { ImportadorCSV } from './components/ImportadorCSV';
+import SemestresPage from './components/SemestresPage';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -54,7 +63,7 @@ const IconBag = () => (
         <path d="M16 10a4 4 0 0 1-8 0" />
     </svg>
 );
-const IconChart = () => (
+const IconPrinter = () => (
     <svg
         width="20"
         height="20"
@@ -65,25 +74,9 @@ const IconChart = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <line x1="18" y1="20" x2="18" y2="10" />
-        <line x1="12" y1="20" x2="12" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="14" />
-        <line x1="2" y1="20" x2="22" y2="20" />
-    </svg>
-);
-const IconBook = () => (
-    <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        <polyline points="6 9 6 2 18 2 18 9" />
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+        <rect x="6" y="14" width="12" height="8" />
     </svg>
 );
 const IconSettings = () => (
@@ -184,19 +177,71 @@ const IconCentral = () => (
     </svg>
 );
 
+const IconCalendar = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
+const IconBook = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+);
+
 //Items de navegación
 const navItems = [
-    { icon: <IconGrid />, label: 'Dashboard' },
-    { icon: <IconUsers />, label: 'Students' },
-    { icon: <IconBag />, label: 'Inventory' },
-    { icon: <IconChart />, label: 'Reports' },
-    { icon: <IconBook />, label: 'Courses' },
-    { icon: <IconSettings />, label: 'Settings' },
+    {
+        icon: <IconGrid />,
+        label: 'Dashboard',
+        roles: ['EST', 'SOL', 'PRO', 'AYU', 'ADM'],
+    },
+    { icon: <IconCalendar />, label: 'Semestres', roles: ['PRO', 'ADM'] },
+    { icon: <IconUsers />, label: 'Estudiantes', roles: ['PRO', 'ADM'] },
+    { icon: <IconBag />, label: 'Inventario', roles: ['PRO', 'ADM'] },
+    {
+        icon: <IconPrinter />,
+        label: 'Impresiones',
+        roles: ['AYU', 'ADM', 'EST', 'SOL'],
+    },
+    { icon: <IconSettings />, label: 'Ajustes', roles: ['ADM'] },
+    { icon: <IconBook />, label: 'Mis Cursos', roles: ['EST'] },
+    {
+        icon: <IconPrinter />,
+        label: 'Historial Impresiones',
+        roles: ['EST', 'SOL'],
+    },
+    { icon: <IconUser />, label: 'Perfil', roles: ['EST', 'SOL'] },
 ];
 
 // Sidebar
-function Sidebar() {
-    const [active, setActive] = useState(0);
+function Sidebar({ active, setActive, currentUser }) {
+    const userRole = currentUser?.rol;
+    const visibleItems = navItems.filter(
+        (item) => !item.roles || item.roles.includes(userRole)
+    );
+
     return (
         <aside
             style={{
@@ -262,10 +307,10 @@ function Sidebar() {
                     flex: 1,
                 }}
             >
-                {navItems.map((item, i) => (
+                {visibleItems.map((item) => (
                     <button
-                        key={i}
-                        onClick={() => setActive(i)}
+                        key={item.label}
+                        onClick={() => setActive(navItems.indexOf(item))}
                         title={item.label}
                         style={{
                             width: '44px',
@@ -276,8 +321,13 @@ function Sidebar() {
                             borderRadius: '12px',
                             border: 'none',
                             backgroundColor:
-                                active === i ? '#ede9fe' : 'transparent',
-                            color: active === i ? '#5b21b6' : '#9ca3af',
+                                active === navItems.indexOf(item)
+                                    ? '#ede9fe'
+                                    : 'transparent',
+                            color:
+                                active === navItems.indexOf(item)
+                                    ? '#5b21b6'
+                                    : '#9ca3af',
                             cursor: 'pointer',
                             transition: 'background 0.2s, color 0.2s',
                         }}
@@ -291,7 +341,8 @@ function Sidebar() {
 }
 
 //Topbar
-function Topbar({ user, onLogout }) {
+function Topbar({ user, onLogout, notifications, hasUnread, setHasUnread }) {
+    const [isOpen, setIsOpen] = useState(false);
     return (
         <div
             style={{
@@ -342,40 +393,144 @@ function Topbar({ user, onLogout }) {
                     gap: '12px',
                 }}
             >
-                {/* Campana */}
-                <button
-                    title="Notificaciones"
+                {/* Contenedor relativo para posicionar el menú flotante justo bajo la campana */}
+                <div
                     style={{
-                        width: '40px',
-                        height: '40px',
+                        position: 'relative',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(0,0,0,0.08)',
-                        backgroundColor: '#ffffff',
-                        color: '#6b7280',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        transition: 'background 0.2s, color 0.2s',
                     }}
                 >
-                    <IconBell />
-
-                    {/* Badge de notificación */}
-                    <span
-                        style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            width: '7px',
-                            height: '7px',
-                            borderRadius: '50%',
-                            backgroundColor: '#7c3aed',
-                            border: '1.5px solid #ffffff',
+                    {/* Campana */}
+                    <button
+                        title="Notificaciones"
+                        onClick={() => {
+                            setIsOpen(!isOpen);
+                            if (!isOpen) {
+                                setHasUnread(false);
+                            }
                         }}
-                    />
-                </button>
+                        style={{
+                            width: '40px',
+                            height: '40px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(0,0,0,0.08)',
+                            backgroundColor: isOpen ? '#ede9fe' : '#ffffff',
+                            color: isOpen ? '#5b21b6' : '#6b7280',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            transition: 'background 0.2s, color 0.2s',
+                        }}
+                    >
+                        <IconBell />
+
+                        {/* Badge de notificación */}
+                        {hasUnread && (
+                            <span
+                                style={{
+                                    position: 'absolute',
+                                    top: '8px',
+                                    right: '8px',
+                                    width: '8px',
+                                    height: '8px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#ef4444',
+                                    border: '2px solid white',
+                                }}
+                            />
+                        )}
+                    </button>
+
+                    {/* Menú Desplegable de Notificaciones */}
+                    {isOpen && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '48px',
+                                right: '0',
+                                width: '280px',
+                                backgroundColor: '#ffffff',
+                                borderRadius: '16px',
+                                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                                border: '1px solid rgba(0,0,0,0.06)',
+                                padding: '12px 0',
+                                zIndex: 200,
+                                fontFamily: 'system-ui, sans-serif',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    padding: '0 16px 8px 16px',
+                                    borderBottom: '1px solid #f3f4f6',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        fontWeight: 600,
+                                        fontSize: '14px',
+                                        color: '#1f2937',
+                                    }}
+                                >
+                                    Notificaciones
+                                </span>
+                            </div>
+
+                            <div
+                                style={{
+                                    maxHeight: '240px',
+                                    overflowY: 'auto',
+                                }}
+                            >
+                                {notifications.map((notif) => (
+                                    <div
+                                        key={notif.id}
+                                        style={{
+                                            padding: '12px 16px',
+                                            borderBottom: '1px solid #f9fafb',
+                                            cursor: 'pointer',
+                                            transition: 'background 0.2s',
+                                            textAlign: 'left',
+                                        }}
+                                        onMouseEnter={(e) =>
+                                            (e.currentTarget.style.backgroundColor =
+                                                '#f9fafb')
+                                        }
+                                        onMouseLeave={(e) =>
+                                            (e.currentTarget.style.backgroundColor =
+                                                'transparent')
+                                        }
+                                    >
+                                        <p
+                                            style={{
+                                                margin: '0 0 4px 0',
+                                                fontSize: '13px',
+                                                color: '#4b5563',
+                                                lineHeight: '1.4',
+                                                fontWeight: 'normal',
+                                            }}
+                                        >
+                                            {notif.text}
+                                        </p>
+                                        <span
+                                            style={{
+                                                fontSize: '11px',
+                                                color: '#9ca3af',
+                                            }}
+                                        >
+                                            {notif.time}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Logout */}
                 <button
@@ -462,18 +617,23 @@ const styles = {
         ...baseCard,
         height: 'var(--top-panel-height)',
         paddingTop: '5px',
+        position: 'relative',
+        zIndex: 100,
     },
     CentralPanel: {
         ...baseCard,
-        height: 'var(--central-panel-height)',
+        minHeight: 'var(--central-panel-height)',
+        height: 'auto',
         border: '1px solid rgba(0, 0, 0, 0.08)',
         marginTop: '70px',
         marginBottom: '30px',
     },
     LowerPanel: {
         ...baseCard,
-        height: 'var(--lower-panel-height)',
+        minHeight: 'var(--lower-panel-height)',
+        height: 'auto',
         border: '1px solid rgba(0, 0, 0, 0.08)',
+        //paddingBottom: '30px',
     },
 };
 
@@ -505,7 +665,7 @@ function TopPanel({ children }) {
     );
 }
 
-function CentralPanel({ children }) {
+function CentralPanel({ children, showDefaultLogo }) {
     const { hovered, ...handlers } = useHover();
     return (
         <div
@@ -520,58 +680,48 @@ function CentralPanel({ children }) {
         >
             {children}
 
-            {/* Logo makerbox */}
-            <div
-                style={{
-                    position: 'relative',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-93%, -50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}
-            >
+            {/* Logo makerbox (solo mostrar si showDefaultLogo es true) */}
+            {showDefaultLogo && (
                 <div
                     style={{
-                        width: '150px',
-                        height: '150px',
-                        backgroundColor: '#ede9fe',
-                        borderRadius: '16px',
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#5b21b6',
+                        flexDirection: 'row', // Mantiene el logo y el texto lado a lado
+                        alignItems: 'center', // Los centra verticalmente entre sí
+                        justifyContent: 'flex-start', // ¡Alinea todo hacia el lado izquierdo!
+                        width: '100%',
+                        flex: 1,
+                        gap: '40px', // Espacio entre el cubo y el texto
+                        padding: '60px 24px', // 24px de margen a los lados para que respire
                     }}
                 >
-                    <IconCentral />
+                    <div
+                        style={{
+                            width: '150px',
+                            height: '150px',
+                            backgroundColor: '#ede9fe',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#5b21b6',
+                            flexShrink: 0,
+                        }}
+                    >
+                        <IconCentral />
+                    </div>
+                    <span
+                        style={{
+                            fontSize: '50px',
+                            fontWeight: 100,
+                            color: '#000000',
+                            letterSpacing: '0.05em',
+                            margin: 0,
+                        }}
+                    >
+                        Proyectos realizados: 0
+                    </span>
                 </div>
-                <span
-                    style={{
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        color: '#5b21b6',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                    }}
-                ></span>
-                <span
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(20%, -80%)',
-                        fontSize: '50px',
-                        fontWeight: 100,
-                        color: '#000000',
-                        letterSpacing: '0.05em',
-                        marginTop: '10px',
-                    }}
-                >
-                    Proyectos realizados: 0
-                </span>
-            </div>
+            )}
         </div>
     );
 }
@@ -589,24 +739,39 @@ function LowerPanel({ children }) {
             }}
             {...handlers}
         >
-            <span
-                style={{
-                    fontSize: '30px',
-                    fontWeight: 100,
-                    color: '#000000',
-                    fontFamily: 'inter',
-                    letterSpacing: '0.05em',
-                }}
-            >
-                Progreso de proyecto actual: 0%
-            </span>
-            {children}
+            <>
+                <span
+                    style={{
+                        fontSize: '30px',
+                        fontWeight: 100,
+                        color: '#000000',
+                        fontFamily: 'inter',
+                        letterSpacing: '0.05em',
+                    }}
+                >
+                    Progreso de proyecto actual: 20%
+                </span>
+                {children}
+            </>
         </div>
     );
 }
 
 function AppContent() {
     const { currentUser, isAuthenticated, isLoading, logout } = useAuth();
+    const [activeTab, setActiveTab] = useState(0);
+    const [notifications, setNotifications] = useState([]);
+    const [hasUnread, setHasUnread] = useState(false);
+    const [cursoSeleccionadoId, setCursoSeleccionadoId] = useState(null); // <-- LÍNEA NUEVA
+    const addNotification = (notification) => {
+        setNotifications((prev) => [notification, ...prev]);
+        setHasUnread(true);
+    };
+    const mockArticulos = [
+        { id_articulo: 'art-001', nombre_articulo: 'Filamento PLA Morado' },
+        { id_articulo: 'art-002', nombre_articulo: 'Resina Estándar Gris' },
+        { id_articulo: 'art-003', nombre_articulo: 'Filamento ABS Negro' },
+    ];
 
     if (isLoading) {
         return (
@@ -633,7 +798,11 @@ function AppContent() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar />
+            <Sidebar
+                active={activeTab}
+                setActive={setActiveTab}
+                currentUser={currentUser}
+            />
             <div
                 style={{
                     flex: 1,
@@ -644,10 +813,44 @@ function AppContent() {
             >
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <TopPanel>
-                        <Topbar user={currentUser} onLogout={logout} />
+                        <Topbar
+                            user={currentUser}
+                            onLogout={logout}
+                            notifications={notifications}
+                            hasUnread={hasUnread}
+                            setHasUnread={setHasUnread}
+                        />
                     </TopPanel>
-                    <CentralPanel></CentralPanel>
-                    <LowerPanel></LowerPanel>
+                    <CentralPanel showDefaultLogo={activeTab === 3}>
+                        {activeTab === 1 && <SemestresPage />}
+                        {activeTab === 4 && (
+                            <FileUpload
+                                onFileUploaded={addNotification}
+                                articulos={mockArticulos}
+                            />
+                        )}
+                        {activeTab === 5 && <UserRegistrationForm />}
+                        {activeTab === 0 && (
+                            <DashboardDocente
+                                setActiveTab={setActiveTab}
+                                setCursoSeleccionadoId={setCursoSeleccionadoId}
+                            />
+                        )}
+                        {activeTab === 2 && (
+                            <ImportadorCSV
+                                cursoId={cursoSeleccionadoId}
+                                onVolver={() => setActiveTab(0)}
+                            />
+                        )}
+                        {activeTab === 6 && <DashboardEstudiante />}
+                        {activeTab === 7 && <HistorialImpresiones />}
+                        {activeTab === 8 && <PerfilUsuario />}
+                    </CentralPanel>
+                    {activeTab === 3 && (
+                        <LowerPanel>
+                            <SimpleChart />
+                        </LowerPanel>
+                    )}
                 </div>
             </div>
         </div>

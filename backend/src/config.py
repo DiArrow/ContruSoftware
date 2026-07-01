@@ -40,8 +40,18 @@ SECRET_KEY = os.getenv("SECRET_KEY", "")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-# Role-specific database credentials
+# Credenciales de base de datos específicas por rol.
+#
+# Si las variables ``POSTGRES_USER_<ROL>`` y ``POSTGRES_PASSWORD_<ROL>`` están
+# definidas, el rol obtiene su propio engine SQLAlchemy. Si no, el sistema
+# hace fallback al engine genérico (``POSTGRES_APP_USER`` + ``POSTGRES_DB``)
+# al usar ``get_role_db`` en los routers.
+#
+# Los roles definidos en el sistema son:
 ROLES = ["SOL", "EST", "AYU", "PRO", "ADM"]
+
+# Mapeo de rol -> URL de base de datos específica. Se puebla automáticamente
+# a partir de las variables de entorno. Roles sin URL definida hacen fallback.
 ROL_DATABASE_URLS: dict[str, str] = {}
 
 for _rol in ROLES:

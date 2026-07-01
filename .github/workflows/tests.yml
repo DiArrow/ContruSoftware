@@ -1,0 +1,163 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, Develop, 'ci/**', 'feat/**', 'fix/**']
+  pull_request:
+    branches: [main, Develop]
+
+jobs:
+  # ── Backend unit tests ──────────────────────────────────────────
+  #     Schema inspection, pure Python, mocks. No PostgreSQL needed.
+  backend-unit-tests:
+    name: backend/unit-tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run unit tests
+        env:
+          # Valores dummy: necesarios para que config.py no explote al
+          # importar (SQLAlchemy.create_engine es lazy, no conecta).
+          # Misma estructura que deploy-develop.yml.
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_APP_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_APP_PASSWORD: test
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          POSTGRES_USER_SOL: test
+          POSTGRES_PASSWORD_SOL: test
+          POSTGRES_USER_EST: test
+          POSTGRES_PASSWORD_EST: test
+          POSTGRES_USER_AYU: test
+          POSTGRES_PASSWORD_AYU: test
+          POSTGRES_USER_PRO: test
+          POSTGRES_PASSWORD_PRO: test
+          POSTGRES_USER_ADM: test
+          POSTGRES_PASSWORD_ADM: test
+        run: pytest tests/ -m "not integration"
+
+  # ── Backend integration tests ────────────────────────────────────
+  #     Necesitan PostgreSQL real con las 15 tablas del schema.
+  backend-integration-tests:
+    name: backend/integration-tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Create database tables
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_APP_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_APP_PASSWORD: test
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          POSTGRES_USER_SOL: test
+          POSTGRES_PASSWORD_SOL: test
+          POSTGRES_USER_EST: test
+          POSTGRES_PASSWORD_EST: test
+          POSTGRES_USER_AYU: test
+          POSTGRES_PASSWORD_AYU: test
+          POSTGRES_USER_PRO: test
+          POSTGRES_PASSWORD_PRO: test
+          POSTGRES_USER_ADM: test
+          POSTGRES_PASSWORD_ADM: test
+        run: >
+          PYTHONPATH=src python -c "from database import Base, engine;
+          import models; Base.metadata.create_all(bind=engine);
+          print('Tables created')"
+
+      - name: Run integration tests
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_APP_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_APP_PASSWORD: test
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          POSTGRES_USER_SOL: test
+          POSTGRES_PASSWORD_SOL: test
+          POSTGRES_USER_EST: test
+          POSTGRES_PASSWORD_EST: test
+          POSTGRES_USER_AYU: test
+          POSTGRES_PASSWORD_AYU: test
+          POSTGRES_USER_PRO: test
+          POSTGRES_PASSWORD_PRO: test
+          POSTGRES_USER_ADM: test
+          POSTGRES_PASSWORD_ADM: test
+        run: pytest tests/ -m integration
+
+  # ── Frontend unit tests ──────────────────────────────────────────
+  #     Vitest + jsdom + Testing Library.
+  frontend-unit-tests:
+    name: frontend/unit-tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test -- run

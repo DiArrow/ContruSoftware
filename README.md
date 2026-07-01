@@ -13,7 +13,7 @@ aaaa
 # Enlace página en producción
 
 
-URL: [Proyecto-Construcción-De-Software](proy-const.cfuentes.dev)
+URL: proy-const.cfuentes.dev
 
 
 ---
@@ -61,6 +61,16 @@ URL: [Proyecto-Construcción-De-Software](proy-const.cfuentes.dev)
   * **Pyflakes (F):** Detección de errores lógicos (variables sin usar, imports faltantes).
   * **Isort (I):** Ordenamiento automático y alfabético de las importaciones.
   * **Formato:** Longitud máxima de 88 caracteres por línea y uso de comillas dobles (`"`) para strings.
+  * **Schemas de Pydantic:** mantenerlos inline en el router correspondiente
+    (e.g. `SemestreCreate`/`SemestreResponse` en `routers/semestres.py`).
+    Extraer a `schemas/` solo cuando haya 3+ routers con sus propios schemas.
+  * **Sesiones de base de datos por rol:** los routers autenticados usan
+    `Depends(get_role_db)` (en `auth/dependencies.py`), que delega en
+    `get_role_session` (en `database.py`). Si el rol del JWT tiene
+    `POSTGRES_USER_<ROL>` y `POSTGRES_PASSWORD_<ROL>` configuradas, se usa
+    un engine SQLAlchemy dedicado (`pool_size=1`). Si no, fallback al
+    engine genérico con un `UserWarning` (no error). Configurar las
+    variables por rol solo si se necesita aislamiento multi-tenant.
 
 #### 3. Base de Datos (SQL / PostgreSQL)
 * **Herramienta:** SQLFluff

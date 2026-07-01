@@ -10,5 +10,25 @@ build/
 .parcel-cache/
 .next/
 
+# Coverage
+.coverage
+coverage/
+htmlcov/
+.nyc_output/
+
 .DS_Store
 Thumbs.db
+
+# Reportes HTML de cobertura (generados por scripts/coverage.sh)
+docs/coverage-frontend/
+docs/coverage-backend/
+
+# Artefactos locales de SDD y herramientas
+Specs/
+.atl/
+
+# Documentos locales del usuario (no van al repo)
+docs/Hito 2.mp4
+docs/Informe Hiito 2/
+docs/hito_2_Grupo_1.zip
+docs/informe.pdf

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class LoginRequest(BaseModel):
@@ -27,6 +27,24 @@ class TokenData(BaseModel):
     exp: datetime
 
 
+class UsuarioCreate(BaseModel):
+    """Payload for creating a new user."""
+
+    nombre: str
+    apellido: str
+    email: EmailStr
+    password: str
+    rol: str
+
+
+class UsuarioUpdate(BaseModel):
+    """Payload for updating the authenticated user profile."""
+
+    nombre: str | None = None
+    apellido: str | None = None
+    email: EmailStr | None = None
+
+
 class UsuarioResponse(BaseModel):
     """Payload returned for authenticated user profile."""
 
@@ -35,3 +53,5 @@ class UsuarioResponse(BaseModel):
     apellido: str
     email: str
     rol: str
+
+    model_config = ConfigDict(from_attributes=True)
