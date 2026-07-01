@@ -195,6 +195,13 @@ class TestMisCursos:
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == []
 
+    def test_est_sin_registro_retorna_404(self, client, db_session):
+        """EST autenticado pero sin registro Estudiante → 404."""
+        fake_id = str(uuid4())
+        headers = _token_headers("EST", fake_id)
+        response = client.get("/cursos/mis-cursos", headers=headers)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
     def test_pro_no_puede_ver_mis_cursos(self, client_unit, pro_headers):
         """Rol no EST → 403."""
         response = client_unit.get("/cursos/mis-cursos", headers=pro_headers)
