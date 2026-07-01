@@ -108,9 +108,7 @@ describe('Pruebas unitarias y de integración para ImportadorCSV', () => {
         });
 
         // Verifica que la tabla de contraseñas se renderiza
-        expect(
-            screen.getByText('Contraseñas generadas')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Contraseñas generadas')).toBeInTheDocument();
         expect(screen.getByText('abc123xyz')).toBeInTheDocument();
         expect(screen.getByText('def456uvw')).toBeInTheDocument();
         expect(screen.getByText('ghi789rst')).toBeInTheDocument();
@@ -242,9 +240,7 @@ describe('Pruebas unitarias y de integración para ImportadorCSV', () => {
 
     test('Descarga de CSV con contraseñas: genera blob y dispara descarga con contenido correcto', async () => {
         const mockUrl = 'blob:test-url';
-        const createObjectURLSpy = vi
-            .fn()
-            .mockReturnValue(mockUrl);
+        const createObjectURLSpy = vi.fn().mockReturnValue(mockUrl);
         const revokeObjectURLSpy = vi.fn();
         URL.createObjectURL = createObjectURLSpy;
         URL.revokeObjectURL = revokeObjectURLSpy;

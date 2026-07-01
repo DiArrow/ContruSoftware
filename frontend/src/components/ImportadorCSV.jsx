@@ -550,8 +550,7 @@ export const ImportadorCSV = ({ cursoId, onVolver }) => {
                                     const url = URL.createObjectURL(blob);
                                     const a = document.createElement('a');
                                     a.href = url;
-                                    a.download =
-                                        'contrasenas_estudiantes.csv';
+                                    a.download = 'contrasenas_estudiantes.csv';
                                     a.click();
                                     URL.revokeObjectURL(url);
                                 }}
