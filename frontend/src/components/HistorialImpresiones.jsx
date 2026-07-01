@@ -31,10 +31,37 @@ export const HistorialImpresiones = () => {
                 .then((data) => setImpresiones(data))
                 .catch((err) => setError(err.message))
                 .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
         }
     }, [currentUser]);
+
+    if (!currentUser) {
+        return (
+            <div
+                style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    color: '#6b7280',
+                }}
+            >
+                Cargando...
+            </div>
+        );
+    }
+
+    if (currentUser.rol !== 'EST' && currentUser.rol !== 'SOL') {
+        return (
+            <div
+                style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    color: '#6b7280',
+                }}
+            >
+                Sin acceso. Esta sección es exclusiva para estudiantes y
+                solicitantes.
+            </div>
+        );
+    }
 
     if (loading) {
         return (
@@ -60,24 +87,6 @@ export const HistorialImpresiones = () => {
                 }}
             >
                 {error}
-            </div>
-        );
-    }
-
-    if (
-        !currentUser ||
-        (currentUser.rol !== 'EST' && currentUser.rol !== 'SOL')
-    ) {
-        return (
-            <div
-                style={{
-                    padding: '20px',
-                    textAlign: 'center',
-                    color: '#6b7280',
-                }}
-            >
-                Sin acceso. Esta sección es exclusiva para estudiantes y
-                solicitantes.
             </div>
         );
     }

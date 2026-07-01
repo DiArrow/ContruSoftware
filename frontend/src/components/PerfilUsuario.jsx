@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { apiPut } from '../api/client';
 
@@ -6,26 +6,15 @@ function esEmailValido(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export const PerfilUsuario = () => {
-    const { currentUser } = useContext(AuthContext);
+const PerfilUsuarioForm = ({ currentUser }) => {
     const [form, setForm] = useState({
-        nombre: '',
-        apellido: '',
-        email: '',
+        nombre: currentUser?.nombre || '',
+        apellido: currentUser?.apellido || '',
+        email: currentUser?.email || '',
     });
     const [guardando, setGuardando] = useState(false);
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
-
-    useEffect(() => {
-        if (currentUser) {
-            setForm({
-                nombre: currentUser.nombre || '',
-                apellido: currentUser.apellido || '',
-                email: currentUser.email || '',
-            });
-        }
-    }, [currentUser]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -220,5 +209,15 @@ export const PerfilUsuario = () => {
                 )}
             </form>
         </div>
+    );
+};
+
+export const PerfilUsuario = () => {
+    const { currentUser } = useContext(AuthContext);
+    return (
+        <PerfilUsuarioForm
+            key={currentUser?.id || 'no-user'}
+            currentUser={currentUser}
+        />
     );
 };

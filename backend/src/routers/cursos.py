@@ -77,7 +77,6 @@ class CursoEstudianteResponse(BaseModel):
     nombre: str
     semestre_nombre: Optional[str]
 
-
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -180,7 +179,9 @@ def listar_mis_cursos(
     """Lista los cursos en los que el estudiante autenticado está inscrito."""
     user_sub = current_user["sub"]
 
-    estudiante = db.query(Estudiante).filter(Estudiante.id_estudiante == user_sub).first()
+    estudiante = (
+        db.query(Estudiante).filter(Estudiante.id_estudiante == user_sub).first()
+    )
     if not estudiante:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

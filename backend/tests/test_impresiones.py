@@ -612,26 +612,73 @@ class TestMisImpresiones:
         response = client_unit.get("/impresiones/mias", headers=headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    @pytest.mark.asyncio
-    async def test_ayudante_aprueba_impresion_con_stock_exitoso(client, db_session):
-        solicitud_id = 1
+    @pytest.mark.integration
+    def test_ayudante_aprueba_impresion_con_stock_exitoso(self, client, db_session):
+        user_id = "ayu_stock@test.com"
+        _crear_usuario(db_session, user_id, "AYU")
+        art_id = _crear_articulo(db_session)
 
-        response = await client.put(
-            f"/api/impresiones/{solicitud_id}/estado",
-            json={"estado": "En Impresion"}
+        imp_id = str(uuid4())
+        db_session.add(
+            Impresion(
+                id_impresion=imp_id,
+                ref_usuario=user_id,
+                ref_articulo=art_id,
+                cantidad=1,
+                fecha_impresion=datetime.now(),
+                estado_impresion="Pendiente",
+            )
+        )
+        db_session.commit()
+
+        headers = token_headers("AYU", user_id)
+        response = client.put(
+            f"/impresiones/{imp_id}/estado",
+            json={"estado": "En Impresion"},
+            headers=headers,
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()["estado"] == "En Impresion"
+        assert response.json()["estado_impresion"] == "En Impresion"
 
-    @pytest.mark.asyncio
-    async def test_ayudante_aprueba_impresion_con_stock_insuficiente(client, db_session):
-        solicitud_id_sin_stock = 999
+    @pytest.mark.integration
+    def test_ayudante_aprueba_impresion_con_stock_insuficiente(
+        self, client, db_session
+    ):
+        user_id = "ayu_nostock@test.com"
+        _crear_usuario(db_session, user_id, "AYU")
 
-        response = await client.put(
-            f"/api/impresiones/{solicitud_id_sin_stock}/estado",
-            json={"estado": "En Impresion"}
+        art_id_sin_stock = str(uuid4())[:8]
+        db_session.add(
+            Articulo(
+                id_articulo=art_id_sin_stock,
+                nombre_articulo="Test Sin Stock",
+                stock_actual=0,
+                stock_minimo=1,
+                alerta_stock=False,
+            )
+        )
+        db_session.flush()
+
+        imp_id = str(uuid4())
+        db_session.add(
+            Impresion(
+                id_impresion=imp_id,
+                ref_usuario=user_id,
+                ref_articulo=art_id_sin_stock,
+                cantidad=1,
+                fecha_impresion=datetime.now(),
+                estado_impresion="Pendiente",
+            )
+        )
+        db_session.commit()
+
+        headers = token_headers("AYU", user_id)
+        response = client.put(
+            f"/impresiones/{imp_id}/estado",
+            json={"estado": "En Impresion"},
+            headers=headers,
         )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json()["detail"] == "Stock insuficiente de filamnto"
+        assert response.json()["detail"] == "Stock insuficiente de filamento"

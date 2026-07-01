@@ -42,6 +42,55 @@ class ImpresionMiaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# 1. Definir el esquema para el cuerpo (Payload) que enviará el Ayudante
+class CambiarEstadoRequest(BaseModel):
+    """Esquema para recibir el cambio de estado de una impresión."""
+
+    estado: str
+
+
+# 2. Agregar la constante del rol si no viene importada (o impórtala de auth.roles)
+AYUDANTE = "AYU"  # Ajusta el string exacto que use tu sistema si es diferente
+
+
+@router.put(
+    "/impresiones/{impresion_id}/estado",
+    response_model=ImpresionResponse,
+)
+def cambiar_estado_impresion(
+    impresion_id: str,
+    payload: CambiarEstadoRequest,
+    current_user: dict = Depends(requiere_rol([AYUDANTE])),
+    db: Session = Depends(get_role_db),
+):
+    impresion = (
+        db.query(Impresion)
+        .options(joinedload(Impresion.articulo))
+        .filter(Impresion.id_impresion == impresion_id)
+        .first()
+    )
+    if not impresion:
+        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+
+    if payload.estado == "En Impresion" and impresion.articulo.stock_actual < 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Stock insuficiente de filamento",
+        )
+
+    impresion.estado_impresion = payload.estado
+
+    try:
+        db.commit()
+        db.refresh(impresion)
+        return impresion
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Error al actualizar estado: {str(e)}"
+        )
+
+
 @router.get(
     "/impresiones/mias",
     response_model=list[ImpresionMiaResponse],
