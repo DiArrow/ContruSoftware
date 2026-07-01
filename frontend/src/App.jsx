@@ -212,14 +212,26 @@ const IconBook = () => (
 
 //Items de navegación
 const navItems = [
-    { icon: <IconGrid />, label: 'Dashboard', roles: ['EST', 'SOL', 'PRO', 'AYU', 'ADM'] },
+    {
+        icon: <IconGrid />,
+        label: 'Dashboard',
+        roles: ['EST', 'SOL', 'PRO', 'AYU', 'ADM'],
+    },
     { icon: <IconCalendar />, label: 'Semestres', roles: ['PRO', 'ADM'] },
     { icon: <IconUsers />, label: 'Estudiantes', roles: ['PRO', 'ADM'] },
     { icon: <IconBag />, label: 'Inventario', roles: ['PRO', 'ADM'] },
-    { icon: <IconPrinter />, label: 'Impresiones', roles: ['AYU', 'ADM', 'EST', 'SOL'] },
+    {
+        icon: <IconPrinter />,
+        label: 'Impresiones',
+        roles: ['AYU', 'ADM', 'EST', 'SOL'],
+    },
     { icon: <IconSettings />, label: 'Ajustes', roles: ['ADM'] },
     { icon: <IconBook />, label: 'Mis Cursos', roles: ['EST'] },
-    { icon: <IconPrinter />, label: 'Historial Impresiones', roles: ['EST', 'SOL'] },
+    {
+        icon: <IconPrinter />,
+        label: 'Historial Impresiones',
+        roles: ['EST', 'SOL'],
+    },
     { icon: <IconUser />, label: 'Perfil', roles: ['EST', 'SOL'] },
 ];
 

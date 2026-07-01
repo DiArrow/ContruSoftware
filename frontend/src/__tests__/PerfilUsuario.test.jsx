@@ -24,16 +24,13 @@ describe('PerfilUsuario Component', () => {
     });
 
     it('muestra el formulario prellenado con los datos del usuario', () => {
-        renderWithAuth(
-            <PerfilUsuario />,
-            {
-                id_usuario: '1',
-                nombre: 'Juan',
-                apellido: 'Pérez',
-                email: 'juan@p.com',
-                rol: 'EST',
-            }
-        );
+        renderWithAuth(<PerfilUsuario />, {
+            id_usuario: '1',
+            nombre: 'Juan',
+            apellido: 'Pérez',
+            email: 'juan@p.com',
+            rol: 'EST',
+        });
 
         expect(screen.getByDisplayValue('Juan')).toBeInTheDocument();
         expect(screen.getByDisplayValue('Pérez')).toBeInTheDocument();
@@ -49,16 +46,13 @@ describe('PerfilUsuario Component', () => {
             rol: 'EST',
         });
 
-        renderWithAuth(
-            <PerfilUsuario />,
-            {
-                id_usuario: '1',
-                nombre: 'Juan',
-                apellido: 'Pérez',
-                email: 'juan@p.com',
-                rol: 'EST',
-            }
-        );
+        renderWithAuth(<PerfilUsuario />, {
+            id_usuario: '1',
+            nombre: 'Juan',
+            apellido: 'Pérez',
+            email: 'juan@p.com',
+            rol: 'EST',
+        });
 
         fireEvent.change(screen.getByDisplayValue('Juan'), {
             target: { value: 'Carlos' },
@@ -77,16 +71,13 @@ describe('PerfilUsuario Component', () => {
     });
 
     it('muestra error de validación con un correo inválido', async () => {
-        renderWithAuth(
-            <PerfilUsuario />,
-            {
-                id_usuario: '1',
-                nombre: 'Juan',
-                apellido: 'Pérez',
-                email: 'juan@p.com',
-                rol: 'EST',
-            }
-        );
+        renderWithAuth(<PerfilUsuario />, {
+            id_usuario: '1',
+            nombre: 'Juan',
+            apellido: 'Pérez',
+            email: 'juan@p.com',
+            rol: 'EST',
+        });
 
         fireEvent.change(screen.getByDisplayValue('juan@p.com'), {
             target: { value: 'no-es-un-email' },

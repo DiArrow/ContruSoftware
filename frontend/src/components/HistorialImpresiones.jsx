@@ -64,7 +64,10 @@ export const HistorialImpresiones = () => {
         );
     }
 
-    if (!currentUser || (currentUser.rol !== 'EST' && currentUser.rol !== 'SOL')) {
+    if (
+        !currentUser ||
+        (currentUser.rol !== 'EST' && currentUser.rol !== 'SOL')
+    ) {
         return (
             <div
                 style={{
@@ -73,7 +76,8 @@ export const HistorialImpresiones = () => {
                     color: '#6b7280',
                 }}
             >
-                Sin acceso. Esta sección es exclusiva para estudiantes y solicitantes.
+                Sin acceso. Esta sección es exclusiva para estudiantes y
+                solicitantes.
             </div>
         );
     }
@@ -167,17 +171,15 @@ export const HistorialImpresiones = () => {
                         </thead>
                         <tbody>
                             {impresiones.map((imp) => {
-                                const estilo =
-                                    ESTADO_COLORES[imp.estado] || {
-                                        backgroundColor: '#f3f4f6',
-                                        color: '#374151',
-                                    };
+                                const estilo = ESTADO_COLORES[imp.estado] || {
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                };
                                 return (
                                     <tr
                                         key={imp.id_impresion}
                                         style={{
-                                            borderBottom:
-                                                '1px solid #f3f4f6',
+                                            borderBottom: '1px solid #f3f4f6',
                                         }}
                                     >
                                         <td
@@ -193,8 +195,7 @@ export const HistorialImpresiones = () => {
                                             <span
                                                 style={{
                                                     display: 'inline-block',
-                                                    padding:
-                                                        '6px 12px',
+                                                    padding: '6px 12px',
                                                     borderRadius: '9999px',
                                                     fontSize: '12px',
                                                     fontWeight: 600,
