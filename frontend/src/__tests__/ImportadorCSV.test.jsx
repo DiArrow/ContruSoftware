@@ -63,12 +63,21 @@ describe('Pruebas unitarias y de integración para ImportadorCSV', () => {
         ).toBeInTheDocument();
     });
 
-    test('Submit exitoso: emite la petición Multipart y muestra reporte de resultados (tarjeta verde)', async () => {
-        // Mock del fetch exitoso del servidor
+    test('Submit exitoso: emite la petición Multipart y muestra reporte de resultados con contraseñas', async () => {
+        // Mock del fetch exitoso del servidor — incluye passwords
         window.fetch = vi.fn().mockResolvedValue({
             ok: true,
             status: 200,
-            json: async () => ({ imported: 3, duplicates: 0, errors: [] }),
+            json: async () => ({
+                imported: 3,
+                duplicates: 0,
+                errors: [],
+                passwords: [
+                    { correo: 'ana.garcia@utalca.cl', password: 'abc123xyz' },
+                    { correo: 'dsoto@utalca.cl', password: 'def456uvw' },
+                    { correo: 'vrojas@utalca.cl', password: 'ghi789rst' },
+                ],
+            }),
         });
 
         render(<ImportadorCSV cursoId={cursoId} onVolver={mockOnVolver} />);
@@ -97,6 +106,14 @@ describe('Pruebas unitarias y de integración para ImportadorCSV', () => {
             expect(screen.getByText('Duplicados')).toBeInTheDocument();
             expect(screen.getByText('Errores')).toBeInTheDocument();
         });
+
+        // Verifica que la tabla de contraseñas se renderiza
+        expect(
+            screen.getByText('Contraseñas generadas')
+        ).toBeInTheDocument();
+        expect(screen.getByText('abc123xyz')).toBeInTheDocument();
+        expect(screen.getByText('def456uvw')).toBeInTheDocument();
+        expect(screen.getByText('ghi789rst')).toBeInTheDocument();
     });
 
     test('Submit con errores parciales: renderiza resumen y lista detallada de cada falla', async () => {
@@ -221,5 +238,89 @@ describe('Pruebas unitarias y de integración para ImportadorCSV', () => {
         // El botón debe congelarse para mitigar el doble submit accidental
         expect(botonSubmit).toBeDisabled();
         expect(screen.getAllByText('Importando...').length).toBe(2);
+    });
+
+    test('Descarga de CSV con contraseñas: genera blob y dispara descarga con contenido correcto', async () => {
+        const mockUrl = 'blob:test-url';
+        const createObjectURLSpy = vi
+            .fn()
+            .mockReturnValue(mockUrl);
+        const revokeObjectURLSpy = vi.fn();
+        URL.createObjectURL = createObjectURLSpy;
+        URL.revokeObjectURL = revokeObjectURLSpy;
+
+        // Espiamos createElement para capturar el click del anchor
+        const anchorClickSpy = vi.fn();
+        const originalCreateElement = document.createElement.bind(document);
+        vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+            const element = originalCreateElement(tag);
+            if (tag === 'a') {
+                element.click = anchorClickSpy;
+                // jsdom no soporta href assignment nativo, lo emulamos
+                let _href = '';
+                let _download = '';
+                Object.defineProperty(element, 'href', {
+                    get: () => _href,
+                    set: (v) => {
+                        _href = v;
+                    },
+                });
+                Object.defineProperty(element, 'download', {
+                    get: () => _download,
+                    set: (v) => {
+                        _download = v;
+                    },
+                });
+            }
+            return element;
+        });
+
+        window.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => ({
+                imported: 2,
+                duplicates: 0,
+                errors: [],
+                passwords: [
+                    { correo: 'a@test.cl', password: 'p4ssA' },
+                    { correo: 'b@test.cl', password: 'p4ssB' },
+                ],
+            }),
+        });
+
+        render(<ImportadorCSV cursoId={cursoId} onVolver={mockOnVolver} />);
+
+        const file = new File([''], 'Estudiante_Pruebas.csv', {
+            type: 'text/csv',
+        });
+        const input = screen.getByTestId('csv-input');
+        fireEvent.change(input, { target: { files: [file] } });
+
+        const botonSubmit = await screen.findByRole('button', {
+            name: /Importar/i,
+        });
+        fireEvent.click(botonSubmit);
+
+        const botonDescarga = await screen.findByRole('button', {
+            name: /Descargar CSV con contraseñas/i,
+        });
+
+        fireEvent.click(botonDescarga);
+
+        // Verificamos que se creó un Blob con el CSV correcto
+        expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
+        const blobArg = createObjectURLSpy.mock.calls[0][0];
+        expect(blobArg.type).toBe('text/csv');
+        const csvText = await blobArg.text();
+        expect(csvText).toBe(
+            'correo,contraseña\na@test.cl,p4ssA\nb@test.cl,p4ssB'
+        );
+
+        // Verificamos que se disparó el click para descargar
+        expect(anchorClickSpy).toHaveBeenCalledTimes(1);
+
+        // Limpiamos el spy para no afectar otros tests
+        vi.restoreAllMocks();
     });
 });
