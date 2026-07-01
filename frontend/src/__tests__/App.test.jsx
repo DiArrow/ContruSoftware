@@ -5,6 +5,7 @@ import App from '../App';
 vi.mock('../api/client', () => ({
     apiGet: vi.fn(),
     apiPost: vi.fn(),
+    apiPut: vi.fn(),
 }));
 
 import { apiGet, apiPost } from '../api/client';
@@ -75,7 +76,7 @@ describe('App with auth', () => {
             nombre: 'Carlos',
             apellido: 'Pérez',
             email: 'carlos@utalca.cl',
-            rol: 'admin',
+            rol: 'ADM',
         });
 
         render(<App />);
@@ -106,6 +107,72 @@ describe('App with auth', () => {
             fireEvent.click(button);
             expect(button).toHaveStyle('background-color: rgb(237, 233, 254)');
         });
+    });
+
+    it('EST sees only non-admin tabs', async () => {
+        apiPost.mockResolvedValue({ access_token: 'tok123' });
+        apiGet.mockResolvedValue({
+            id_usuario: '2',
+            nombre: 'Lucía',
+            apellido: 'Martínez',
+            email: 'lucia@utalca.cl',
+            rol: 'EST',
+        });
+
+        render(<App />);
+
+        fireEvent.change(screen.getByTestId('email-input'), {
+            target: { value: 'lucia@utalca.cl' },
+        });
+        fireEvent.change(screen.getByTestId('password-input'), {
+            target: { value: 'est123' },
+        });
+        fireEvent.click(screen.getByText(/Acceder/i));
+
+        await waitFor(() =>
+            expect(
+                screen.getByText(/Bienvenid@ a MakerBox/i)
+            ).toBeInTheDocument()
+        );
+
+        expect(screen.getByTitle('Dashboard')).toBeInTheDocument();
+        expect(screen.getByTitle('Mis Cursos')).toBeInTheDocument();
+        expect(screen.getByTitle('Impresiones')).toBeInTheDocument();
+        expect(screen.queryByTitle('Semestres')).not.toBeInTheDocument();
+        expect(screen.queryByTitle('Estudiantes')).not.toBeInTheDocument();
+        expect(screen.queryByTitle('Inventario')).not.toBeInTheDocument();
+        expect(screen.queryByTitle('Ajustes')).not.toBeInTheDocument();
+    });
+
+    it('SOL does not see Mis Cursos tab', async () => {
+        apiPost.mockResolvedValue({ access_token: 'tok123' });
+        apiGet.mockResolvedValue({
+            id_usuario: '3',
+            nombre: 'Pedro',
+            apellido: 'Soto',
+            email: 'pedro@utalca.cl',
+            rol: 'SOL',
+        });
+
+        render(<App />);
+
+        fireEvent.change(screen.getByTestId('email-input'), {
+            target: { value: 'pedro@utalca.cl' },
+        });
+        fireEvent.change(screen.getByTestId('password-input'), {
+            target: { value: 'sol123' },
+        });
+        fireEvent.click(screen.getByText(/Acceder/i));
+
+        await waitFor(() =>
+            expect(
+                screen.getByText(/Bienvenid@ a MakerBox/i)
+            ).toBeInTheDocument()
+        );
+
+        expect(screen.getByTitle('Dashboard')).toBeInTheDocument();
+        expect(screen.getByTitle('Impresiones')).toBeInTheDocument();
+        expect(screen.queryByTitle('Mis Cursos')).not.toBeInTheDocument();
     });
 });
 

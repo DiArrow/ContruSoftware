@@ -37,8 +37,8 @@ CREATE TABLE usuario (
     rol VARCHAR(50),
     estado BOOLEAN DEFAULT true,
     password_hash VARCHAR(255) NOT NULL DEFAULT '',
-    creado_en TIMESTAMP,
-    actualizado_en TIMESTAMP,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_usuario PRIMARY KEY (id_usuario)
 );
 
@@ -48,8 +48,8 @@ CREATE TABLE semestre (
     fecha_inicio DATE,
     fecha_fin DATE,
     estado BOOLEAN,
-    creado_en TIMESTAMP,
-    actualizado_en TIMESTAMP,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_semestre PRIMARY KEY (id_semestre)
 );
 
@@ -67,7 +67,7 @@ CREATE TABLE articulo (
     stock_actual INTEGER,
     stock_minimo INTEGER,
     alerta_stock BOOLEAN,
-    actualizado_en TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_articulo PRIMARY KEY (id_articulo)
 );
 
@@ -88,11 +88,14 @@ CREATE TABLE curso (
     nombre VARCHAR(255),
     ref_semestre VARCHAR(36),
     bloque_id VARCHAR(36),
-    creado_en TIMESTAMP,
-    actualizado_en TIMESTAMP,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ref_profesor VARCHAR(36),
     CONSTRAINT pk_curso PRIMARY KEY (id_curso),
     CONSTRAINT fk_curso_semestre FOREIGN KEY (ref_semestre)
-    REFERENCES semestre (id_semestre)
+    REFERENCES semestre (id_semestre),
+    CONSTRAINT fk_curso_profesor FOREIGN KEY (ref_profesor)
+    REFERENCES usuario (id_usuario)
 );
 
 CREATE TABLE grupo_estudiante (

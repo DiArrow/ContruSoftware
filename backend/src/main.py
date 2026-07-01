@@ -6,17 +6,23 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
-from auth.admin import router as admin_router
-from auth.router import router as auth_router
 from database import get_db
-from models.impresiones import router as impresiones_router
+from routers.admin import router as admin_router
+from routers.auth import router as auth_router
+from routers.cursos import router as cursos_router
+from routers.estudiantes import router as estudiantes_router
+from routers.impresiones import router as impresiones_router
+from routers.semestres import router as semestres_router
 
 app = FastAPI(title="ContruSoftware API")
 
 # Include routers
 app.include_router(auth_router)
-app.include_router(admin_router)
+app.include_router(admin_router, prefix="/admin", tags=["admin"])
+app.include_router(cursos_router)
+app.include_router(estudiantes_router)
 app.include_router(impresiones_router)
+app.include_router(semestres_router)
 
 
 @app.get("/health")

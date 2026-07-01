@@ -19,3 +19,10 @@ class GrupoEstudiante(Base):
     estudiante = relationship(
         "Estudiante", back_populates="grupo_estudiantes", lazy="select"
     )
+    curso = relationship(
+        "Curso",
+        primaryjoin="GrupoEstudiante.ref_grupo == Curso.id_curso",
+        foreign_keys="GrupoEstudiante.ref_grupo",
+        back_populates="grupo_estudiantes",
+        lazy="select",
+    )

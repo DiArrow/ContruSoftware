@@ -1,12 +1,15 @@
-"""Database engine, session factory, declarative base, and dependency injection.
-
-Exports:
-    engine:     SQLAlchemy Engine (pool_size=5, max_overflow=10)
-    SessionLocal:  Session factory bound to engine
-    Base:       Declarative base for all ORM models
-    get_db:     FastAPI-compatible generator yielding Session instances
+"""
+Engine de base de datos, fábrica de sesiones, base declarativa e
+inyección de dependencias.
+Exporta:
+    engine:         SQLAlchemy Engine (pool_size=5, max_overflow=10)
+    SessionLocal:   Fábrica de sesiones ligada al engine
+    Base:           Base declarativa para todos los modelos ORM
+    get_db:         Generador compatible con FastAPI que produce sesiones
+    get_role_session: Generador que produce sesiones específicas por rol
 """
 
+import warnings
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
@@ -27,9 +30,11 @@ Base = declarative_base()
 
 
 def get_db() -> Generator[Session, None, None]:
-    """Yield a database session and ensure it is closed after use.
+    """Proporciona una sesión de base de datos y asegura su cierre tras su uso.
 
-    Intended for FastAPI ``Depends(get_db)``.
+    Diseñada para usarse con ``Depends(get_db)`` de FastAPI. Pensada para
+    endpoints sin autenticación (login, health check). Para endpoints
+    autenticados, usar ``get_role_db`` desde ``auth.dependencies``.
     """
     db = SessionLocal()
     try:
@@ -44,18 +49,34 @@ _role_sessions: dict[str, object] = {}
 
 
 def get_role_session(role: str) -> Generator[Session, None, None]:
-    """Yield a database session bound to the role-specific engine.
+    """Proporciona una sesión de base de datos ligada al engine del rol.
 
-    Creates the engine on first use with ``pool_size=1`` and
-    ``max_overflow=1`` to limit PostgreSQL connections per role.
+    Si el rol tiene una URL configurada en ``ROL_DATABASE_URLS``, usa el
+    engine específico. Si no, hace fallback al engine genérico
+    (``SessionLocal``) emitiendo un warning para no enmascarar errores
+    de configuración.
 
-    Raises:
-        KeyError: If no database URL is configured for the given role.
+    Args:
+        role: Rol del usuario (por ejemplo, ``"ADM"`` o ``"EST"``).
+
+    Yields:
+        Sesión de SQLAlchemy apropiada para el rol.
     """
+    url = ROL_DATABASE_URLS.get(role)
+    if not url:
+        warnings.warn(
+            f"Rol '{role}' sin URL configurada — usando engine genérico",
+            stacklevel=2,
+        )
+        db = SessionLocal()
+        try:
+            yield db
+        finally:
+            db.rollback()
+            db.close()
+        return
+
     if role not in _role_engines:
-        url = ROL_DATABASE_URLS.get(role)
-        if not url:
-            raise KeyError(f"No database URL configured for role {role}")
         _role_engines[role] = create_engine(url, pool_size=1, max_overflow=1)
         _role_sessions[role] = sessionmaker(
             autocommit=False, autoflush=False, bind=_role_engines[role]

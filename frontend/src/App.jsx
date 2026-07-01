@@ -3,6 +3,13 @@ import Login from './components/Login';
 import FileUpload from './components/FileUpload';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import SimpleChart from './components/SimpleChart';
+import UserRegistrationForm from './components/UserRegistrationForm';
+import { DashboardDocente } from './components/DashboardDocente';
+import { DashboardEstudiante } from './components/DashboardEstudiante';
+import { HistorialImpresiones } from './components/HistorialImpresiones';
+import { PerfilUsuario } from './components/PerfilUsuario';
+import { ImportadorCSV } from './components/ImportadorCSV';
+import SemestresPage from './components/SemestresPage';
 
 //Iconos presentes mediante figuras geométricas
 //Iconos para la sidebar
@@ -170,17 +177,71 @@ const IconCentral = () => (
     </svg>
 );
 
+const IconCalendar = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
+const IconBook = () => (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+);
+
 //Items de navegación
 const navItems = [
-    { icon: <IconGrid />, label: 'Dashboard' },
-    { icon: <IconUsers />, label: 'Estudiantes' },
-    { icon: <IconBag />, label: 'Inventario' },
-    { icon: <IconPrinter />, label: 'Impresiones' },
-    { icon: <IconSettings />, label: 'Ajustes' },
+    {
+        icon: <IconGrid />,
+        label: 'Dashboard',
+        roles: ['EST', 'SOL', 'PRO', 'AYU', 'ADM'],
+    },
+    { icon: <IconCalendar />, label: 'Semestres', roles: ['PRO', 'ADM'] },
+    { icon: <IconUsers />, label: 'Estudiantes', roles: ['PRO', 'ADM'] },
+    { icon: <IconBag />, label: 'Inventario', roles: ['PRO', 'ADM'] },
+    {
+        icon: <IconPrinter />,
+        label: 'Impresiones',
+        roles: ['AYU', 'ADM', 'EST', 'SOL'],
+    },
+    { icon: <IconSettings />, label: 'Ajustes', roles: ['ADM'] },
+    { icon: <IconBook />, label: 'Mis Cursos', roles: ['EST'] },
+    {
+        icon: <IconPrinter />,
+        label: 'Historial Impresiones',
+        roles: ['EST', 'SOL'],
+    },
+    { icon: <IconUser />, label: 'Perfil', roles: ['EST', 'SOL'] },
 ];
 
 // Sidebar
-function Sidebar({ active, setActive }) {
+function Sidebar({ active, setActive, currentUser }) {
+    const userRole = currentUser?.rol;
+    const visibleItems = navItems.filter(
+        (item) => !item.roles || item.roles.includes(userRole)
+    );
+
     return (
         <aside
             style={{
@@ -246,10 +307,10 @@ function Sidebar({ active, setActive }) {
                     flex: 1,
                 }}
             >
-                {navItems.map((item, i) => (
+                {visibleItems.map((item) => (
                     <button
-                        key={i}
-                        onClick={() => setActive(i)}
+                        key={item.label}
+                        onClick={() => setActive(navItems.indexOf(item))}
                         title={item.label}
                         style={{
                             width: '44px',
@@ -260,8 +321,13 @@ function Sidebar({ active, setActive }) {
                             borderRadius: '12px',
                             border: 'none',
                             backgroundColor:
-                                active === i ? '#ede9fe' : 'transparent',
-                            color: active === i ? '#5b21b6' : '#9ca3af',
+                                active === navItems.indexOf(item)
+                                    ? '#ede9fe'
+                                    : 'transparent',
+                            color:
+                                active === navItems.indexOf(item)
+                                    ? '#5b21b6'
+                                    : '#9ca3af',
                             cursor: 'pointer',
                             transition: 'background 0.2s, color 0.2s',
                         }}
@@ -567,7 +633,7 @@ const styles = {
         minHeight: 'var(--lower-panel-height)',
         height: 'auto',
         border: '1px solid rgba(0, 0, 0, 0.08)',
-        paddingBottom: '30px',
+        //paddingBottom: '30px',
     },
 };
 
@@ -618,14 +684,14 @@ function CentralPanel({ children, showDefaultLogo }) {
             {showDefaultLogo && (
                 <div
                     style={{
-                        position: 'relative',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-93%, -50%)',
                         display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '8px',
+                        flexDirection: 'row', // Mantiene el logo y el texto lado a lado
+                        alignItems: 'center', // Los centra verticalmente entre sí
+                        justifyContent: 'flex-start', // ¡Alinea todo hacia el lado izquierdo!
+                        width: '100%',
+                        flex: 1,
+                        gap: '40px', // Espacio entre el cubo y el texto
+                        padding: '60px 24px', // 24px de margen a los lados para que respire
                     }}
                 >
                     <div
@@ -638,30 +704,18 @@ function CentralPanel({ children, showDefaultLogo }) {
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#5b21b6',
+                            flexShrink: 0,
                         }}
                     >
                         <IconCentral />
                     </div>
                     <span
                         style={{
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            color: '#5b21b6',
-                            letterSpacing: '0.05em',
-                            textTransform: 'uppercase',
-                        }}
-                    ></span>
-                    <span
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(20%, -80%)',
                             fontSize: '50px',
                             fontWeight: 100,
                             color: '#000000',
                             letterSpacing: '0.05em',
-                            marginTop: '10px',
+                            margin: 0,
                         }}
                     >
                         Proyectos realizados: 0
@@ -708,6 +762,7 @@ function AppContent() {
     const [activeTab, setActiveTab] = useState(0);
     const [notifications, setNotifications] = useState([]);
     const [hasUnread, setHasUnread] = useState(false);
+    const [cursoSeleccionadoId, setCursoSeleccionadoId] = useState(null); // <-- LÍNEA NUEVA
     const addNotification = (notification) => {
         setNotifications((prev) => [notification, ...prev]);
         setHasUnread(true);
@@ -743,7 +798,11 @@ function AppContent() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar active={activeTab} setActive={setActiveTab} />
+            <Sidebar
+                active={activeTab}
+                setActive={setActiveTab}
+                currentUser={currentUser}
+            />
             <div
                 style={{
                     flex: 1,
@@ -762,17 +821,36 @@ function AppContent() {
                             setHasUnread={setHasUnread}
                         />
                     </TopPanel>
-                    <CentralPanel showDefaultLogo={activeTab !== 3}>
-                        {activeTab === 3 && (
+                    <CentralPanel showDefaultLogo={activeTab === 3}>
+                        {activeTab === 1 && <SemestresPage />}
+                        {activeTab === 4 && (
                             <FileUpload
                                 onFileUploaded={addNotification}
                                 articulos={mockArticulos}
                             />
                         )}
+                        {activeTab === 5 && <UserRegistrationForm />}
+                        {activeTab === 0 && (
+                            <DashboardDocente
+                                setActiveTab={setActiveTab}
+                                setCursoSeleccionadoId={setCursoSeleccionadoId}
+                            />
+                        )}
+                        {activeTab === 2 && (
+                            <ImportadorCSV
+                                cursoId={cursoSeleccionadoId}
+                                onVolver={() => setActiveTab(0)}
+                            />
+                        )}
+                        {activeTab === 6 && <DashboardEstudiante />}
+                        {activeTab === 7 && <HistorialImpresiones />}
+                        {activeTab === 8 && <PerfilUsuario />}
                     </CentralPanel>
-                    <LowerPanel showDefaultLogo={activeTab !== 3}>
-                        <SimpleChart />
-                    </LowerPanel>
+                    {activeTab === 3 && (
+                        <LowerPanel>
+                            <SimpleChart />
+                        </LowerPanel>
+                    )}
                 </div>
             </div>
         </div>

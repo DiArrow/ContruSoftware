@@ -1,15 +1,19 @@
-"""FastAPI authentication dependencies.
+"""Dependencias de autenticación para FastAPI.
 
-Exports:
-    oauth2_scheme: OAuth2PasswordBearer instance pointing to ``/auth/token``.
-    get_current_user: Decode and validate the JWT from the request header.
-    requiere_rol: Factory that returns a dependency enforcing role-based access.
-    get_role_session: Re-export of ``src.database.get_role_session`` for convenience.
+Exporta:
+    oauth2_scheme:     Instancia de OAuth2PasswordBearer apuntando a ``/auth/token``.
+    get_current_user:  Decodifica y valida el JWT del header de la request.
+    requiere_rol:      Fábrica que devuelve una dependencia que valida el rol.
+    get_role_session:  Re-export de ``database.get_role_session`` por conveniencia.
+    get_role_db:       Dependencia FastAPI que produce la sesión del rol del usuario.
 """
+
+from collections.abc import Generator
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
+from sqlalchemy.orm import Session
 
 from auth.jwt_handler import validar_token_jwt
 from database import get_role_session
@@ -19,22 +23,23 @@ __all__ = [
     "get_current_user",
     "requiere_rol",
     "get_role_session",
+    "get_role_db",
 ]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
-    """Decode the JWT bearer token and return the payload.
+    """Decodifica el JWT bearer y devuelve el payload.
 
     Args:
-        token: JWT string extracted from the ``Authorization`` header.
+        token: String del JWT extraído del header ``Authorization``.
 
     Returns:
-        Decoded JWT payload dictionary.
+        Diccionario con el payload del JWT decodificado.
 
     Raises:
-        HTTPException: 401 if the token is invalid or expired.
+        HTTPException: 401 si el token es inválido o está expirado.
     """
     try:
         payload = validar_token_jwt(token)
@@ -46,18 +51,35 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     return payload
 
 
-def requiere_rol(roles: list[str]) -> callable:
-    """Return a dependency that enforces role-based access.
+def get_role_db(
+    current_user: dict = Depends(get_current_user),
+) -> Generator[Session, None, None]:
+    """Proporciona una sesión de base de datos para el rol del usuario actual.
+
+    Actúa como dependencia de FastAPI: lee el rol del JWT ya autenticado
+    y delega en ``get_role_session`` para obtener la sesión. Si el rol
+    no tiene URL configurada, hace fallback al engine genérico con un
+    warning.
+
+    Yields:
+        Sesión de SQLAlchemy apropiada para el rol del usuario.
+    """
+    role = current_user.get("role", "")
+    yield from get_role_session(role)
+
+
+def requiere_rol(roles: list[str] | set[str]) -> callable:
+    """Devuelve una dependencia que valida el acceso por rol.
 
     Args:
-        roles: List of allowed role strings.
+        roles: Lista o conjunto de strings con los roles permitidos.
 
     Returns:
-        A callable suitable for ``Depends()`` that validates the user's role.
+        Un callable apto para ``Depends()`` que valida el rol del usuario.
 
     Raises:
-        HTTPException: 403 if ``roles`` is empty.
-        HTTPException: 403 if the user's role is not in the allowed list.
+        HTTPException: 403 si ``roles`` está vacío.
+        HTTPException: 403 si el rol del usuario no está en la lista permitida.
     """
     if not roles:
         raise HTTPException(

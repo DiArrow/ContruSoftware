@@ -48,11 +48,9 @@ def test_admin_crear_estudiante_happy_path(
     }
 
     with patch(
-        "auth.admin.hash_password", return_value="mocked_bcrypt_hash"
+        "auth.hasher.hash_password", return_value="mocked_bcrypt_hash"
     ) as mock_hash:
-        response = client.post(
-            "/api/admin/usuarios", json=payload, headers=admin_headers
-        )
+        response = client.post("/admin/usuarios", json=payload, headers=admin_headers)
 
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
@@ -76,7 +74,7 @@ def test_crear_usuario_403_rol_no_autorizado(
         "rol": "EST",
     }
     response = client_unit.post(
-        "/api/admin/usuarios", json=payload, headers=estudiante_headers
+        "/admin/usuarios", json=payload, headers=estudiante_headers
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -106,7 +104,7 @@ def test_crear_usuario_409_email_duplicado(
         "rol": "EST",
     }
 
-    response = client.post("/api/admin/usuarios", json=payload, headers=admin_headers)
+    response = client.post("/admin/usuarios", json=payload, headers=admin_headers)
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
@@ -119,5 +117,5 @@ def test_crear_usuario_401_sin_token(client_unit: TestClient):
         "password": "password123",
         "rol": "EST",
     }
-    response = client_unit.post("/api/admin/usuarios", json=payload)
+    response = client_unit.post("/admin/usuarios", json=payload)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
