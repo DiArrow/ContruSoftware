@@ -622,7 +622,7 @@ class TestMisImpresiones:
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json()["estado"] == "En Impresion" 
+        assert response.json()["estado"] == "En Impresion"
 
     @pytest.mark.asyncio
     async def test_ayudante_aprueba_impresion_con_stock_insuficiente(client, db_session):
