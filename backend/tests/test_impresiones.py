@@ -1,11 +1,17 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock
+from uuid import uuid4
 
 import pytest
+from fastapi import status
 
 from auth.dependencies import get_current_user, get_role_db
 from auth.jwt_handler import crear_token_jwt
 from main import app
+from models.archivo_impresion import ArchivoImpresion
+from models.articulo import Articulo
+from models.impresion import Impresion
+from models.usuario import Usuario
 from utils.files import validar_extension
 
 # ==========================================
@@ -463,3 +469,145 @@ def test_api_impresiones_extension_case_insensitive(db_session, client, seed_est
 
     response = client.post("/impresiones", headers=headers, data=data, files=archivos)
     assert response.status_code == 201
+
+
+def _crear_usuario(session, user_id: str, rol: str = "EST") -> str:
+    session.add(
+        Usuario(
+            id_usuario=user_id,
+            nombre="Test",
+            apellido="User",
+            email=f"{user_id[:8]}@test.com",
+            correo=f"{user_id[:8]}@test.com",
+            rol=rol,
+            password_hash="x",
+        )
+    )
+    session.flush()
+    return user_id
+
+
+def _crear_articulo(session) -> str:
+    art_id = str(uuid4())[:8]
+    session.add(
+        Articulo(
+            id_articulo=art_id,
+            nombre_articulo="Test",
+            stock_actual=10,
+            stock_minimo=1,
+            alerta_stock=False,
+        )
+    )
+    session.flush()
+    return art_id
+
+
+class TestMisImpresiones:
+    """GET /impresiones/mias scenarios."""
+
+    @pytest.mark.integration
+    def test_estudiante_ve_su_historial_ordenado(
+        self, client, db_session, estudiante_headers
+    ):
+        user_id = "test_user@test.com"
+        _crear_usuario(db_session, user_id, "EST")
+        art_id = _crear_articulo(db_session)
+
+        imp1_id = str(uuid4())
+        imp2_id = str(uuid4())
+        db_session.add(
+            Impresion(
+                id_impresion=imp1_id,
+                ref_usuario=user_id,
+                ref_articulo=art_id,
+                cantidad=1,
+                fecha_impresion=datetime(2025, 6, 14, 10, 0, 0),
+                estado_impresion="Pendiente",
+            )
+        )
+        db_session.add(
+            Impresion(
+                id_impresion=imp2_id,
+                ref_usuario=user_id,
+                ref_articulo=art_id,
+                cantidad=1,
+                fecha_impresion=datetime(2025, 6, 15, 12, 0, 0),
+                estado_impresion="Completada",
+            )
+        )
+        db_session.add(
+            ArchivoImpresion(
+                id_archivo=str(uuid4()),
+                ref_impresion=imp1_id,
+                nombre_archivo="modelo1.stl",
+                contenido=b"data1",
+            )
+        )
+        db_session.add(
+            ArchivoImpresion(
+                id_archivo=str(uuid4()),
+                ref_impresion=imp2_id,
+                nombre_archivo="modelo2.obj",
+                contenido=b"data2",
+            )
+        )
+        db_session.flush()
+
+        response = client.get("/impresiones/mias", headers=estudiante_headers)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert len(data) == 2
+        assert data[0]["id_impresion"] == imp2_id
+        assert data[0]["estado"] == "Completada"
+        assert data[0]["nombre_archivo"] == "modelo2.obj"
+        assert data[1]["id_impresion"] == imp1_id
+        assert data[1]["estado"] == "Pendiente"
+        assert data[1]["nombre_archivo"] == "modelo1.stl"
+
+    @pytest.mark.integration
+    def test_solicitante_ve_su_historial(self, client, db_session):
+        user_id = str(uuid4())
+        _crear_usuario(db_session, user_id, "SOL")
+        art_id = _crear_articulo(db_session)
+
+        imp_id = str(uuid4())
+        db_session.add(
+            Impresion(
+                id_impresion=imp_id,
+                ref_usuario=user_id,
+                ref_articulo=art_id,
+                cantidad=1,
+                fecha_impresion=datetime(2025, 6, 15, 12, 0, 0),
+                estado_impresion="Rechazada",
+            )
+        )
+        db_session.add(
+            ArchivoImpresion(
+                id_archivo=str(uuid4()),
+                ref_impresion=imp_id,
+                nombre_archivo="pieza.gcode",
+                contenido=b"data",
+            )
+        )
+        db_session.flush()
+
+        headers = token_headers("SOL", user_id=user_id)
+        response = client.get("/impresiones/mias", headers=headers)
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["id_impresion"] == imp_id
+        assert data[0]["estado"] == "Rechazada"
+        assert data[0]["nombre_archivo"] == "pieza.gcode"
+
+    @pytest.mark.integration
+    def test_historial_vacio_retorna_lista_vacia(self, client, estudiante_headers):
+        response = client.get("/impresiones/mias", headers=estudiante_headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == []
+
+    @pytest.mark.parametrize("rol_no_autorizado", ["PRO", "ADM", "AYU"])
+    def test_rol_no_autorizado_recibe_403(self, rol_no_autorizado, client_unit):
+        headers = token_headers(rol_no_autorizado)
+        response = client_unit.get("/impresiones/mias", headers=headers)
+        assert response.status_code == status.HTTP_403_FORBIDDEN

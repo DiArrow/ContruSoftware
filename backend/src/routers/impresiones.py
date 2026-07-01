@@ -2,11 +2,11 @@
 
 import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from auth.dependencies import get_role_db, requiere_rol
 from auth.roles import ESTUDIANTE, SOLICITANTE
@@ -29,6 +29,45 @@ class ImpresionResponse(BaseModel):
     archivos_subidos: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ImpresionMiaResponse(BaseModel):
+    """Schema de respuesta para el historial de impresiones del usuario."""
+
+    id_impresion: str
+    nombre_archivo: Optional[str]
+    estado: str
+    fecha_solicitud: Optional[datetime]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+@router.get(
+    "/impresiones/mias",
+    response_model=list[ImpresionMiaResponse],
+)
+def listar_mis_impresiones(
+    db: Session = Depends(get_role_db),
+    current_user: dict = Depends(requiere_rol([ESTUDIANTE, SOLICITANTE])),
+):
+    """Retorna el historial de impresiones del usuario autenticado."""
+    user_sub = current_user["sub"]
+    impresiones = (
+        db.query(Impresion)
+        .options(joinedload(Impresion.archivos))
+        .filter(Impresion.ref_usuario == user_sub)
+        .order_by(Impresion.fecha_impresion.desc())
+        .all()
+    )
+    return [
+        ImpresionMiaResponse(
+            id_impresion=imp.id_impresion,
+            nombre_archivo=imp.archivos[0].nombre_archivo if imp.archivos else None,
+            estado=imp.estado_impresion,
+            fecha_solicitud=imp.fecha_impresion,
+        )
+        for imp in impresiones
+    ]
 
 
 @router.post(
