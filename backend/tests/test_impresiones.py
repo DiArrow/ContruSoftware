@@ -611,3 +611,27 @@ class TestMisImpresiones:
         headers = token_headers(rol_no_autorizado)
         response = client_unit.get("/impresiones/mias", headers=headers)
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.asyncio
+    async def test_ayudante_aprueba_impresion_con_stock_exitoso(client, db_session):
+        solicitud_id = 1
+
+        response = await client.put(
+            f"/api/impresiones/{solicitud_id}/estado",
+            json={"estado": "En Impresion"}
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["estado"] == "En Impresion" 
+
+    @pytest.mark.asyncio
+    async def test_ayudante_aprueba_impresion_con_stock_insuficiente(client, db_session):
+        solicitud_id_sin_stock = 999
+
+        response = await client.put(
+            f"/api/impresiones/{solicitud_id_sin_stock}/estado",
+            json={"estado": "En Impresion"}
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json()["detail"] == "Stock insuficiente de filamnto"
