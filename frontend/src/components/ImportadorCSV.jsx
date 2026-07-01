@@ -451,6 +451,126 @@ export const ImportadorCSV = ({ cursoId, onVolver }) => {
                         </div>
                     )}
 
+                    {resultado.passwords && resultado.passwords.length > 0 && (
+                        <div style={{ marginBottom: '20px' }}>
+                            <h3
+                                style={{
+                                    fontSize: '1.1rem',
+                                    color: '#374151',
+                                    marginBottom: '12px',
+                                }}
+                            >
+                                Contraseñas generadas
+                            </h3>
+                            <div
+                                style={{
+                                    overflowX: 'auto',
+                                    marginBottom: '12px',
+                                }}
+                            >
+                                <table
+                                    style={{
+                                        width: '100%',
+                                        borderCollapse: 'collapse',
+                                        textAlign: 'left',
+                                        border: '1px solid #e5e7eb',
+                                    }}
+                                >
+                                    <thead
+                                        style={{
+                                            backgroundColor: '#f3f4f6',
+                                        }}
+                                    >
+                                        <tr>
+                                            <th
+                                                style={{
+                                                    padding: '12px',
+                                                    borderBottom:
+                                                        '1px solid #e5e7eb',
+                                                }}
+                                            >
+                                                Correo
+                                            </th>
+                                            <th
+                                                style={{
+                                                    padding: '12px',
+                                                    borderBottom:
+                                                        '1px solid #e5e7eb',
+                                                }}
+                                            >
+                                                Contraseña
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {resultado.passwords.map(
+                                            (entry, index) => (
+                                                <tr
+                                                    key={index}
+                                                    style={{
+                                                        borderBottom:
+                                                            '1px solid #e5e7eb',
+                                                    }}
+                                                >
+                                                    <td
+                                                        style={{
+                                                            padding: '12px',
+                                                        }}
+                                                    >
+                                                        {entry.correo}
+                                                    </td>
+                                                    <td
+                                                        style={{
+                                                            padding: '12px',
+                                                            fontFamily:
+                                                                'monospace',
+                                                        }}
+                                                    >
+                                                        {entry.password}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    const csv =
+                                        'correo,contraseña\n' +
+                                        resultado.passwords
+                                            .map(
+                                                (p) =>
+                                                    `${p.correo},${p.password}`
+                                            )
+                                            .join('\n');
+                                    const blob = new Blob([csv], {
+                                        type: 'text/csv',
+                                    });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = 'contrasenas_estudiantes.csv';
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                }}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    backgroundColor: '#f59e0b',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                }}
+                            >
+                                Descargar CSV con contraseñas
+                            </button>
+                        </div>
+                    )}
+
                     <button
                         onClick={() => {
                             setArchivo(null);

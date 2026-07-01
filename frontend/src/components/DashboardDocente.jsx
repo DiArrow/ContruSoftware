@@ -88,7 +88,7 @@ export const DashboardDocente = ({ setActiveTab, setCursoSeleccionadoId }) => {
 
     const handleImportarCSV = (cursoId) => {
         setCursoSeleccionadoId(cursoId);
-        setActiveTab(1);
+        setActiveTab(2);
     };
 
     // Estilos reutilizables (Paleta MakerBox)
