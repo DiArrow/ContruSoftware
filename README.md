@@ -1,6 +1,6 @@
 # Grupo Nº1 Constucción de Software.
 
-aaaa
+a
 # Integrantes
 
 | Nombre             | Rol   |
